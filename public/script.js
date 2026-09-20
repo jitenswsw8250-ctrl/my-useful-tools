@@ -11,6 +11,7 @@ let currentScreen = 'home';
 let isDarkTheme = false;
 let emiCurrency = 'INR';      // 'INR' or 'USD' (default is INR)
 let emiTenureUnit = 'years'; // 'years' or 'months' (default is years)
+let discCurrency = 'INR';     // 'INR' or 'USD' (default is INR)
 let bmiUnit = 'metric';      // 'metric' or 'imperial'
 
 // Cached DOM Elements
@@ -80,14 +81,21 @@ function initDomCache() {
     pctTabPanes: document.querySelectorAll('.tab-pane'),
 
     // Discount Calculator
+    discCurrencyControl: document.getElementById('disc-currency-control'),
+    discCurrInr: document.getElementById('disc-curr-inr'),
+    discCurrUsd: document.getElementById('disc-curr-usd'),
+    discPriceLabel: document.getElementById('disc-price-label'),
     discPrice: document.getElementById('disc-price'),
     discPercent: document.getElementById('disc-percent'),
     discTaxEnable: document.getElementById('disc-tax-enable'),
     discTaxRate: document.getElementById('disc-tax-rate'),
     discTaxGroup: document.getElementById('disc-tax-group'),
+    discFinalLabel: document.getElementById('disc-final-label'),
     discFinalVal: document.getElementById('disc-final-val'),
+    discSavingsLabel: document.getElementById('disc-savings-label'),
     discSavingsVal: document.getElementById('disc-savings-val'),
     discSavingsSub: document.getElementById('disc-savings-sub'),
+    discOrigLabel: document.getElementById('disc-orig-label'),
     discOrigVal: document.getElementById('disc-orig-val'),
     discTaxVal: document.getElementById('disc-tax-val'),
     discChips: document.querySelectorAll('.chip'),
@@ -148,6 +156,14 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateAge();
       }
     });
+  }
+
+  // Currency toggle buttons for Discount Calculator
+  if (elCache.discCurrInr) {
+    elCache.discCurrInr.addEventListener('click', () => setDiscCurrency('INR'));
+  }
+  if (elCache.discCurrUsd) {
+    elCache.discCurrUsd.addEventListener('click', () => setDiscCurrency('USD'));
   }
 
   // Initialize initial default state for all calculators
@@ -534,6 +550,44 @@ function formatDecimal(val) {
 }
 
 // ================= 4. DISCOUNT CALCULATOR =================
+function setDiscCurrency(curr) {
+  discCurrency = curr;
+  const inrBtn = elCache.discCurrInr || document.getElementById('disc-curr-inr');
+  const usdBtn = elCache.discCurrUsd || document.getElementById('disc-curr-usd');
+  if (inrBtn) inrBtn.classList.toggle('active', curr === 'INR');
+  if (usdBtn) usdBtn.classList.toggle('active', curr === 'USD');
+
+  const priceLabel = elCache.discPriceLabel || document.getElementById('disc-price-label');
+  if (priceLabel) {
+    priceLabel.textContent = curr === 'INR' ? 'Original Price (₹)' : 'Original Price ($)';
+  }
+
+  const finalLabel = elCache.discFinalLabel || document.getElementById('disc-final-label');
+  if (finalLabel) {
+    finalLabel.textContent = curr === 'INR' ? 'Final Price (₹)' : 'Final Price ($)';
+  }
+
+  const savingsLabel = elCache.discSavingsLabel || document.getElementById('disc-savings-label');
+  if (savingsLabel) {
+    savingsLabel.textContent = curr === 'INR' ? 'You Save (₹)' : 'You Save ($)';
+  }
+
+  const origLabel = elCache.discOrigLabel || document.getElementById('disc-orig-label');
+  if (origLabel) {
+    origLabel.textContent = curr === 'INR' ? 'Original Price (₹)' : 'Original Price ($)';
+  }
+
+  calculateDiscount();
+}
+
+function formatDiscCurrency(val) {
+  if (discCurrency === 'INR') {
+    return '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  } else {
+    return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+}
+
 function setQuickDiscount(pct) {
   if (elCache.discPercent) elCache.discPercent.value = pct;
   const chips = elCache.discChips || document.querySelectorAll('.chip');
@@ -559,10 +613,29 @@ function calculateDiscount() {
   const isTaxEnabled = elCache.discTaxEnable ? elCache.discTaxEnable.checked : false;
   const taxPct = isTaxEnabled ? (parseFloat(elCache.discTaxRate ? elCache.discTaxRate.value : 0) || 0) : 0;
 
+  // Make sure all labels are in sync with discCurrency
+  const priceLabel = elCache.discPriceLabel || document.getElementById('disc-price-label');
+  if (priceLabel) {
+    priceLabel.textContent = discCurrency === 'INR' ? 'Original Price (₹)' : 'Original Price ($)';
+  }
+  const finalLabel = elCache.discFinalLabel || document.getElementById('disc-final-label');
+  if (finalLabel) {
+    finalLabel.textContent = discCurrency === 'INR' ? 'Final Price (₹)' : 'Final Price ($)';
+  }
+  const savingsLabel = elCache.discSavingsLabel || document.getElementById('disc-savings-label');
+  if (savingsLabel) {
+    savingsLabel.textContent = discCurrency === 'INR' ? 'You Save (₹)' : 'You Save ($)';
+  }
+  const origLabel = elCache.discOrigLabel || document.getElementById('disc-orig-label');
+  if (origLabel) {
+    origLabel.textContent = discCurrency === 'INR' ? 'Original Price (₹)' : 'Original Price ($)';
+  }
+
   if (price <= 0) {
-    if (elCache.discFinalVal) elCache.discFinalVal.textContent = '$0.00';
-    if (elCache.discSavingsVal) elCache.discSavingsVal.textContent = '$0.00';
-    if (elCache.discOrigVal) elCache.discOrigVal.textContent = '$0.00';
+    const zeroStr = formatDiscCurrency(0);
+    if (elCache.discFinalVal) elCache.discFinalVal.textContent = zeroStr;
+    if (elCache.discSavingsVal) elCache.discSavingsVal.textContent = zeroStr;
+    if (elCache.discOrigVal) elCache.discOrigVal.textContent = zeroStr;
     return;
   }
 
@@ -571,19 +644,20 @@ function calculateDiscount() {
   const taxAmount = priceAfterDiscount * (taxPct / 100);
   const finalPrice = priceAfterDiscount + taxAmount;
 
-  if (elCache.discFinalVal) elCache.discFinalVal.textContent = `$${formatCurrency(finalPrice)}`;
-  if (elCache.discSavingsVal) elCache.discSavingsVal.textContent = `$${formatCurrency(savings)}`;
+  if (elCache.discFinalVal) elCache.discFinalVal.textContent = formatDiscCurrency(finalPrice);
+  if (elCache.discSavingsVal) elCache.discSavingsVal.textContent = formatDiscCurrency(savings);
   if (elCache.discSavingsSub) elCache.discSavingsSub.textContent = `${discountPct}% off original price`;
-  if (elCache.discOrigVal) elCache.discOrigVal.textContent = `$${formatCurrency(price)}`;
+  if (elCache.discOrigVal) elCache.discOrigVal.textContent = formatDiscCurrency(price);
 
   if (elCache.discTaxVal) {
     elCache.discTaxVal.textContent = isTaxEnabled
-      ? `Includes +$${formatCurrency(taxAmount)} (${taxPct}% tax)`
+      ? `Includes +${formatDiscCurrency(taxAmount)} (${taxPct}% tax)`
       : 'Tax: Not included';
   }
 }
 
 function resetDiscount() {
+  setDiscCurrency('INR');
   if (elCache.discPrice) elCache.discPrice.value = '120';
   if (elCache.discPercent) elCache.discPercent.value = '25';
   if (elCache.discTaxEnable) elCache.discTaxEnable.checked = false;
