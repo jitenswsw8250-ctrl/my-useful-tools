@@ -324,7 +324,9 @@ function navigateTo(screenId, updateHash = true) {
   // Update Canonical URL
   const canonicalLink = document.getElementById('canonical-url');
   const ogUrl = document.getElementById('og-url');
-  const baseUrl = 'https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/';
+  const currentOrigin = (window.location.origin && window.location.origin !== 'null') ? window.location.origin : '';
+  const currentPath = window.location.pathname || '/';
+  const baseUrl = currentOrigin ? (currentOrigin + currentPath) : 'https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/';
   const fullTargetUrl = effectiveScreen === 'home' ? baseUrl : `${baseUrl}#${effectiveScreen}`;
   if (canonicalLink) {
     canonicalLink.setAttribute('href', fullTargetUrl);
@@ -337,8 +339,8 @@ function navigateTo(screenId, updateHash = true) {
   if (typeof window.gtag === 'function') {
     window.gtag('event', 'page_view', {
       page_title: seo.title,
-      page_location: fullTargetUrl,
-      page_path: effectiveScreen === 'home' ? '/' : `/#${effectiveScreen}`
+      page_location: window.location.href,
+      page_path: effectiveScreen === 'home' ? currentPath : `${currentPath}#${effectiveScreen}`
     });
   }
 
