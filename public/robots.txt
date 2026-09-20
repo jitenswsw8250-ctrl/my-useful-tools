@@ -1,0 +1,16 @@
+# robots.txt for MY USEFUL TOOLS
+# https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/
+
+User-agent: *
+Allow: /
+
+# Google Search engine crawler directives
+User-agent: Googlebot
+Allow: /
+
+# Googlebot image crawler directives
+User-agent: Googlebot-Image
+Allow: /
+
+# XML Sitemap location
+Sitemap: https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/sitemap.xml

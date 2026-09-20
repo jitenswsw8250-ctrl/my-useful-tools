@@ -175,16 +175,23 @@ document.addEventListener('DOMContentLoaded', () => {
   calculateDiscount();
   calculateBmi();
 
-  // Hash Navigation
+  // Hash & Query URL Navigation
+  function parseInitialRoute() {
+    const params = new URLSearchParams(window.location.search);
+    const queryScreen = params.get('tool') || params.get('page') || params.get('screen') || params.get('calc');
+    const hash = window.location.hash.replace('#', '');
+    const target = queryScreen || hash;
+    if (target) {
+      navigateTo(target, false);
+    }
+  }
+
   window.addEventListener('hashchange', () => {
     const hash = window.location.hash.replace('#', '') || 'home';
     navigateTo(hash, false);
   });
 
-  if (window.location.hash) {
-    const initial = window.location.hash.replace('#', '');
-    navigateTo(initial, false);
-  }
+  parseInitialRoute();
 });
 
 // ================= THEME TOGGLE =================
@@ -298,9 +305,32 @@ function navigateTo(screenId, updateHash = true) {
   // Dynamic SEO Title & Meta Description update
   const seo = PAGE_SEO[screenId] || PAGE_SEO[effectiveScreen] || PAGE_SEO.home;
   document.title = seo.title;
+
   const metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) {
     metaDesc.setAttribute('content', seo.description);
+  }
+
+  // Update Open Graph and Twitter Card tags
+  const ogTitle = document.getElementById('og-title');
+  if (ogTitle) ogTitle.setAttribute('content', seo.title);
+  const ogDesc = document.getElementById('og-description');
+  if (ogDesc) ogDesc.setAttribute('content', seo.description);
+  const twTitle = document.getElementById('twitter-title');
+  if (twTitle) twTitle.setAttribute('content', seo.title);
+  const twDesc = document.getElementById('twitter-description');
+  if (twDesc) twDesc.setAttribute('content', seo.description);
+
+  // Update Canonical URL
+  const canonicalLink = document.getElementById('canonical-url');
+  const ogUrl = document.getElementById('og-url');
+  const baseUrl = 'https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/';
+  const fullTargetUrl = effectiveScreen === 'home' ? baseUrl : `${baseUrl}#${effectiveScreen}`;
+  if (canonicalLink) {
+    canonicalLink.setAttribute('href', fullTargetUrl);
+  }
+  if (ogUrl) {
+    ogUrl.setAttribute('content', fullTargetUrl);
   }
 
   // Scroll repositioning

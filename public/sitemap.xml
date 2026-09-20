@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- 1. Age Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#age</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 2. EMI Loan Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#emi</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 3. Percentage Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#percentage</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 4. Discount Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#discount</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 5. BMI Health Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#bmi</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- About Us -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#about</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Contact Us -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#contact</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#privacy</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Terms & Conditions -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#terms</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Disclaimer -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#disclaimer</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>
