@@ -333,6 +333,15 @@ function navigateTo(screenId, updateHash = true) {
     ogUrl.setAttribute('content', fullTargetUrl);
   }
 
+  // Google Analytics 4 page_view tracking for client-side navigation
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', 'page_view', {
+      page_title: seo.title,
+      page_location: fullTargetUrl,
+      page_path: effectiveScreen === 'home' ? '/' : `/#${effectiveScreen}`
+    });
+  }
+
   // Scroll repositioning
   if (scrollToTools) {
     setTimeout(() => {

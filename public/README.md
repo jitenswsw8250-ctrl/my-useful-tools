@@ -22,6 +22,8 @@ This folder (`public/`) contains the complete standalone responsive web version 
    - `index.html`
    - `style.css`
    - `script.js`
+   - `robots.txt`
+   - `sitemap.xml`
    *(Ensure `index.html` is at the root of your GitHub repository or in the `/docs` folder).*
 3. In your GitHub repository:
    - Go to **Settings** > **Pages**.
