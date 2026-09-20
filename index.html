@@ -60,56 +60,68 @@
     <div class="drawer-header">
       <div>
         <h2 class="drawer-title">MY USEFUL TOOLS</h2>
-        <p class="drawer-sub">Free Online Utility Suite</p>
+        <p class="drawer-sub">Fast, Free &amp; Private Utilities</p>
       </div>
       <button class="icon-btn" onclick="closeDrawer()" aria-label="Close menu">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
 
+    <div class="drawer-section-label">MAIN NAVIGATION</div>
+    <nav class="drawer-nav">
+      <a href="#home" onclick="navigateTo('home')" class="drawer-item" data-screen="home">
+        <span class="drawer-icon">🏠</span>
+        <span>Home</span>
+      </a>
+      <a href="#all-tools" onclick="navigateTo('all-tools')" class="drawer-item" data-screen="all-tools">
+        <span class="drawer-icon">🧰</span>
+        <span>All Tools</span>
+      </a>
+    </nav>
+
     <div class="drawer-section-label">CALCULATORS</div>
     <nav class="drawer-nav">
-      <a href="javascript:void(0)" onclick="navigateTo('age')" class="drawer-item" data-screen="age">
+      <a href="#age" onclick="navigateTo('age')" class="drawer-item" data-screen="age">
         <span class="drawer-icon">🎂</span>
         <span>Age Calculator</span>
       </a>
-      <a href="javascript:void(0)" onclick="navigateTo('emi')" class="drawer-item" data-screen="emi">
+      <a href="#emi" onclick="navigateTo('emi')" class="drawer-item" data-screen="emi">
         <span class="drawer-icon">🏦</span>
         <span>EMI Loan Calculator</span>
       </a>
-      <a href="javascript:void(0)" onclick="navigateTo('percentage')" class="drawer-item" data-screen="percentage">
+      <a href="#percentage" onclick="navigateTo('percentage')" class="drawer-item" data-screen="percentage">
         <span class="drawer-icon">📊</span>
         <span>Percentage Calculator</span>
       </a>
-      <a href="javascript:void(0)" onclick="navigateTo('discount')" class="drawer-item" data-screen="discount">
+      <a href="#discount" onclick="navigateTo('discount')" class="drawer-item" data-screen="discount">
         <span class="drawer-icon">🏷️</span>
-        <span>Discount & Sale Calculator</span>
+        <span>Discount &amp; Sale Calculator</span>
       </a>
-      <a href="javascript:void(0)" onclick="navigateTo('bmi')" class="drawer-item" data-screen="bmi">
+      <a href="#bmi" onclick="navigateTo('bmi')" class="drawer-item" data-screen="bmi">
         <span class="drawer-icon">⚖️</span>
         <span>BMI Health Calculator</span>
       </a>
     </nav>
 
-    <div class="drawer-section-label">INFORMATION & LEGAL</div>
+    <div class="drawer-section-label">INFORMATION &amp; LEGAL</div>
     <nav class="drawer-nav">
-      <a href="javascript:void(0)" onclick="navigateTo('about')" class="drawer-item" data-screen="about">
+      <a href="#about" onclick="navigateTo('about')" class="drawer-item" data-screen="about">
         <span class="drawer-icon">ℹ️</span>
         <span>About Us</span>
       </a>
-      <a href="javascript:void(0)" onclick="navigateTo('contact')" class="drawer-item" data-screen="contact">
+      <a href="#contact" onclick="navigateTo('contact')" class="drawer-item" data-screen="contact">
         <span class="drawer-icon">✉️</span>
         <span>Contact Us</span>
       </a>
-      <a href="javascript:void(0)" onclick="navigateTo('privacy')" class="drawer-item" data-screen="privacy">
+      <a href="#privacy" onclick="navigateTo('privacy')" class="drawer-item" data-screen="privacy">
         <span class="drawer-icon">🛡️</span>
         <span>Privacy Policy</span>
       </a>
-      <a href="javascript:void(0)" onclick="navigateTo('terms')" class="drawer-item" data-screen="terms">
+      <a href="#terms" onclick="navigateTo('terms')" class="drawer-item" data-screen="terms">
         <span class="drawer-icon">📜</span>
-        <span>Terms & Conditions</span>
+        <span>Terms &amp; Conditions</span>
       </a>
-      <a href="javascript:void(0)" onclick="navigateTo('disclaimer')" class="drawer-item" data-screen="disclaimer">
+      <a href="#disclaimer" onclick="navigateTo('disclaimer')" class="drawer-item" data-screen="disclaimer">
         <span class="drawer-icon">⚠️</span>
         <span>Disclaimer</span>
       </a>
@@ -124,22 +136,22 @@
       <div class="hero-card">
         <span class="badge">100% FREE UTILITY PORTAL</span>
         <h1 class="hero-title">MY USEFUL TOOLS</h1>
-        <p class="hero-subtitle">Free, simple, and easy-to-use online calculators and tools. Fast, private, and client-side.</p>
+        <p class="hero-subtitle">Fast, free, and privacy-friendly online utilities. Simple, accurate, and completely browser-based.</p>
         <div class="hero-pills">
           <span class="pill">⚡ Instant Calculations</span>
           <span class="pill">🔒 100% Client-Side Privacy</span>
-          <span class="pill">📱 Mobile & Desktop Friendly</span>
+          <span class="pill">📱 Mobile &amp; Desktop Friendly</span>
         </div>
       </div>
 
       <!-- Top AdSense Area -->
-      <div class="adsense-placeholder" aria-label="Advertisement Placement">
-        <div class="ad-label">Google AdSense Placement</div>
-        <div class="ad-sub">Responsive Banner Slot (Leaderboard / Billboard)</div>
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot (Leaderboard / Banner)</div>
       </div>
 
       <!-- Tools Grid -->
-      <h2 class="section-title">Popular Calculators</h2>
+      <h2 id="all-tools-grid" class="section-title">All Calculators &amp; Tools</h2>
       <div class="tools-grid">
 
         <!-- Tool 1: Age -->
@@ -656,70 +668,119 @@
         </div>
       </div>
 
-      <div class="adsense-placeholder">
-        <div class="ad-label">AdSense Responsive Slot - BMI Tool Bottom</div>
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
       </div>
     </section>
 
 
     <!-- ==================== LEGAL & INFO PAGES ==================== -->
 
-    <!-- ABOUT US -->
+    <!-- 2. ABOUT US -->
     <section id="screen-about" class="screen-section">
       <div class="tool-header">
         <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
         <h1 class="tool-page-title">About Us</h1>
-        <p class="tool-page-subtitle">Learn more about MY USEFUL TOOLS and our mission for fast, accessible utility computing.</p>
+        <p class="tool-page-subtitle">Simple, free browser-based online calculators and everyday digital utilities.</p>
+      </div>
+
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
       </div>
 
       <div class="card prose-card">
-        <h2>Our Mission</h2>
-        <p>At <strong>MY USEFUL TOOLS</strong>, our purpose is simple: provide lightning-fast, high-precision, everyday calculation tools directly in your browser without paywalls, sign-ups, or invasive tracking.</p>
+        <h2>About MY USEFUL TOOLS</h2>
+        <p>Welcome to <strong>MY USEFUL TOOLS</strong>. We are a free, independent web portal dedicated to providing simple, fast, and accessible browser-based online calculators and digital utilities for students, professionals, shoppers, and everyday users worldwide.</p>
 
-        <h3>Why Choose MY USEFUL TOOLS?</h3>
+        <h3>Our Purpose</h3>
+        <p>Our mission is to take the hassle out of common everyday numbers. Whether you need to find your exact chronological age, calculate monthly loan EMIs, solve percentage problems, figure out shopping sale discounts with sales tax, or check Body Mass Index (BMI), MY USEFUL TOOLS provides immediate answers without bloat or complications.</p>
+
+        <h3>Core Principles of Our Platform</h3>
         <ul>
-          <li><strong>100% Client-Side Computing:</strong> All calculations run directly inside your browser engine. We never transmit your inputs to a remote server.</li>
-          <li><strong>Zero Mandatory Logins:</strong> No user registration or subscription required. Every tool is immediately ready to calculate.</li>
-          <li><strong>Mobile First & Responsive:</strong> Designed to look pristine across smartphones, tablets, Chromebooks, and widescreen desktop monitors.</li>
-          <li><strong>Continuously Updated:</strong> Math and algorithmic formulas are rigorously verified against international standards.</li>
+          <li><strong>100% Free &amp; Open:</strong> Every calculator on our website is entirely free to use. We do not charge fees, offer paid tiers, or lock features behind paywalls.</li>
+          <li><strong>Zero Mandatory Registration:</strong> You do not need to create an account, register your email, or log in. Every utility is ready to use the moment you open the page.</li>
+          <li><strong>Client-Side Browser Processing:</strong> All calculations are executed directly within your web browser. Your numbers and personal dates stay on your device.</li>
+          <li><strong>Fast &amp; Mobile-First:</strong> Crafted with a lightweight, responsive interface that loads instantly and works smoothly on smartphones, tablets, laptops, and desktop computers.</li>
         </ul>
+
+        <h3>Our Calculator Suite</h3>
+        <p>MY USEFUL TOOLS features five focused, high-precision tools:</p>
+        <ul>
+          <li><strong>Age Calculator:</strong> Computes your exact age in years, months, and days, along with a countdown to your next birthday and total days lived.</li>
+          <li><strong>EMI Loan Calculator:</strong> Calculates monthly installments, total interest, and total repayment schedules in INR (₹) or USD ($) for home, personal, and auto loans.</li>
+          <li><strong>Percentage Calculator:</strong> Provides three essential solvers: finding the percentage of a number, calculating percentage increases or decreases, and determining proportions.</li>
+          <li><strong>Discount Calculator:</strong> Determines discounted sale prices, total money saved, and optional sales tax in INR (₹) or USD ($).</li>
+          <li><strong>BMI Health Calculator:</strong> Evaluates Body Mass Index using metric or imperial measurements, complete with World Health Organization categories and healthy weight ranges.</li>
+        </ul>
+
+        <h3>Our Commitment</h3>
+        <p>We strive to keep our formulas aligned with standard mathematics and widely recognized guidelines. We continuously test our utilities across browsers to ensure responsive, consistent, and dependable results.</p>
+      </div>
+
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
       </div>
     </section>
 
-    <!-- CONTACT US -->
+    <!-- 3. CONTACT US -->
     <section id="screen-contact" class="screen-section">
       <div class="tool-header">
         <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
         <h1 class="tool-page-title">Contact Us</h1>
-        <p class="tool-page-subtitle">We would love to hear your feedback, tool requests, and suggestions.</p>
+        <p class="tool-page-subtitle">We welcome your feedback, questions, and calculator suggestions.</p>
+      </div>
+
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
       </div>
 
       <div class="card">
-        <h2 class="card-title">Send a Message</h2>
+        <h2 class="card-title">Send Us a Message</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">
+          Have a suggestion for a new calculator, encountered a calculation question, or want to share feedback? Please get in touch using the form below.
+        </p>
+
+        <div class="notice-box" style="margin-bottom: 18px; padding: 12px 14px; background: var(--primary-bg); border-left: 4px solid var(--primary); font-size: 0.85rem; color: var(--text-main);">
+          <strong>Note on Communication:</strong> MY USEFUL TOOLS operates as a client-side utility suite. This contact form validates your input and is prepared for future server integration. To reach our support team directly via email in the meantime, write to: <a href="mailto:contact@myusefultools.local" style="color: var(--primary); font-weight: 600;">contact@myusefultools.local</a>.
+        </div>
+
         <form id="contact-form" onsubmit="handleContactSubmit(event)">
           <div class="input-group">
-            <label for="contact-name">Your Name</label>
-            <input type="text" id="contact-name" required placeholder="Jane Doe">
+            <label for="contact-name">Your Name <span style="color:var(--rose-600)">*</span></label>
+            <input type="text" id="contact-name" required placeholder="e.g. Alex Johnson" maxlength="80">
+            <div id="contact-name-err" class="input-error" style="display:none;">Please enter your name.</div>
           </div>
           <div class="input-group">
-            <label for="contact-email">Email Address</label>
-            <input type="email" id="contact-email" required placeholder="jane@example.com">
+            <label for="contact-email">Email Address <span style="color:var(--rose-600)">*</span></label>
+            <input type="email" id="contact-email" required placeholder="e.g. alex@example.com" maxlength="120">
+            <div id="contact-email-err" class="input-error" style="display:none;">Please enter a valid email address.</div>
           </div>
           <div class="input-group">
-            <label for="contact-message">Message or Tool Request</label>
-            <textarea id="contact-message" rows="4" required placeholder="Let us know how we can improve or which tool to build next..."></textarea>
+            <label for="contact-message">Message <span style="color:var(--rose-600)">*</span></label>
+            <textarea id="contact-message" rows="4" required placeholder="Write your message, feedback, or suggestion here..." maxlength="1000"></textarea>
+            <div id="contact-msg-err" class="input-error" style="display:none;">Please enter your message (minimum 5 characters).</div>
           </div>
           <div class="btn-row">
-            <button type="submit" class="btn btn-primary">Send Feedback</button>
+            <button type="submit" class="btn btn-primary">Submit Message</button>
+            <button type="reset" class="btn btn-outline" onclick="resetContactForm()">Clear</button>
           </div>
-          <div id="contact-success" class="success-banner" style="display:none;">
-            Thank you! Your feedback has been recorded locally.
+          <div id="contact-success" class="success-banner" style="display:none; margin-top: 14px;">
+            <!-- filled dynamically in script.js -->
           </div>
         </form>
       </div>
+
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
+      </div>
     </section>
 
-    <!-- PRIVACY POLICY -->
+    <!-- 4. PRIVACY POLICY -->
     <section id="screen-privacy" class="screen-section">
       <div class="tool-header">
         <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
@@ -727,64 +788,141 @@
         <p class="tool-page-subtitle">Last updated: September 2026</p>
       </div>
 
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
+      </div>
+
       <div class="card prose-card">
-        <h2>Commitment to Privacy</h2>
-        <p>Your privacy is of paramount importance to us. This Privacy Policy details how <strong>MY USEFUL TOOLS</strong> collects, protects, and handles your information.</p>
+        <h2>Privacy Policy</h2>
+        <p>At <strong>MY USEFUL TOOLS</strong>, we respect your privacy and are committed to maintaining transparent practices. This Privacy Policy details the types of information handled when you visit our website.</p>
 
-        <h3>1. Client-Side Data Handling</h3>
-        <p>All tool calculations (including birth dates, financial loan figures, discount percentages, and health metrics) are processed locally inside your web browser's JavaScript runtime. None of your entered calculation data is sent to or stored on any central server.</p>
+        <h3>1. Calculator Inputs &amp; Local Processing</h3>
+        <p>We use calculator inputs solely to provide requested calculations. All calculator entries—such as birth dates, loan figures, interest rates, percentages, sale prices, heights, and weights—are processed entirely on your device using client-side JavaScript. We do not transmit, collect, or store your calculator inputs on any external server or database.</p>
 
-        <h3>2. Cookies and Advertising</h3>
-        <p>We may display advertisements provided by Google AdSense and third-party advertising partners. Third-party vendors, including Google, use cookies to serve ads based on prior visits to this website or other websites. Users may opt out of personalized advertising by visiting Google's Ad Settings.</p>
+        <h3>2. No Account or Registration Required</h3>
+        <p>No account is required to use any feature of MY USEFUL TOOLS. You do not need to register, create a username, provide passwords, or provide payment details to access our tools.</p>
 
-        <h3>3. Contact Information</h3>
-        <p>If you contact us via our contact form, your provided email address and message will only be used to respond to your inquiry and will never be shared with third parties.</p>
+        <h3>3. No Unnecessary Personal Data Collection</h3>
+        <p>We do not collect unnecessary personal data. We do not maintain individual user tracking profiles, sell personal information, or harvest contact lists. Standard automated server logs may record basic technical data (such as IP address, browser type, and time of access) solely for server maintenance and security monitoring.</p>
+
+        <h3>4. Google AdSense &amp; Advertising Cookies</h3>
+        <p>We may display advertisements provided by Google AdSense and third-party advertising partners to help support the free provision of our utilities. Third-party vendors, including Google, use cookies, web beacons, or similar technologies to serve ads based on a user's prior visits to this website or other websites on the internet.</p>
+        <p>Google's use of advertising cookies enables it and its partners to serve ads to our visitors based on their visits to our site and/or other sites across the internet.</p>
+
+        <h3>5. Managing Advertising and Cookie Preferences</h3>
+        <p>Users can manage, disable, or delete cookies at any time through their individual browser settings (e.g., Google Chrome, Mozilla Firefox, Apple Safari, Microsoft Edge). Please consult your browser's help documentation to configure your cookie permissions.</p>
+        <p>You may also opt out of personalized Google advertising by visiting the <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: underline;">Google Ad Settings</a> page. Additionally, you may visit the <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: underline;">AboutAds Choices</a> resource to manage third-party advertising cookies.</p>
+
+        <h3>6. Contact Form Messages</h3>
+        <p>If you choose to submit an inquiry through our Contact Us form, any contact details provided (such as your name or email) are used solely to review and respond to your message.</p>
+
+        <h3>7. Policy Updates</h3>
+        <p>We may periodically update this Privacy Policy to reflect technical or operational updates. Any updates will be posted on this page with an updated revision date.</p>
+      </div>
+
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
       </div>
     </section>
 
-    <!-- TERMS & CONDITIONS -->
+    <!-- 5. TERMS & CONDITIONS -->
     <section id="screen-terms" class="screen-section">
       <div class="tool-header">
         <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
-        <h1 class="tool-page-title">Terms & Conditions</h1>
+        <h1 class="tool-page-title">Terms &amp; Conditions</h1>
         <p class="tool-page-subtitle">Last updated: September 2026</p>
       </div>
 
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
+      </div>
+
       <div class="card prose-card">
-        <h2>Acceptance of Terms</h2>
-        <p>By accessing and using <strong>MY USEFUL TOOLS</strong>, you agree to be bound by these Terms and Conditions. If you do not agree to all terms, please refrain from using the services.</p>
+        <h2>Terms &amp; Conditions of Use</h2>
+        <p>By accessing and using <strong>MY USEFUL TOOLS</strong>, you agree to comply with and be bound by the following terms and conditions. If you disagree with any part of these terms, please do not use our website.</p>
 
-        <h3>Use of Calculators</h3>
-        <p>The tools provided on this portal are for educational, informational, and general reference purposes only. While we make every effort to ensure computational correctness, we do not warrant that calculations are free of minor rounding variances or algorithmic errors.</p>
+        <h3>1. Free Use of the Website</h3>
+        <p>MY USEFUL TOOLS grants you a personal, non-exclusive, revocable license to access and use our browser-based calculators and utility tools free of charge for personal, educational, and general informational purposes.</p>
 
-        <h3>Intellectual Property</h3>
-        <p>The visual layout, design components, and custom scripting of MY USEFUL TOOLS are protected by international copyright laws. Reproduction without written consent is strictly prohibited.</p>
+        <h3>2. Informational &amp; General Reference Purposes Only</h3>
+        <p>All calculations, results, estimations, formulas, and text on MY USEFUL TOOLS are provided strictly for general informational and reference purposes. While calculated according to standard mathematical formulas, outputs are not formal financial agreements, legal contracts, or medical diagnoses.</p>
+
+        <h3>3. Independent Verification Required</h3>
+        <p>Users must verify all important financial, health, medical, business, or legal calculations independently with accredited professionals before making financial commitments, signing contracts, taking loans, or altering medical regimens. You agree that you rely on calculator outputs at your own discretion.</p>
+
+        <h3>4. No Guarantee of Accuracy or Availability</h3>
+        <p>The website and its utilities are provided on an "as is" and "as available" basis without warranties of any kind, whether express or implied. We do not guarantee that calculations will be uninterrupted, error-free, or free of minor rounding variances. We reserve the right to modify or discontinue any tool at any time without prior notice.</p>
+
+        <h3>5. Prohibited Misuse of the Website</h3>
+        <p>You agree not to misuse MY USEFUL TOOLS. Prohibited actions include:</p>
+        <ul>
+          <li>Using automated scripts, scrapers, bots, or spiders to flood or overburden our infrastructure.</li>
+          <li>Attempting to interfere with the proper working of the site or bypass security measures.</li>
+          <li>Introducing viruses, trojans, worms, logic bombs, or other malicious materials.</li>
+          <li>Using the website or its outputs for deceptive, fraudulent, or unlawful activities.</li>
+        </ul>
+
+        <h3>6. Changes to Terms</h3>
+        <p>We reserve the right to revise these Terms &amp; Conditions at our discretion. Any revisions take effect immediately upon posting to this page.</p>
+      </div>
+
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
       </div>
     </section>
 
-    <!-- DISCLAIMER -->
+    <!-- 6. DISCLAIMER -->
     <section id="screen-disclaimer" class="screen-section">
       <div class="tool-header">
         <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
         <h1 class="tool-page-title">Disclaimer</h1>
-        <p class="tool-page-subtitle">General reference information</p>
+        <p class="tool-page-subtitle">Informational notice regarding calculations and professional advice.</p>
+      </div>
+
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
       </div>
 
       <div class="card prose-card">
-        <h2>Financial & Medical Disclaimer</h2>
-        <p><strong>Not Financial Advice:</strong> Results provided by our EMI and financial calculators are for estimation purposes only. Actual interest rates, processing fees, loan amortization schedules, and repayment amounts may vary based on your financial institution's policies.</p>
-        <p><strong>Not Medical Advice:</strong> Body Mass Index (BMI) calculations are general screening figures and do not account for muscle mass, bone density, age, or overall body composition. Always consult a qualified medical professional for health evaluations.</p>
+        <h2>General &amp; Professional Disclaimer</h2>
+        <p><em>Last updated: September 2026</em></p>
+
+        <div class="notice-box" style="margin-bottom: 18px; padding: 14px 16px; background: var(--amber-100); border-left: 4px solid var(--amber-600); font-size: 0.9rem; color: #78350f;">
+          <strong>Important Notice:</strong> MY USEFUL TOOLS is an independent online calculation utility website. <strong>MY USEFUL TOOLS is not a bank, lender, financial adviser, healthcare facility, or medical provider.</strong>
+        </div>
+
+        <h3>1. Financial Disclaimer (EMI Calculator)</h3>
+        <p>Calculations provided by our EMI Loan Calculator are mathematical estimates based on standard reducing-balance loan interest formulas. Actual loan repayment amounts, interest rates, processing fees, loan tenures, amortization schedules, and documentation charges may vary depending on your lending institution, bank policies, credit rating, and regional taxation. These calculations do not constitute an offer of credit or financing. Always consult your bank or a certified financial advisor before taking on financial obligations.</p>
+
+        <h3>2. Health &amp; Medical Disclaimer (BMI Calculator)</h3>
+        <p>Results provided by the BMI Health Calculator are general informational estimates and are <strong>not medical advice</strong>. Body Mass Index is a broad statistical screening ratio based on World Health Organization guidelines. It does not measure body fat percentage directly and does not account for muscle mass, bone density, age, gender, pregnancy, or individual medical conditions. It should not be used as a diagnosis or as a substitute for professional healthcare advice. Always consult a qualified physician or healthcare provider regarding personal weight management and wellness.</p>
+
+        <h3>3. Utility Calculations (Percentage, Discount, and Age Calculators)</h3>
+        <p>Percentage, discount, and age calculations are informational utilities provided for everyday convenience. While formulas are standard and rigorously tested, users should verify figures independently for official legal records, commercial contracts, or tax returns.</p>
+
+        <h3>4. No Professional-Client Relationship</h3>
+        <p>Using MY USEFUL TOOLS does not create any advisory, fiduciary, doctor-patient, or client relationship between you and MY USEFUL TOOLS. The platform provides tools purely on a self-service utility basis.</p>
+      </div>
+
+      <div class="adsense-placeholder" aria-label="Advertisement">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-sub">Responsive Ad Slot</div>
       </div>
     </section>
 
   </main>
 
-  <!-- APP FOOTER -->
+  <!-- ==================== 8. FOOTER ==================== -->
   <footer class="app-footer">
     <div class="footer-container">
       <div class="footer-top">
         <div>
-          <div class="footer-brand">MY USEFUL TOOLS</div>
+          <div class="footer-brand" onclick="navigateTo('home')">MY USEFUL TOOLS</div>
           <p class="footer-tagline">Fast, free, and privacy-friendly online utilities.</p>
         </div>
         <button class="back-to-top-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="Back to top">
@@ -792,30 +930,46 @@
         </button>
       </div>
 
+      <!-- Required Footer Links Line -->
+      <div class="footer-primary-links" aria-label="Legal and essential links">
+        <span class="footer-links-label">Links:</span>
+        <a href="#about" onclick="navigateTo('about')">About Us</a>
+        <span class="footer-divider">|</span>
+        <a href="#contact" onclick="navigateTo('contact')">Contact Us</a>
+        <span class="footer-divider">|</span>
+        <a href="#privacy" onclick="navigateTo('privacy')">Privacy Policy</a>
+        <span class="footer-divider">|</span>
+        <a href="#terms" onclick="navigateTo('terms')">Terms &amp; Conditions</a>
+        <span class="footer-divider">|</span>
+        <a href="#disclaimer" onclick="navigateTo('disclaimer')">Disclaimer</a>
+      </div>
+
+      <!-- Detailed Navigation Grid -->
       <div class="footer-links-grid">
         <div class="footer-col">
-          <div class="footer-col-title">CALCULATORS</div>
-          <a href="javascript:void(0)" onclick="navigateTo('age')">Age Calculator</a>
-          <a href="javascript:void(0)" onclick="navigateTo('emi')">EMI Calculator</a>
-          <a href="javascript:void(0)" onclick="navigateTo('percentage')">Percentage Calculator</a>
-          <a href="javascript:void(0)" onclick="navigateTo('discount')">Discount Calculator</a>
-          <a href="javascript:void(0)" onclick="navigateTo('bmi')">BMI Calculator</a>
+          <div class="footer-col-title">OUR CALCULATORS</div>
+          <a href="#age" onclick="navigateTo('age')">Age Calculator</a>
+          <a href="#emi" onclick="navigateTo('emi')">EMI Calculator</a>
+          <a href="#percentage" onclick="navigateTo('percentage')">Percentage Calculator</a>
+          <a href="#discount" onclick="navigateTo('discount')">Discount Calculator</a>
+          <a href="#bmi" onclick="navigateTo('bmi')">BMI Calculator</a>
         </div>
         <div class="footer-col">
-          <div class="footer-col-title">ABOUT & SUPPORT</div>
-          <a href="javascript:void(0)" onclick="navigateTo('about')">About Us</a>
-          <a href="javascript:void(0)" onclick="navigateTo('contact')">Contact & Feedback</a>
+          <div class="footer-col-title">COMPANY &amp; SUPPORT</div>
+          <a href="#about" onclick="navigateTo('about')">About Us</a>
+          <a href="#contact" onclick="navigateTo('contact')">Contact Us</a>
+          <a href="#all-tools" onclick="navigateTo('all-tools')">All Tools Directory</a>
         </div>
         <div class="footer-col">
-          <div class="footer-col-title">LEGAL & PRIVACY</div>
-          <a href="javascript:void(0)" onclick="navigateTo('privacy')">Privacy Policy</a>
-          <a href="javascript:void(0)" onclick="navigateTo('terms')">Terms & Conditions</a>
-          <a href="javascript:void(0)" onclick="navigateTo('disclaimer')">Disclaimer</a>
+          <div class="footer-col-title">LEGAL &amp; PRIVACY</div>
+          <a href="#privacy" onclick="navigateTo('privacy')">Privacy Policy</a>
+          <a href="#terms" onclick="navigateTo('terms')">Terms &amp; Conditions</a>
+          <a href="#disclaimer" onclick="navigateTo('disclaimer')">Disclaimer</a>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <p>Free to use. No account or subscription required.</p>
+        <p>Free to use. No account, login, or subscription required.</p>
         <p style="margin-top: 6px; font-size: 0.75rem; opacity: 0.8;">© 2026 MY USEFUL TOOLS. All rights reserved.</p>
       </div>
     </div>

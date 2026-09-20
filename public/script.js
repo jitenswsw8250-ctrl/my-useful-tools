@@ -205,12 +205,73 @@ function setTheme(dark) {
   }
 }
 
+// ================= SEO METADATA =================
+const PAGE_SEO = {
+  home: {
+    title: 'MY USEFUL TOOLS - Free Online Calculators & Daily Utilities',
+    description: 'Free, simple, and privacy-friendly online calculators: Age, EMI Loan, Percentage, Discount, and BMI. Fast, lightweight, and 100% browser-based.'
+  },
+  'all-tools': {
+    title: 'All Free Tools & Calculators | MY USEFUL TOOLS',
+    description: 'Explore all 5 free, instant browser calculators: Age, EMI, Percentage, Discount, and BMI calculators on MY USEFUL TOOLS.'
+  },
+  age: {
+    title: 'Age Calculator - Exact Years, Months & Days | MY USEFUL TOOLS',
+    description: 'Calculate your exact age in years, months, and days with next birthday countdown and zodiac sign. Free, instant, and private.'
+  },
+  emi: {
+    title: 'EMI Loan Calculator - Monthly Installment & Interest | MY USEFUL TOOLS',
+    description: 'Calculate loan EMI, total interest payable, and repayment breakdown in INR (₹) or USD ($) for home, car, or personal loans.'
+  },
+  percentage: {
+    title: 'Percentage Calculator - Percent Increase, Decrease & Proportions | MY USEFUL TOOLS',
+    description: 'Free online percentage calculator: calculate percentage of a number, percentage change, and proportions instantly.'
+  },
+  discount: {
+    title: 'Discount Calculator - Sale Price, Savings & Tax | MY USEFUL TOOLS',
+    description: 'Calculate final sale price after discount with quick percentage presets and optional sales tax in INR (₹) or USD ($).'
+  },
+  bmi: {
+    title: 'BMI Health Calculator - Body Mass Index & Weight Range | MY USEFUL TOOLS',
+    description: 'Check your Body Mass Index (BMI) with metric and imperial units. View official WHO categories and healthy weight range.'
+  },
+  about: {
+    title: 'About Us - Free Online Utilities | MY USEFUL TOOLS',
+    description: 'Learn about MY USEFUL TOOLS, our mission to provide simple, free, privacy-friendly browser-based online calculators and utilities.'
+  },
+  contact: {
+    title: 'Contact Us - Feedback & Inquiries | MY USEFUL TOOLS',
+    description: 'Contact the MY USEFUL TOOLS team for feedback, questions, or tool suggestions. Simple and direct communication.'
+  },
+  privacy: {
+    title: 'Privacy Policy | MY USEFUL TOOLS',
+    description: 'Read the Privacy Policy for MY USEFUL TOOLS. Learn about local browser-side calculation processing, cookies, and ad settings.'
+  },
+  terms: {
+    title: 'Terms & Conditions | MY USEFUL TOOLS',
+    description: 'Terms and conditions of use for MY USEFUL TOOLS free online utility calculators and reference tools.'
+  },
+  disclaimer: {
+    title: 'Disclaimer | MY USEFUL TOOLS',
+    description: 'Read the informational disclaimer for EMI loan estimates, BMI health screening, and utility calculations on MY USEFUL TOOLS.'
+  }
+};
+
 // ================= NAVIGATION =================
 function navigateTo(screenId, updateHash = true) {
   const sections = elCache.screenSections || document.querySelectorAll('.screen-section');
-  let target = document.getElementById(`screen-${screenId}`);
+  let effectiveScreen = screenId;
+  let scrollToTools = false;
+
+  if (screenId === 'all-tools') {
+    effectiveScreen = 'home';
+    scrollToTools = true;
+  }
+
+  let target = document.getElementById(`screen-${effectiveScreen}`);
 
   if (!target) {
+    effectiveScreen = 'home';
     screenId = 'home';
     target = document.getElementById('screen-home');
   }
@@ -223,18 +284,36 @@ function navigateTo(screenId, updateHash = true) {
   const items = elCache.drawerItems || document.querySelectorAll('.drawer-item');
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
-    if (item.getAttribute('data-screen') === screenId) {
+    const itemScreen = item.getAttribute('data-screen');
+    if (itemScreen === screenId || (itemScreen === 'home' && effectiveScreen === 'home' && screenId !== 'all-tools')) {
       item.classList.add('active');
     } else {
       item.classList.remove('active');
     }
   }
 
-  currentScreen = screenId;
+  currentScreen = effectiveScreen;
   closeDrawer();
 
-  // Instant scroll to top without laggy animation locks
-  window.scrollTo(0, 0);
+  // Dynamic SEO Title & Meta Description update
+  const seo = PAGE_SEO[screenId] || PAGE_SEO[effectiveScreen] || PAGE_SEO.home;
+  document.title = seo.title;
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) {
+    metaDesc.setAttribute('content', seo.description);
+  }
+
+  // Scroll repositioning
+  if (scrollToTools) {
+    setTimeout(() => {
+      const grid = document.getElementById('all-tools-grid') || document.querySelector('.tools-grid');
+      if (grid) {
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 40);
+  } else {
+    window.scrollTo(0, 0);
+  }
 
   if (updateHash) {
     window.location.hash = screenId === 'home' ? '' : screenId;
@@ -757,15 +836,72 @@ function resetBmi() {
 }
 
 // ================= CONTACT FORM =================
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function handleContactSubmit(e) {
   e.preventDefault();
+  const nameEl = document.getElementById('contact-name');
+  const emailEl = document.getElementById('contact-email');
+  const msgEl = document.getElementById('contact-message');
+  const nameErr = document.getElementById('contact-name-err');
+  const emailErr = document.getElementById('contact-email-err');
+  const msgErr = document.getElementById('contact-msg-err');
   const successBanner = document.getElementById('contact-success');
-  if (successBanner) {
-    successBanner.style.display = 'block';
-    setTimeout(() => {
-      successBanner.style.display = 'none';
-    }, 4000);
+
+  const nameVal = nameEl ? nameEl.value.trim() : '';
+  const emailVal = emailEl ? emailEl.value.trim() : '';
+  const msgVal = msgEl ? msgEl.value.trim() : '';
+
+  let isValid = true;
+
+  if (!nameVal) {
+    if (nameErr) nameErr.style.display = 'block';
+    isValid = false;
+  } else if (nameErr) {
+    nameErr.style.display = 'none';
   }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailVal || !emailRegex.test(emailVal)) {
+    if (emailErr) emailErr.style.display = 'block';
+    isValid = false;
+  } else if (emailErr) {
+    emailErr.style.display = 'none';
+  }
+
+  if (!msgVal || msgVal.length < 5) {
+    if (msgErr) msgErr.style.display = 'block';
+    isValid = false;
+  } else if (msgErr) {
+    msgErr.style.display = 'none';
+  }
+
+  if (!isValid) return;
+
+  if (successBanner) {
+    successBanner.innerHTML = `<strong>Thank you, ${escapeHtml(nameVal)}!</strong> Your message has been verified and validated locally.<br><span style="font-size: 0.82rem; font-weight: normal; margin-top: 4px; display: inline-block;">Note: This browser-based suite currently operates client-side without an external mail server. For direct inquiries, you can reach out via: <a href="mailto:contact@myusefultools.local" style="color: var(--primary); font-weight: 600;">contact@myusefultools.local</a></span>`;
+    successBanner.style.display = 'block';
+  }
+
   const form = document.getElementById('contact-form');
   if (form) form.reset();
+}
+
+function resetContactForm() {
+  const nameErr = document.getElementById('contact-name-err');
+  const emailErr = document.getElementById('contact-email-err');
+  const msgErr = document.getElementById('contact-msg-err');
+  const successBanner = document.getElementById('contact-success');
+  if (nameErr) nameErr.style.display = 'none';
+  if (emailErr) emailErr.style.display = 'none';
+  if (msgErr) msgErr.style.display = 'none';
+  if (successBanner) successBanner.style.display = 'none';
 }

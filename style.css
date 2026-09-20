@@ -995,6 +995,18 @@ input, textarea, select {
   margin-top: 12px;
 }
 
+.notice-box {
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.input-error {
+  color: var(--rose-600);
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
 /* ================= FOOTER ================= */
 .app-footer {
   background: var(--surface-color);
@@ -1023,11 +1035,47 @@ input, textarea, select {
   font-size: 1.05rem;
   font-weight: 900;
   color: var(--primary);
+  cursor: pointer;
 }
 
 .footer-tagline {
   font-size: 0.78rem;
   color: var(--text-muted);
+}
+
+.footer-primary-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  padding: 12px 0 16px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--surface-border);
+  font-size: 0.85rem;
+}
+
+.footer-primary-links a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.15s ease;
+}
+
+.footer-primary-links a:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.footer-divider {
+  color: var(--slate-400);
+  font-size: 0.75rem;
+}
+
+.footer-links-label {
+  font-weight: 700;
+  color: var(--text-main);
+  margin-right: 2px;
 }
 
 .back-to-top-btn {
