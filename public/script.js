@@ -9,7 +9,8 @@
 // Global State
 let currentScreen = 'home';
 let isDarkTheme = false;
-let emiTenureUnit = 'years'; // 'years' or 'months'
+let emiCurrency = 'INR';      // 'INR' or 'USD' (default is INR)
+let emiTenureUnit = 'years'; // 'years' or 'months' (default is years)
 let bmiUnit = 'metric';      // 'metric' or 'imperial'
 
 // Cached DOM Elements
@@ -45,6 +46,9 @@ function initDomCache() {
 
     // EMI Calculator
     emiAmount: document.getElementById('emi-amount'),
+    emiAmountLabel: document.getElementById('emi-amount-label'),
+    emiCurrInr: document.getElementById('emi-curr-inr'),
+    emiCurrUsd: document.getElementById('emi-curr-usd'),
     emiRate: document.getElementById('emi-rate'),
     emiTenure: document.getElementById('emi-tenure'),
     emiTenureYears: document.getElementById('emi-tenure-years'),
@@ -381,6 +385,16 @@ function getZodiac(day, month) {
 }
 
 // ================= 2. EMI CALCULATOR =================
+function setEmiCurrency(curr) {
+  emiCurrency = curr;
+  if (elCache.emiCurrInr) elCache.emiCurrInr.classList.toggle('active', curr === 'INR');
+  if (elCache.emiCurrUsd) elCache.emiCurrUsd.classList.toggle('active', curr === 'USD');
+  if (elCache.emiAmountLabel) {
+    elCache.emiAmountLabel.textContent = curr === 'INR' ? 'Loan Amount (₹)' : 'Loan Amount ($)';
+  }
+  calculateEmi();
+}
+
 function setEmiTenureUnit(unit) {
   emiTenureUnit = unit;
   if (elCache.emiTenureYears) elCache.emiTenureYears.classList.toggle('active', unit === 'years');
@@ -396,9 +410,10 @@ function calculateEmi() {
   const months = emiTenureUnit === 'years' ? tenureInput * 12 : tenureInput;
 
   if (principal <= 0 || annualRate <= 0 || months <= 0) {
-    if (elCache.emiMonthlyVal) elCache.emiMonthlyVal.textContent = '$0.00';
-    if (elCache.emiTotalInterest) elCache.emiTotalInterest.textContent = '$0.00';
-    if (elCache.emiTotalPayment) elCache.emiTotalPayment.textContent = '$0.00';
+    const zeroStr = formatEmiCurrency(0);
+    if (elCache.emiMonthlyVal) elCache.emiMonthlyVal.textContent = zeroStr;
+    if (elCache.emiTotalInterest) elCache.emiTotalInterest.textContent = zeroStr;
+    if (elCache.emiTotalPayment) elCache.emiTotalPayment.textContent = zeroStr;
     return;
   }
 
@@ -411,11 +426,11 @@ function calculateEmi() {
   const principalPct = Math.min(100, Math.max(0, (principal / totalPayment) * 100));
   const interestPct = Math.min(100, Math.max(0, (totalInterest / totalPayment) * 100));
 
-  if (elCache.emiMonthlyVal) elCache.emiMonthlyVal.textContent = `$${formatCurrency(emi)}`;
-  if (elCache.emiTotalInterest) elCache.emiTotalInterest.textContent = `$${formatCurrency(totalInterest)}`;
-  if (elCache.emiTotalPayment) elCache.emiTotalPayment.textContent = `$${formatCurrency(totalPayment)}`;
+  if (elCache.emiMonthlyVal) elCache.emiMonthlyVal.textContent = formatEmiCurrency(emi);
+  if (elCache.emiTotalInterest) elCache.emiTotalInterest.textContent = formatEmiCurrency(totalInterest);
+  if (elCache.emiTotalPayment) elCache.emiTotalPayment.textContent = formatEmiCurrency(totalPayment);
   if (elCache.emiInterestPct) elCache.emiInterestPct.textContent = `${interestPct.toFixed(1)}% of repayment`;
-  if (elCache.emiPrincipalPct) elCache.emiPrincipalPct.textContent = `${principalPct.toFixed(1)}% Principal`;
+  if (elCache.emiPrincipalPct) elCache.emiPrincipalPct.textContent = `${principalPct.toFixed(1)}% Principal (${formatEmiCurrency(principal)})`;
 
   if (elCache.barPrincipalPct) elCache.barPrincipalPct.textContent = `${principalPct.toFixed(1)}%`;
   if (elCache.barInterestPct) elCache.barInterestPct.textContent = `${interestPct.toFixed(1)}%`;
@@ -424,10 +439,19 @@ function calculateEmi() {
 }
 
 function resetEmi() {
-  if (elCache.emiAmount) elCache.emiAmount.value = '100000';
+  setEmiCurrency('INR');
+  if (elCache.emiAmount) elCache.emiAmount.value = '50000';
   if (elCache.emiRate) elCache.emiRate.value = '8.5';
   if (elCache.emiTenure) elCache.emiTenure.value = '5';
   setEmiTenureUnit('years');
+}
+
+function formatEmiCurrency(val) {
+  if (emiCurrency === 'INR') {
+    return '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  } else {
+    return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 }
 
 function formatCurrency(val) {

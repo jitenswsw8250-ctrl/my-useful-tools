@@ -313,10 +313,18 @@
 
       <div class="card">
         <h2 class="card-title">Loan Parameters</h2>
+        <div class="input-group" style="margin-bottom: 14px;">
+          <label>Select Currency</label>
+          <div class="segmented-control" id="emi-currency-control">
+            <button type="button" id="emi-curr-inr" class="segment-btn active" onclick="setEmiCurrency('INR')">Indian Rupee (₹ INR)</button>
+            <button type="button" id="emi-curr-usd" class="segment-btn" onclick="setEmiCurrency('USD')">US Dollar ($ USD)</button>
+          </div>
+        </div>
+
         <div class="input-grid-2">
           <div class="input-group">
-            <label for="emi-amount">Loan Amount ($)</label>
-            <input type="number" id="emi-amount" value="100000" min="1" step="1000" oninput="calculateEmi()">
+            <label for="emi-amount" id="emi-amount-label">Loan Amount (₹)</label>
+            <input type="number" id="emi-amount" value="50000" min="1" step="500" oninput="calculateEmi()">
           </div>
           <div class="input-group">
             <label for="emi-rate">Annual Interest Rate (%)</label>
@@ -332,8 +340,8 @@
           <div class="input-group">
             <label>Tenure Unit</label>
             <div class="segmented-control">
-              <button id="emi-tenure-years" class="segment-btn active" onclick="setEmiTenureUnit('years')">Years</button>
-              <button id="emi-tenure-months" class="segment-btn" onclick="setEmiTenureUnit('months')">Months</button>
+              <button type="button" id="emi-tenure-years" class="segment-btn active" onclick="setEmiTenureUnit('years')">Years</button>
+              <button type="button" id="emi-tenure-months" class="segment-btn" onclick="setEmiTenureUnit('months')">Months</button>
             </div>
           </div>
         </div>
@@ -348,19 +356,19 @@
       <div id="emi-result-card" class="result-card">
         <h3 class="result-header">Repayment Summary</h3>
         <div class="stat-highlight">
-          <span id="emi-monthly-val" class="highlight-number">$2,051.65</span>
+          <span id="emi-monthly-val" class="highlight-number">₹1,025.83</span>
           <span class="highlight-unit">Monthly Payment (EMI)</span>
         </div>
 
         <div class="result-grid-2">
           <div class="metric-box">
             <div class="metric-label">Total Interest Payable</div>
-            <div id="emi-total-interest" class="metric-value text-rose">$23,099.00</div>
+            <div id="emi-total-interest" class="metric-value text-rose">₹11,549.57</div>
             <div id="emi-interest-pct" class="metric-sub">18.8% of repayment</div>
           </div>
           <div class="metric-box">
             <div class="metric-label">Total Payment (Principal + Interest)</div>
-            <div id="emi-total-payment" class="metric-value">$123,099.00</div>
+            <div id="emi-total-payment" class="metric-value">₹61,549.57</div>
             <div id="emi-principal-pct" class="metric-sub">81.2% Principal</div>
           </div>
         </div>

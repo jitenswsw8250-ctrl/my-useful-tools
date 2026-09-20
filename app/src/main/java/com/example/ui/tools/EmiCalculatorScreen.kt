@@ -50,11 +50,12 @@ import kotlin.math.pow
 
 @Composable
 fun EmiCalculatorScreen(modifier: Modifier = Modifier) {
-  var loanAmountStr by rememberSaveable { mutableStateOf("100000") }
+  var loanAmountStr by rememberSaveable { mutableStateOf("50000") }
   var interestRateStr by rememberSaveable { mutableStateOf("8.5") }
   var tenureStr by rememberSaveable { mutableStateOf("5") }
   var isTenureInYears by rememberSaveable { mutableStateOf(true) }
-  var currencySymbol by rememberSaveable { mutableStateOf("$") }
+  var selectedCurrency by rememberSaveable { mutableStateOf("INR") } // "INR" or "USD"
+  val currencySymbol = if (selectedCurrency == "INR") "₹" else "$"
 
   // Calculation
   val emiResult by remember {
@@ -119,25 +120,32 @@ fun EmiCalculatorScreen(modifier: Modifier = Modifier) {
     ) {
       Column(modifier = Modifier.padding(16.dp)) {
         // Currency Selector
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically
-        ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
           Text(
-            text = "Loan Parameters",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
+            text = "Select Currency",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
           )
 
-          Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            listOf("$", "€", "£", "₹").forEach { symbol ->
-              FilterChip(
-                selected = currencySymbol == symbol,
-                onClick = { currencySymbol = symbol },
-                label = { Text(symbol) }
-              )
-            }
+          Spacer(modifier = Modifier.height(6.dp))
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+          ) {
+            FilterChip(
+              selected = selectedCurrency == "INR",
+              onClick = { selectedCurrency = "INR" },
+              label = { Text("Indian Rupee (₹ INR)") },
+              modifier = Modifier.testTag("currency_inr_chip")
+            )
+            FilterChip(
+              selected = selectedCurrency == "USD",
+              onClick = { selectedCurrency = "USD" },
+              label = { Text("US Dollar ($ USD)") },
+              modifier = Modifier.testTag("currency_usd_chip")
+            )
           }
         }
 
@@ -148,7 +156,7 @@ fun EmiCalculatorScreen(modifier: Modifier = Modifier) {
           value = loanAmountStr,
           onValueChange = { loanAmountStr = it },
           label = { Text("Loan Amount ($currencySymbol)") },
-          placeholder = { Text("e.g. 100000") },
+          placeholder = { Text("e.g. 50000") },
           leadingIcon = { Text(currencySymbol, fontWeight = FontWeight.Bold) },
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
           singleLine = true,
@@ -230,9 +238,11 @@ fun EmiCalculatorScreen(modifier: Modifier = Modifier) {
 
           OutlinedButton(
             onClick = {
-              loanAmountStr = ""
-              interestRateStr = ""
-              tenureStr = ""
+              selectedCurrency = "INR"
+              loanAmountStr = "50000"
+              interestRateStr = "8.5"
+              tenureStr = "5"
+              isTenureInYears = true
             },
             modifier = Modifier
               .height(48.dp)
@@ -240,7 +250,7 @@ fun EmiCalculatorScreen(modifier: Modifier = Modifier) {
           ) {
             Icon(Icons.Default.Clear, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(6.dp))
-            Text("Clear")
+            Text("Reset")
           }
         }
       }
@@ -272,7 +282,7 @@ fun EmiCalculatorScreen(modifier: Modifier = Modifier) {
           Spacer(modifier = Modifier.height(4.dp))
 
           Text(
-            text = "$currencySymbol %,.2f".format(result.monthlyEmi),
+            text = formatEmiAmount(result.monthlyEmi, selectedCurrency),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Black,
             color = MaterialTheme.colorScheme.primary
@@ -287,14 +297,14 @@ fun EmiCalculatorScreen(modifier: Modifier = Modifier) {
           ) {
             EmiStatCard(
               title = "Total Interest",
-              amount = "$currencySymbol %,.2f".format(result.totalInterest),
+              amount = formatEmiAmount(result.totalInterest, selectedCurrency),
               color = Rose600,
               modifier = Modifier.weight(1f)
             )
 
             EmiStatCard(
               title = "Total Payment",
-              amount = "$currencySymbol %,.2f".format(result.totalPayment),
+              amount = formatEmiAmount(result.totalPayment, selectedCurrency),
               color = MaterialTheme.colorScheme.primary,
               modifier = Modifier.weight(1f)
             )
@@ -402,3 +412,39 @@ data class EmiCalculation(
   val principalPercent: Float,
   val interestPercent: Float
 )
+
+private fun formatEmiAmount(amount: Double, currency: String): String {
+  val symbol = if (currency == "INR") "₹" else "$"
+  return if (currency == "INR") {
+    "$symbol${formatIndianGrouping(amount)}"
+  } else {
+    val df = java.text.DecimalFormat("#,##0.00")
+    "$symbol${df.format(amount)}"
+  }
+}
+
+private fun formatIndianGrouping(value: Double): String {
+  val rounded = String.format(java.util.Locale.US, "%.2f", value)
+  val parts = rounded.split(".")
+  var integerPart = parts[0]
+  val decimalPart = parts[1]
+  val isNegative = integerPart.startsWith("-")
+  if (isNegative) {
+    integerPart = integerPart.substring(1)
+  }
+  val result = if (integerPart.length > 3) {
+    val lastThree = integerPart.substring(integerPart.length - 3)
+    val remaining = integerPart.substring(0, integerPart.length - 3)
+    val sb = StringBuilder()
+    var count = 0
+    for (i in remaining.length - 1 downTo 0) {
+      sb.append(remaining[i])
+      count++
+      if (count % 2 == 0 && i > 0) sb.append(',')
+    }
+    "${sb.reverse()},$lastThree.$decimalPart"
+  } else {
+    "$integerPart.$decimalPart"
+  }
+  return if (isNegative) "-$result" else result
+}
