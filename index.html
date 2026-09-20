@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MY USEFUL TOOLS - Free Online Calculators & Daily Utilities</title>
+  <meta name="description" content="Free, fast, and privacy-friendly online calculators: Age, EMI Loan, Percentage, Discount, and BMI. Works instantly in your browser with zero data collection.">
+  <meta name="keywords" content="age calculator, emi calculator, percentage calculator, discount calculator, bmi calculator, free online tools, privacy friendly calculator">
+  <meta name="theme-color" content="#2563eb">
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="MY USEFUL TOOLS - Free Online Calculators">
+  <meta property="og:description" content="Fast, accurate, and 100% free online calculators: Age, EMI, Percentage, Discount, and BMI.">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts: System native font stack with preconnected Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body class="light-theme">
+
+  <!-- TOP APP BAR / HEADER -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="header-left">
+        <button id="menu-btn" class="icon-btn" aria-label="Open Navigation Menu" title="Menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="brand" onclick="navigateTo('home')">
+          <span class="brand-name">MY USEFUL TOOLS</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="home-nav-btn" class="icon-btn" onclick="navigateTo('home')" aria-label="Go to Home" title="Home">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </button>
+        <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Light/Dark Theme" title="Toggle Theme">
+          <span class="theme-icon sun-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          </span>
+          <span class="theme-icon moon-icon" style="display:none;">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </span>
+        </button>
+        <button id="share-btn" class="icon-btn" aria-label="Share Site" title="Share">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MOBILE / DESKTOP SIDE DRAWER OVERLAY -->
+  <div id="drawer-overlay" class="drawer-overlay" onclick="closeDrawer()"></div>
+  <aside id="drawer" class="drawer" aria-label="Site Navigation">
+    <div class="drawer-header">
+      <div>
+        <h2 class="drawer-title">MY USEFUL TOOLS</h2>
+        <p class="drawer-sub">Free Online Utility Suite</p>
+      </div>
+      <button class="icon-btn" onclick="closeDrawer()" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+
+    <div class="drawer-section-label">CALCULATORS</div>
+    <nav class="drawer-nav">
+      <a href="javascript:void(0)" onclick="navigateTo('age')" class="drawer-item" data-screen="age">
+        <span class="drawer-icon">🎂</span>
+        <span>Age Calculator</span>
+      </a>
+      <a href="javascript:void(0)" onclick="navigateTo('emi')" class="drawer-item" data-screen="emi">
+        <span class="drawer-icon">🏦</span>
+        <span>EMI Loan Calculator</span>
+      </a>
+      <a href="javascript:void(0)" onclick="navigateTo('percentage')" class="drawer-item" data-screen="percentage">
+        <span class="drawer-icon">📊</span>
+        <span>Percentage Calculator</span>
+      </a>
+      <a href="javascript:void(0)" onclick="navigateTo('discount')" class="drawer-item" data-screen="discount">
+        <span class="drawer-icon">🏷️</span>
+        <span>Discount & Sale Calculator</span>
+      </a>
+      <a href="javascript:void(0)" onclick="navigateTo('bmi')" class="drawer-item" data-screen="bmi">
+        <span class="drawer-icon">⚖️</span>
+        <span>BMI Health Calculator</span>
+      </a>
+    </nav>
+
+    <div class="drawer-section-label">INFORMATION & LEGAL</div>
+    <nav class="drawer-nav">
+      <a href="javascript:void(0)" onclick="navigateTo('about')" class="drawer-item" data-screen="about">
+        <span class="drawer-icon">ℹ️</span>
+        <span>About Us</span>
+      </a>
+      <a href="javascript:void(0)" onclick="navigateTo('contact')" class="drawer-item" data-screen="contact">
+        <span class="drawer-icon">✉️</span>
+        <span>Contact Us</span>
+      </a>
+      <a href="javascript:void(0)" onclick="navigateTo('privacy')" class="drawer-item" data-screen="privacy">
+        <span class="drawer-icon">🛡️</span>
+        <span>Privacy Policy</span>
+      </a>
+      <a href="javascript:void(0)" onclick="navigateTo('terms')" class="drawer-item" data-screen="terms">
+        <span class="drawer-icon">📜</span>
+        <span>Terms & Conditions</span>
+      </a>
+      <a href="javascript:void(0)" onclick="navigateTo('disclaimer')" class="drawer-item" data-screen="disclaimer">
+        <span class="drawer-icon">⚠️</span>
+        <span>Disclaimer</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAIN VIEW CONTAINER -->
+  <main class="main-container">
+
+    <!-- ==================== HOME SCREEN ==================== -->
+    <section id="screen-home" class="screen-section active">
+      <div class="hero-card">
+        <span class="badge">100% FREE UTILITY PORTAL</span>
+        <h1 class="hero-title">MY USEFUL TOOLS</h1>
+        <p class="hero-subtitle">Free, simple, and easy-to-use online calculators and tools. Fast, private, and client-side.</p>
+        <div class="hero-pills">
+          <span class="pill">⚡ Instant Calculations</span>
+          <span class="pill">🔒 100% Client-Side Privacy</span>
+          <span class="pill">📱 Mobile & Desktop Friendly</span>
+        </div>
+      </div>
+
+      <!-- Top AdSense Area -->
+      <div class="adsense-placeholder" aria-label="Advertisement Placement">
+        <div class="ad-label">Google AdSense Placement</div>
+        <div class="ad-sub">Responsive Banner Slot (Leaderboard / Billboard)</div>
+      </div>
+
+      <!-- Tools Grid -->
+      <h2 class="section-title">Popular Calculators</h2>
+      <div class="tools-grid">
+
+        <!-- Tool 1: Age -->
+        <div class="tool-card" onclick="navigateTo('age')">
+          <div class="tool-icon-wrapper age-icon">🎂</div>
+          <div class="tool-info">
+            <h3 class="tool-title">Age Calculator</h3>
+            <p class="tool-desc">Calculate exact age in years, months, and days with next birthday countdown and zodiac sign.</p>
+            <div class="tool-tags">
+              <span class="tag">Birthday</span>
+              <span class="tag">Countdown</span>
+              <span class="tag">Zodiac</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+
+        <!-- Tool 2: EMI -->
+        <div class="tool-card" onclick="navigateTo('emi')">
+          <div class="tool-icon-wrapper emi-icon">🏦</div>
+          <div class="tool-info">
+            <h3 class="tool-title">EMI Loan Calculator</h3>
+            <p class="tool-desc">Compute monthly installment, total interest payable, and repayment breakdown for any loan.</p>
+            <div class="tool-tags">
+              <span class="tag">Loans</span>
+              <span class="tag">Home</span>
+              <span class="tag">Car</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+
+        <!-- Tool 3: Percentage -->
+        <div class="tool-card" onclick="navigateTo('percentage')">
+          <div class="tool-icon-wrapper pct-icon">📊</div>
+          <div class="tool-info">
+            <h3 class="tool-title">Percentage Calculator</h3>
+            <p class="tool-desc">Three essential percentage solvers: What is X% of Y, percentage increase/decrease, and X is what % of Y.</p>
+            <div class="tool-tags">
+              <span class="tag">Increase/Decrease</span>
+              <span class="tag">Proportions</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+
+        <!-- Tool 4: Discount -->
+        <div class="tool-card" onclick="navigateTo('discount')">
+          <div class="tool-icon-wrapper dsc-icon">🏷️</div>
+          <div class="tool-info">
+            <h3 class="tool-title">Discount Calculator</h3>
+            <p class="tool-desc">Find final price after discount with savings summary and optional sales tax computation.</p>
+            <div class="tool-tags">
+              <span class="tag">Shopping</span>
+              <span class="tag">Sales Tax</span>
+              <span class="tag">Savings</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+
+        <!-- Tool 5: BMI -->
+        <div class="tool-card" onclick="navigateTo('bmi')">
+          <div class="tool-icon-wrapper bmi-icon">⚖️</div>
+          <div class="tool-info">
+            <h3 class="tool-title">BMI Health Calculator</h3>
+            <p class="tool-desc">Body Mass Index checker with metric and imperial units, category indicators, and healthy weight range.</p>
+            <div class="tool-tags">
+              <span class="tag">Health</span>
+              <span class="tag">Fitness</span>
+              <span class="tag">Metric / Imperial</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+
+      </div>
+
+      <!-- Bottom AdSense Area -->
+      <div class="adsense-placeholder" aria-label="Advertisement Placement">
+        <div class="ad-label">Google AdSense Placement</div>
+        <div class="ad-sub">In-Article / Native Responsive Display Unit</div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 1. AGE CALCULATOR ==================== -->
+    <section id="screen-age" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">Age Calculator</h1>
+        <p class="tool-page-subtitle">Calculate your exact age in years, months, and days, plus days left until your next birthday.</p>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - Age Tool Top</div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Enter Date of Birth</h2>
+        <div class="input-grid-3">
+          <div class="input-group">
+            <label for="age-day">Day (DD)</label>
+            <input type="number" id="age-day" min="1" max="31" value="15" placeholder="15">
+          </div>
+          <div class="input-group">
+            <label for="age-month">Month (MM)</label>
+            <input type="number" id="age-month" min="1" max="12" value="6" placeholder="6">
+          </div>
+          <div class="input-group">
+            <label for="age-year">Year (YYYY)</label>
+            <input type="number" id="age-year" min="1900" max="2099" value="1995" placeholder="1995">
+          </div>
+        </div>
+
+        <div class="input-group date-picker-row">
+          <label for="age-date-picker">Or pick date directly:</label>
+          <input type="date" id="age-date-picker" value="1995-06-15">
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="calculateAge()">Calculate Age</button>
+          <button class="btn btn-outline" onclick="resetAge()">Reset</button>
+        </div>
+        <div id="age-error" class="error-banner" style="display:none;"></div>
+      </div>
+
+      <!-- Age Result Card -->
+      <div id="age-result-card" class="result-card">
+        <h3 class="result-header">Your Exact Age</h3>
+        <div class="stat-highlight">
+          <span id="age-years-num" class="highlight-number">30</span>
+          <span class="highlight-unit">Years Old</span>
+        </div>
+        <div class="stats-pills-row">
+          <div class="stat-pill"><strong id="age-breakdown">30 Years, 9 Months, 5 Days</strong></div>
+          <div class="stat-pill">Zodiac: <strong id="age-zodiac">Gemini ♊</strong></div>
+        </div>
+
+        <div class="result-grid-2">
+          <div class="metric-box">
+            <div class="metric-label">Next Birthday In</div>
+            <div id="age-next-bday" class="metric-value">2 Months, 25 Days</div>
+            <div id="age-next-dayofweek" class="metric-sub">Falling on a Monday</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Total Days Lived</div>
+            <div id="age-total-days" class="metric-value">11,236 Days</div>
+            <div id="age-total-hours" class="metric-sub">~269,664 Total Hours</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - Age Tool Bottom</div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 2. EMI CALCULATOR ==================== -->
+    <section id="screen-emi" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">EMI Loan Calculator</h1>
+        <p class="tool-page-subtitle">Calculate your monthly Equated Monthly Installment (EMI), total interest, and total repayment for home, car, or personal loans.</p>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - EMI Tool Top</div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Loan Parameters</h2>
+        <div class="input-grid-2">
+          <div class="input-group">
+            <label for="emi-amount">Loan Amount ($)</label>
+            <input type="number" id="emi-amount" value="100000" min="1" step="1000" oninput="calculateEmi()">
+          </div>
+          <div class="input-group">
+            <label for="emi-rate">Annual Interest Rate (%)</label>
+            <input type="number" id="emi-rate" value="8.5" min="0.1" max="100" step="0.1" oninput="calculateEmi()">
+          </div>
+        </div>
+
+        <div class="input-grid-2">
+          <div class="input-group">
+            <label for="emi-tenure">Tenure</label>
+            <input type="number" id="emi-tenure" value="5" min="1" max="50" oninput="calculateEmi()">
+          </div>
+          <div class="input-group">
+            <label>Tenure Unit</label>
+            <div class="segmented-control">
+              <button id="emi-tenure-years" class="segment-btn active" onclick="setEmiTenureUnit('years')">Years</button>
+              <button id="emi-tenure-months" class="segment-btn" onclick="setEmiTenureUnit('months')">Months</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="calculateEmi()">Calculate EMI</button>
+          <button class="btn btn-outline" onclick="resetEmi()">Reset to Defaults</button>
+        </div>
+      </div>
+
+      <!-- EMI Result Card -->
+      <div id="emi-result-card" class="result-card">
+        <h3 class="result-header">Repayment Summary</h3>
+        <div class="stat-highlight">
+          <span id="emi-monthly-val" class="highlight-number">$2,051.65</span>
+          <span class="highlight-unit">Monthly Payment (EMI)</span>
+        </div>
+
+        <div class="result-grid-2">
+          <div class="metric-box">
+            <div class="metric-label">Total Interest Payable</div>
+            <div id="emi-total-interest" class="metric-value text-rose">$23,099.00</div>
+            <div id="emi-interest-pct" class="metric-sub">18.8% of repayment</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Total Payment (Principal + Interest)</div>
+            <div id="emi-total-payment" class="metric-value">$123,099.00</div>
+            <div id="emi-principal-pct" class="metric-sub">81.2% Principal</div>
+          </div>
+        </div>
+
+        <!-- Visual Proportion Bar -->
+        <div class="bar-container">
+          <div class="bar-labels">
+            <span>Principal (<span id="bar-principal-pct">81.2%</span>)</span>
+            <span>Interest (<span id="bar-interest-pct">18.8%</span>)</span>
+          </div>
+          <div class="split-bar">
+            <div id="split-bar-principal" class="bar-fill-principal" style="width: 81.2%;"></div>
+            <div id="split-bar-interest" class="bar-fill-interest" style="width: 18.8%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - EMI Tool Bottom</div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 3. PERCENTAGE CALCULATOR ==================== -->
+    <section id="screen-percentage" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">Percentage Calculator</h1>
+        <p class="tool-page-subtitle">Solve common percentage problems instantly: find X% of Y, calculate percent increase/decrease, or determine what percentage one number is of another.</p>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - Percentage Tool Top</div>
+      </div>
+
+      <!-- Mode Tabs -->
+      <div class="tab-bar">
+        <button id="pct-tab-0" class="tab-btn active" onclick="switchPctTab(0)">X% of Y</button>
+        <button id="pct-tab-1" class="tab-btn" onclick="switchPctTab(1)">% Change</button>
+        <button id="pct-tab-2" class="tab-btn" onclick="switchPctTab(2)">X is what %</button>
+      </div>
+
+      <!-- Sub Mode 1: What is X% of Y? -->
+      <div id="pct-mode-0" class="card tab-pane active">
+        <h2 class="card-title">What is X% of Y?</h2>
+        <div class="input-grid-2">
+          <div class="input-group">
+            <label for="pct-m1-x">Percentage (X %)</label>
+            <input type="number" id="pct-m1-x" value="15" step="any" oninput="calcPctMode1()">
+          </div>
+          <div class="input-group">
+            <label for="pct-m1-y">Of Total Number (Y)</label>
+            <input type="number" id="pct-m1-y" value="250" step="any" oninput="calcPctMode1()">
+          </div>
+        </div>
+        <div class="result-box-simple">
+          <div class="res-sub">Result:</div>
+          <div id="pct-m1-res" class="res-bold">37.5</div>
+          <div id="pct-m1-expl" class="res-formula">15% of 250 = 37.5</div>
+        </div>
+      </div>
+
+      <!-- Sub Mode 2: Percentage Increase / Decrease -->
+      <div id="pct-mode-1" class="card tab-pane">
+        <h2 class="card-title">Percentage Increase or Decrease</h2>
+        <div class="input-grid-2">
+          <div class="input-group">
+            <label for="pct-m2-initial">Initial Value (From)</label>
+            <input type="number" id="pct-m2-initial" value="100" step="any" oninput="calcPctMode2()">
+          </div>
+          <div class="input-group">
+            <label for="pct-m2-final">Final Value (To)</label>
+            <input type="number" id="pct-m2-final" value="140" step="any" oninput="calcPctMode2()">
+          </div>
+        </div>
+        <div class="result-box-simple">
+          <div class="res-sub">Difference:</div>
+          <div id="pct-m2-res" class="res-bold text-emerald">+40.00% Increase</div>
+          <div id="pct-m2-expl" class="res-formula">Absolute change of +40.00 (from 100 to 140)</div>
+        </div>
+      </div>
+
+      <!-- Sub Mode 3: X is what % of Y -->
+      <div id="pct-mode-2" class="card tab-pane">
+        <h2 class="card-title">X is what percent of Y?</h2>
+        <div class="input-grid-2">
+          <div class="input-group">
+            <label for="pct-m3-part">Value (X)</label>
+            <input type="number" id="pct-m3-part" value="45" step="any" oninput="calcPctMode3()">
+          </div>
+          <div class="input-group">
+            <label for="pct-m3-whole">Total (Y)</label>
+            <input type="number" id="pct-m3-whole" value="60" step="any" oninput="calcPctMode3()">
+          </div>
+        </div>
+        <div class="result-box-simple">
+          <div class="res-sub">Percentage:</div>
+          <div id="pct-m3-res" class="res-bold">75.00%</div>
+          <div id="pct-m3-expl" class="res-formula">45 is 75% of 60</div>
+        </div>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - Percentage Tool Bottom</div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 4. DISCOUNT CALCULATOR ==================== -->
+    <section id="screen-discount" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">Discount Calculator</h1>
+        <p class="tool-page-subtitle">Quickly figure out the final sale price, amount saved, and after-tax total during shopping sales.</p>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - Discount Tool Top</div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Item Details</h2>
+        <div class="input-grid-2">
+          <div class="input-group">
+            <label for="disc-price">Original Price ($)</label>
+            <input type="number" id="disc-price" value="120" min="0" step="0.01" oninput="calculateDiscount()">
+          </div>
+          <div class="input-group">
+            <label for="disc-percent">Discount (%)</label>
+            <input type="number" id="disc-percent" value="25" min="0" max="100" step="1" oninput="calculateDiscount()">
+          </div>
+        </div>
+
+        <!-- Quick discount chips -->
+        <div class="chips-label">Quick select discount:</div>
+        <div class="chips-row">
+          <button class="chip" onclick="setQuickDiscount(10)">10%</button>
+          <button class="chip" onclick="setQuickDiscount(15)">15%</button>
+          <button class="chip" onclick="setQuickDiscount(20)">20%</button>
+          <button class="chip active" id="chip-25" onclick="setQuickDiscount(25)">25%</button>
+          <button class="chip" onclick="setQuickDiscount(30)">30%</button>
+          <button class="chip" onclick="setQuickDiscount(40)">40%</button>
+          <button class="chip" onclick="setQuickDiscount(50)">50%</button>
+          <button class="chip" onclick="setQuickDiscount(70)">70%</button>
+        </div>
+
+        <div class="toggle-row">
+          <label class="toggle-label" for="disc-tax-enable">
+            <input type="checkbox" id="disc-tax-enable" onchange="toggleTaxField()">
+            <span>Include Sales Tax</span>
+          </label>
+        </div>
+
+        <div id="disc-tax-group" class="input-group" style="display:none; margin-top: 12px;">
+          <label for="disc-tax-rate">Sales Tax Rate (%)</label>
+          <input type="number" id="disc-tax-rate" value="8.5" min="0" max="50" step="0.1" oninput="calculateDiscount()">
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="resetDiscount()">Reset</button>
+        </div>
+      </div>
+
+      <!-- Discount Results -->
+      <div id="disc-result-card" class="result-card">
+        <h3 class="result-header">Price Breakdown</h3>
+        <div class="stat-highlight">
+          <span id="disc-final-val" class="highlight-number text-emerald">$90.00</span>
+          <span class="highlight-unit">Final Price You Pay</span>
+        </div>
+
+        <div class="result-grid-2">
+          <div class="metric-box">
+            <div class="metric-label">You Save</div>
+            <div id="disc-savings-val" class="metric-value text-emerald">$30.00</div>
+            <div id="disc-savings-sub" class="metric-sub">25.0% off original price</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Original Price</div>
+            <div id="disc-orig-val" class="metric-value strike-through">$120.00</div>
+            <div id="disc-tax-val" class="metric-sub">Tax: Not included</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - Discount Tool Bottom</div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 5. BMI CALCULATOR ==================== -->
+    <section id="screen-bmi" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">BMI Health Calculator</h1>
+        <p class="tool-page-subtitle">Determine your Body Mass Index (BMI) and check which category your weight falls under according to standard World Health Organization criteria.</p>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - BMI Tool Top</div>
+      </div>
+
+      <div class="card">
+        <div class="segmented-control" style="margin-bottom: 16px;">
+          <button id="bmi-unit-metric" class="segment-btn active" onclick="setBmiUnit('metric')">Metric (cm, kg)</button>
+          <button id="bmi-unit-imperial" class="segment-btn" onclick="setBmiUnit('imperial')">Imperial (ft, in, lbs)</button>
+        </div>
+
+        <!-- Metric inputs -->
+        <div id="bmi-metric-inputs" class="input-grid-2">
+          <div class="input-group">
+            <label for="bmi-height-cm">Height (cm)</label>
+            <input type="number" id="bmi-height-cm" value="175" min="50" max="260" oninput="calculateBmi()">
+          </div>
+          <div class="input-group">
+            <label for="bmi-weight-kg">Weight (kg)</label>
+            <input type="number" id="bmi-weight-kg" value="70" min="20" max="300" oninput="calculateBmi()">
+          </div>
+        </div>
+
+        <!-- Imperial inputs -->
+        <div id="bmi-imperial-inputs" style="display: none;">
+          <div class="input-grid-3">
+            <div class="input-group">
+              <label for="bmi-height-ft">Height (ft)</label>
+              <input type="number" id="bmi-height-ft" value="5" min="1" max="8" oninput="calculateBmi()">
+            </div>
+            <div class="input-group">
+              <label for="bmi-height-in">Height (in)</label>
+              <input type="number" id="bmi-height-in" value="9" min="0" max="11" oninput="calculateBmi()">
+            </div>
+            <div class="input-group">
+              <label for="bmi-weight-lbs">Weight (lbs)</label>
+              <input type="number" id="bmi-weight-lbs" value="154" min="40" max="660" oninput="calculateBmi()">
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="resetBmi()">Reset</button>
+        </div>
+      </div>
+
+      <!-- BMI Result Card -->
+      <div id="bmi-result-card" class="result-card">
+        <h3 class="result-header">Your BMI Score</h3>
+        <div class="stat-highlight">
+          <span id="bmi-score-val" class="highlight-number text-emerald">22.9</span>
+          <span id="bmi-category-badge" class="category-badge badge-normal">Normal Weight</span>
+        </div>
+
+        <div class="result-grid-2">
+          <div class="metric-box">
+            <div class="metric-label">Healthy Weight Range for your height</div>
+            <div id="bmi-healthy-range" class="metric-value">56.7 kg – 76.3 kg</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">WHO Standard Classification</div>
+            <div id="bmi-who-desc" class="metric-sub">18.5 – 24.9 indicates optimal healthy weight.</div>
+          </div>
+        </div>
+
+        <!-- BMI Range Indicator Bar -->
+        <div class="bmi-scale-wrapper">
+          <div class="bmi-scale-bar">
+            <div class="scale-segment seg-under">Under</div>
+            <div class="scale-segment seg-normal">Normal</div>
+            <div class="scale-segment seg-over">Over</div>
+            <div class="scale-segment seg-obese">Obese</div>
+          </div>
+          <div class="bmi-scale-labels">
+            <span>&lt; 18.5</span>
+            <span>18.5 - 24.9</span>
+            <span>25.0 - 29.9</span>
+            <span>&ge; 30.0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="adsense-placeholder">
+        <div class="ad-label">AdSense Responsive Slot - BMI Tool Bottom</div>
+      </div>
+    </section>
+
+
+    <!-- ==================== LEGAL & INFO PAGES ==================== -->
+
+    <!-- ABOUT US -->
+    <section id="screen-about" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
+        <h1 class="tool-page-title">About Us</h1>
+        <p class="tool-page-subtitle">Learn more about MY USEFUL TOOLS and our mission for fast, accessible utility computing.</p>
+      </div>
+
+      <div class="card prose-card">
+        <h2>Our Mission</h2>
+        <p>At <strong>MY USEFUL TOOLS</strong>, our purpose is simple: provide lightning-fast, high-precision, everyday calculation tools directly in your browser without paywalls, sign-ups, or invasive tracking.</p>
+
+        <h3>Why Choose MY USEFUL TOOLS?</h3>
+        <ul>
+          <li><strong>100% Client-Side Computing:</strong> All calculations run directly inside your browser engine. We never transmit your inputs to a remote server.</li>
+          <li><strong>Zero Mandatory Logins:</strong> No user registration or subscription required. Every tool is immediately ready to calculate.</li>
+          <li><strong>Mobile First & Responsive:</strong> Designed to look pristine across smartphones, tablets, Chromebooks, and widescreen desktop monitors.</li>
+          <li><strong>Continuously Updated:</strong> Math and algorithmic formulas are rigorously verified against international standards.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CONTACT US -->
+    <section id="screen-contact" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
+        <h1 class="tool-page-title">Contact Us</h1>
+        <p class="tool-page-subtitle">We would love to hear your feedback, tool requests, and suggestions.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Send a Message</h2>
+        <form id="contact-form" onsubmit="handleContactSubmit(event)">
+          <div class="input-group">
+            <label for="contact-name">Your Name</label>
+            <input type="text" id="contact-name" required placeholder="Jane Doe">
+          </div>
+          <div class="input-group">
+            <label for="contact-email">Email Address</label>
+            <input type="email" id="contact-email" required placeholder="jane@example.com">
+          </div>
+          <div class="input-group">
+            <label for="contact-message">Message or Tool Request</label>
+            <textarea id="contact-message" rows="4" required placeholder="Let us know how we can improve or which tool to build next..."></textarea>
+          </div>
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary">Send Feedback</button>
+          </div>
+          <div id="contact-success" class="success-banner" style="display:none;">
+            Thank you! Your feedback has been recorded locally.
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- PRIVACY POLICY -->
+    <section id="screen-privacy" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
+        <h1 class="tool-page-title">Privacy Policy</h1>
+        <p class="tool-page-subtitle">Last updated: September 2026</p>
+      </div>
+
+      <div class="card prose-card">
+        <h2>Commitment to Privacy</h2>
+        <p>Your privacy is of paramount importance to us. This Privacy Policy details how <strong>MY USEFUL TOOLS</strong> collects, protects, and handles your information.</p>
+
+        <h3>1. Client-Side Data Handling</h3>
+        <p>All tool calculations (including birth dates, financial loan figures, discount percentages, and health metrics) are processed locally inside your web browser's JavaScript runtime. None of your entered calculation data is sent to or stored on any central server.</p>
+
+        <h3>2. Cookies and Advertising</h3>
+        <p>We may display advertisements provided by Google AdSense and third-party advertising partners. Third-party vendors, including Google, use cookies to serve ads based on prior visits to this website or other websites. Users may opt out of personalized advertising by visiting Google's Ad Settings.</p>
+
+        <h3>3. Contact Information</h3>
+        <p>If you contact us via our contact form, your provided email address and message will only be used to respond to your inquiry and will never be shared with third parties.</p>
+      </div>
+    </section>
+
+    <!-- TERMS & CONDITIONS -->
+    <section id="screen-terms" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
+        <h1 class="tool-page-title">Terms & Conditions</h1>
+        <p class="tool-page-subtitle">Last updated: September 2026</p>
+      </div>
+
+      <div class="card prose-card">
+        <h2>Acceptance of Terms</h2>
+        <p>By accessing and using <strong>MY USEFUL TOOLS</strong>, you agree to be bound by these Terms and Conditions. If you do not agree to all terms, please refrain from using the services.</p>
+
+        <h3>Use of Calculators</h3>
+        <p>The tools provided on this portal are for educational, informational, and general reference purposes only. While we make every effort to ensure computational correctness, we do not warrant that calculations are free of minor rounding variances or algorithmic errors.</p>
+
+        <h3>Intellectual Property</h3>
+        <p>The visual layout, design components, and custom scripting of MY USEFUL TOOLS are protected by international copyright laws. Reproduction without written consent is strictly prohibited.</p>
+      </div>
+    </section>
+
+    <!-- DISCLAIMER -->
+    <section id="screen-disclaimer" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to Home</button>
+        <h1 class="tool-page-title">Disclaimer</h1>
+        <p class="tool-page-subtitle">General reference information</p>
+      </div>
+
+      <div class="card prose-card">
+        <h2>Financial & Medical Disclaimer</h2>
+        <p><strong>Not Financial Advice:</strong> Results provided by our EMI and financial calculators are for estimation purposes only. Actual interest rates, processing fees, loan amortization schedules, and repayment amounts may vary based on your financial institution's policies.</p>
+        <p><strong>Not Medical Advice:</strong> Body Mass Index (BMI) calculations are general screening figures and do not account for muscle mass, bone density, age, or overall body composition. Always consult a qualified medical professional for health evaluations.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- APP FOOTER -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand">MY USEFUL TOOLS</div>
+          <p class="footer-tagline">Fast, free, and privacy-friendly online utilities.</p>
+        </div>
+        <button class="back-to-top-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="Back to top">
+          ↑ Back to top
+        </button>
+      </div>
+
+      <div class="footer-links-grid">
+        <div class="footer-col">
+          <div class="footer-col-title">CALCULATORS</div>
+          <a href="javascript:void(0)" onclick="navigateTo('age')">Age Calculator</a>
+          <a href="javascript:void(0)" onclick="navigateTo('emi')">EMI Calculator</a>
+          <a href="javascript:void(0)" onclick="navigateTo('percentage')">Percentage Calculator</a>
+          <a href="javascript:void(0)" onclick="navigateTo('discount')">Discount Calculator</a>
+          <a href="javascript:void(0)" onclick="navigateTo('bmi')">BMI Calculator</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">ABOUT & SUPPORT</div>
+          <a href="javascript:void(0)" onclick="navigateTo('about')">About Us</a>
+          <a href="javascript:void(0)" onclick="navigateTo('contact')">Contact & Feedback</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">LEGAL & PRIVACY</div>
+          <a href="javascript:void(0)" onclick="navigateTo('privacy')">Privacy Policy</a>
+          <a href="javascript:void(0)" onclick="navigateTo('terms')">Terms & Conditions</a>
+          <a href="javascript:void(0)" onclick="navigateTo('disclaimer')">Disclaimer</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>Free to use. No account or subscription required.</p>
+        <p style="margin-top: 6px; font-size: 0.75rem; opacity: 0.8;">© 2026 MY USEFUL TOOLS. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

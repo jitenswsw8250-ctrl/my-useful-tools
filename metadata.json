@@ -1,0 +1,6 @@
+{
+  "name": "MY USEFUL TOOLS",
+  "description": "MY USEFUL TOOLS - Free online calculators: Age, EMI Loan, Percentage, Discount, and BMI calculators. Fast, privacy-friendly, fully responsive, and completely client-side.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
