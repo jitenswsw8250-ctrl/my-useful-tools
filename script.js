@@ -174,6 +174,16 @@ document.addEventListener('DOMContentLoaded', () => {
   calcPctMode3();
   calculateDiscount();
   calculateBmi();
+  calculateGst();
+  calculateSimpleInterest();
+  calculateCompoundInterest();
+  calculateProfitLoss();
+  calculateSip();
+  calculateFd();
+  calculateDateDiff();
+  calculateTime();
+  changeUcCategory();
+  calculateAverage();
 
   // Hash & Query URL Navigation
   function parseInitialRoute() {
@@ -216,11 +226,11 @@ function setTheme(dark) {
 const PAGE_SEO = {
   home: {
     title: 'MY USEFUL TOOLS - Free Online Calculators & Daily Utilities',
-    description: 'Free, simple, and privacy-friendly online calculators: Age, EMI Loan, Percentage, Discount, and BMI. Fast, lightweight, and 100% browser-based.'
+    description: 'Free, simple, and privacy-friendly online calculators: Age, EMI Loan, Percentage, Discount, BMI, GST, Interest, Profit & Loss, SIP, FD, Dates, Time, Units, and Average. Fast, lightweight, and 100% browser-based.'
   },
   'all-tools': {
     title: 'All Free Tools & Calculators | MY USEFUL TOOLS',
-    description: 'Explore all 5 free, instant browser calculators: Age, EMI, Percentage, Discount, and BMI calculators on MY USEFUL TOOLS.'
+    description: 'Explore all 15 free, instant browser calculators: Age, EMI, Percentage, Discount, BMI, GST, Interest, Profit & Loss, SIP, FD, Dates, Time, Units, and Average on MY USEFUL TOOLS.'
   },
   age: {
     title: 'Age Calculator - Exact Years, Months & Days | MY USEFUL TOOLS',
@@ -241,6 +251,46 @@ const PAGE_SEO = {
   bmi: {
     title: 'BMI Health Calculator - Body Mass Index & Weight Range | MY USEFUL TOOLS',
     description: 'Check your Body Mass Index (BMI) with metric and imperial units. View official WHO categories and healthy weight range.'
+  },
+  gst: {
+    title: 'GST Calculator - Inclusive & Exclusive GST Rates | MY USEFUL TOOLS',
+    description: 'Calculate GST inclusive and exclusive prices with CGST, SGST, and IGST breakdowns in INR (₹). Free online Indian Goods & Services Tax calculator.'
+  },
+  'simple-interest': {
+    title: 'Simple Interest Calculator - Interest & Maturity Breakdown | MY USEFUL TOOLS',
+    description: 'Compute simple interest and total repayment amounts for loans, savings, and investments with annual or monthly terms.'
+  },
+  'compound-interest': {
+    title: 'Compound Interest Calculator - Compounding Growth & APY | MY USEFUL TOOLS',
+    description: 'Calculate compound interest growth with annual, half-yearly, quarterly, or monthly compounding and effective annual rate.'
+  },
+  'profit-loss': {
+    title: 'Profit and Loss Calculator - Margin & Markup Analysis | MY USEFUL TOOLS',
+    description: 'Calculate profit, loss, profit percentage, markup, and profit margin on selling price with overhead cost factoring.'
+  },
+  sip: {
+    title: 'SIP Calculator - Mutual Fund Systematic Investment Plan | MY USEFUL TOOLS',
+    description: 'Calculate expected future returns and wealth accumulation from monthly mutual fund Systematic Investment Plans (SIP).'
+  },
+  fd: {
+    title: 'FD Calculator - Fixed Deposit Maturity & Interest | MY USEFUL TOOLS',
+    description: 'Calculate bank Fixed Deposit (FD) maturity value, total interest earned, and effective yield with quarterly compounding.'
+  },
+  'date-difference': {
+    title: 'Date Difference Calculator - Days, Weeks & Months Between Dates | MY USEFUL TOOLS',
+    description: 'Calculate the exact time between two dates in years, months, weeks, days, and working business days.'
+  },
+  time: {
+    title: 'Time Calculator - Clock Duration, Add & Subtract Time | MY USEFUL TOOLS',
+    description: 'Calculate duration between two times, add and subtract hours, minutes, and seconds, or convert to decimal hours for payroll.'
+  },
+  'unit-converter': {
+    title: 'Unit Converter - Length, Weight, Temperature, Area & Volume | MY USEFUL TOOLS',
+    description: 'Convert between metric and imperial units: meters, feet, kilograms, pounds, Celsius, Fahrenheit, liters, gallons, and more.'
+  },
+  average: {
+    title: 'Average Calculator - Mean, Median, Mode & Standard Deviation | MY USEFUL TOOLS',
+    description: 'Calculate arithmetic mean, median, mode, total sum, range, and standard deviation for any list of numbers.'
   },
   about: {
     title: 'About Us - Free Online Utilities | MY USEFUL TOOLS',
@@ -928,7 +978,7 @@ function handleContactSubmit(e) {
   if (!isValid) return;
 
   if (successBanner) {
-    successBanner.innerHTML = `<strong>Thank you, ${escapeHtml(nameVal)}!</strong> Your message has been verified and validated locally.<br><span style="font-size: 0.82rem; font-weight: normal; margin-top: 4px; display: inline-block;">Note: This browser-based suite currently operates client-side without an external mail server. For direct inquiries, you can reach out via: <a href="mailto:contact@myusefultools.local" style="color: var(--primary); font-weight: 600;">contact@myusefultools.local</a></span>`;
+    successBanner.innerHTML = `<strong>Thank you, ${escapeHtml(nameVal)}!</strong> Your message has been verified and validated locally.<br><span style="font-size: 0.82rem; font-weight: normal; margin-top: 4px; display: inline-block;">Note: This browser-based suite currently operates client-side without an external mail server. For direct inquiries, you can reach out via: <a href="mailto:myusefultools2026@gmail.com" style="color: var(--primary); font-weight: 600;">myusefultools2026@gmail.com</a></span>`;
     successBanner.style.display = 'block';
   }
 
@@ -945,4 +995,1064 @@ function resetContactForm() {
   if (emailErr) emailErr.style.display = 'none';
   if (msgErr) msgErr.style.display = 'none';
   if (successBanner) successBanner.style.display = 'none';
+}
+
+// ================= UTILITY: INR FORMATTING =================
+function formatINR(val) {
+  return '₹' + Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ================= 6. GST CALCULATOR =================
+let gstType = 'exclusive'; // 'exclusive' or 'inclusive'
+
+function setGstType(type) {
+  gstType = type;
+  const excBtn = document.getElementById('gst-type-exclusive');
+  const incBtn = document.getElementById('gst-type-inclusive');
+  const amountLabel = document.getElementById('gst-amount-label');
+  const grossLabel = document.getElementById('gst-gross-label');
+  const netLabel = document.getElementById('gst-net-label');
+  const typeDesc = document.getElementById('gst-type-desc');
+
+  if (type === 'exclusive') {
+    if (excBtn) excBtn.classList.add('active');
+    if (incBtn) incBtn.classList.remove('active');
+    if (amountLabel) amountLabel.textContent = 'Base Amount (₹)';
+    if (grossLabel) grossLabel.textContent = 'Total Gross Amount (₹)';
+    if (netLabel) netLabel.textContent = 'Net Amount (Base Price)';
+    if (typeDesc) typeDesc.textContent = 'Exclusive mode: GST added to base';
+  } else {
+    if (incBtn) incBtn.classList.add('active');
+    if (excBtn) excBtn.classList.remove('active');
+    if (amountLabel) amountLabel.textContent = 'Gross Amount (₹ - includes GST)';
+    if (grossLabel) grossLabel.textContent = 'Gross Invoice Amount (₹)';
+    if (netLabel) netLabel.textContent = 'Pre-Tax Net Amount (Base Price)';
+    if (typeDesc) typeDesc.textContent = 'Inclusive mode: GST removed from total';
+  }
+  calculateGst();
+}
+
+function setQuickGstRate(rate) {
+  const rateInput = document.getElementById('gst-rate');
+  if (rateInput) rateInput.value = rate;
+  document.querySelectorAll('#screen-gst .chip').forEach(c => {
+    if (c.textContent.startsWith(rate + '%')) {
+      c.classList.add('active');
+    } else {
+      c.classList.remove('active');
+    }
+  });
+  calculateGst();
+}
+
+function calculateGst() {
+  const amountEl = document.getElementById('gst-amount');
+  const rateEl = document.getElementById('gst-rate');
+  if (!amountEl || !rateEl) return;
+
+  const rawAmount = parseFloat(amountEl.value) || 0;
+  const rate = Math.max(0, parseFloat(rateEl.value) || 0);
+
+  let net = 0;
+  let tax = 0;
+  let gross = 0;
+
+  if (gstType === 'exclusive') {
+    net = rawAmount;
+    tax = net * (rate / 100);
+    gross = net + tax;
+  } else {
+    gross = rawAmount;
+    net = gross / (1 + (rate / 100));
+    tax = gross - net;
+  }
+
+  const cgst = tax / 2;
+  const sgst = tax / 2;
+  const igst = tax;
+
+  const grossValEl = document.getElementById('gst-gross-val');
+  const netValEl = document.getElementById('gst-net-val');
+  const taxValEl = document.getElementById('gst-tax-val');
+  const rateSubEl = document.getElementById('gst-rate-sub');
+  const cgstEl = document.getElementById('gst-cgst-val');
+  const sgstEl = document.getElementById('gst-sgst-val');
+  const igstEl = document.getElementById('gst-igst-val');
+
+  if (grossValEl) grossValEl.textContent = formatINR(gross);
+  if (netValEl) netValEl.textContent = formatINR(net);
+  if (taxValEl) taxValEl.textContent = formatINR(tax);
+  if (rateSubEl) rateSubEl.textContent = `Calculated at ${rate}% GST`;
+  if (cgstEl) cgstEl.textContent = formatINR(cgst);
+  if (sgstEl) sgstEl.textContent = formatINR(sgst);
+  if (igstEl) igstEl.textContent = formatINR(igst);
+}
+
+function resetGst() {
+  const amountEl = document.getElementById('gst-amount');
+  const rateEl = document.getElementById('gst-rate');
+  if (amountEl) amountEl.value = '10000';
+  if (rateEl) rateEl.value = '18';
+  setGstType('exclusive');
+  setQuickGstRate(18);
+}
+
+// ================= 7. SIMPLE INTEREST CALCULATOR =================
+let siUnit = 'years';
+
+function setSiUnit(unit) {
+  siUnit = unit;
+  const yBtn = document.getElementById('si-unit-years');
+  const mBtn = document.getElementById('si-unit-months');
+  if (unit === 'years') {
+    if (yBtn) yBtn.classList.add('active');
+    if (mBtn) mBtn.classList.remove('active');
+  } else {
+    if (mBtn) mBtn.classList.add('active');
+    if (yBtn) yBtn.classList.remove('active');
+  }
+  calculateSimpleInterest();
+}
+
+function calculateSimpleInterest() {
+  const pEl = document.getElementById('si-principal');
+  const rEl = document.getElementById('si-rate');
+  const tEl = document.getElementById('si-time');
+  if (!pEl || !rEl || !tEl) return;
+
+  const P = Math.max(0, parseFloat(pEl.value) || 0);
+  const R = Math.max(0, parseFloat(rEl.value) || 0);
+  const rawT = Math.max(0, parseFloat(tEl.value) || 0);
+  const T = siUnit === 'months' ? (rawT / 12) : rawT;
+
+  const interest = (P * R * T) / 100;
+  const total = P + interest;
+  const totalMonths = Math.max(1, T * 12);
+  const monthlyInterest = interest / totalMonths;
+  const dailyInterest = interest / Math.max(1, T * 365);
+
+  const interestValEl = document.getElementById('si-interest-val');
+  const totalValEl = document.getElementById('si-total-val');
+  const monthlyValEl = document.getElementById('si-monthly-val');
+  const dailyValEl = document.getElementById('si-daily-val');
+
+  if (interestValEl) interestValEl.textContent = formatINR(interest);
+  if (totalValEl) totalValEl.textContent = formatINR(total);
+  if (monthlyValEl) monthlyValEl.textContent = formatINR(monthlyInterest);
+  if (dailyValEl) dailyValEl.textContent = `~${formatINR(dailyInterest)} per day`;
+
+  let principalPct = total > 0 ? (P / total) * 100 : 100;
+  let interestPct = total > 0 ? (interest / total) * 100 : 0;
+
+  const barPPct = document.getElementById('si-bar-principal-pct');
+  const barIPct = document.getElementById('si-bar-interest-pct');
+  const barP = document.getElementById('si-bar-principal');
+  const barI = document.getElementById('si-bar-interest');
+
+  if (barPPct) barPPct.textContent = principalPct.toFixed(1) + '%';
+  if (barIPct) barIPct.textContent = interestPct.toFixed(1) + '%';
+  if (barP) barP.style.width = principalPct.toFixed(1) + '%';
+  if (barI) barI.style.width = interestPct.toFixed(1) + '%';
+}
+
+function resetSimpleInterest() {
+  const pEl = document.getElementById('si-principal');
+  const rEl = document.getElementById('si-rate');
+  const tEl = document.getElementById('si-time');
+  if (pEl) pEl.value = '100000';
+  if (rEl) rEl.value = '7.5';
+  if (tEl) tEl.value = '3';
+  setSiUnit('years');
+}
+
+// ================= 8. COMPOUND INTEREST CALCULATOR =================
+function calculateCompoundInterest() {
+  const pEl = document.getElementById('ci-principal');
+  const rEl = document.getElementById('ci-rate');
+  const tEl = document.getElementById('ci-time');
+  const fEl = document.getElementById('ci-freq');
+  if (!pEl || !rEl || !tEl || !fEl) return;
+
+  const P = Math.max(0, parseFloat(pEl.value) || 0);
+  const r = Math.max(0, parseFloat(rEl.value) || 0) / 100;
+  const t = Math.max(0, parseFloat(tEl.value) || 0);
+  const n = parseInt(fEl.value, 10) || 4;
+
+  let A = 0;
+  if (P > 0 && t > 0) {
+    A = P * Math.pow(1 + (r / n), n * t);
+  } else {
+    A = P;
+  }
+  const interest = Math.max(0, A - P);
+  const simpleInterest = (P * (r * 100) * t) / 100;
+  const diff = Math.max(0, interest - simpleInterest);
+  const ear = n > 0 ? (Math.pow(1 + (r / n), n) - 1) * 100 : (r * 100);
+
+  const totalValEl = document.getElementById('ci-total-val');
+  const interestValEl = document.getElementById('ci-interest-val');
+  const earValEl = document.getElementById('ci-ear-val');
+  const diffValEl = document.getElementById('ci-diff-val');
+
+  if (totalValEl) totalValEl.textContent = formatINR(A);
+  if (interestValEl) interestValEl.textContent = formatINR(interest);
+  if (earValEl) earValEl.textContent = ear.toFixed(2) + '%';
+  if (diffValEl) diffValEl.textContent = `+${formatINR(diff)} more than Simple Interest`;
+
+  let principalPct = A > 0 ? (P / A) * 100 : 100;
+  let interestPct = A > 0 ? (interest / A) * 100 : 0;
+
+  const barPPct = document.getElementById('ci-bar-principal-pct');
+  const barIPct = document.getElementById('ci-bar-interest-pct');
+  const barP = document.getElementById('ci-bar-principal');
+  const barI = document.getElementById('ci-bar-interest');
+
+  if (barPPct) barPPct.textContent = principalPct.toFixed(1) + '%';
+  if (barIPct) barIPct.textContent = interestPct.toFixed(1) + '%';
+  if (barP) barP.style.width = principalPct.toFixed(1) + '%';
+  if (barI) barI.style.width = interestPct.toFixed(1) + '%';
+}
+
+function resetCompoundInterest() {
+  const pEl = document.getElementById('ci-principal');
+  const rEl = document.getElementById('ci-rate');
+  const tEl = document.getElementById('ci-time');
+  const fEl = document.getElementById('ci-freq');
+  if (pEl) pEl.value = '100000';
+  if (rEl) rEl.value = '8.0';
+  if (tEl) tEl.value = '5';
+  if (fEl) fEl.value = '4';
+  calculateCompoundInterest();
+}
+
+// ================= 9. PROFIT & LOSS CALCULATOR =================
+function calculateProfitLoss() {
+  const cpEl = document.getElementById('pl-cost-price');
+  const spEl = document.getElementById('pl-selling-price');
+  const ovEl = document.getElementById('pl-overhead');
+  if (!cpEl || !spEl) return;
+
+  const cp = Math.max(0, parseFloat(cpEl.value) || 0);
+  const sp = Math.max(0, parseFloat(spEl.value) || 0);
+  const ov = Math.max(0, parseFloat(ovEl ? ovEl.value : 0) || 0);
+  const totalCost = cp + ov;
+
+  const amountValEl = document.getElementById('pl-amount-val');
+  const badgeEl = document.getElementById('pl-badge');
+  const pctValEl = document.getElementById('pl-pct-val');
+  const marginValEl = document.getElementById('pl-margin-val');
+  const totalCostValEl = document.getElementById('pl-total-cost-val');
+  const markupValEl = document.getElementById('pl-markup-val');
+
+  if (totalCostValEl) totalCostValEl.textContent = formatINR(totalCost);
+
+  if (totalCost === 0 && sp === 0) {
+    if (amountValEl) amountValEl.textContent = '₹0.00';
+    if (badgeEl) { badgeEl.textContent = 'BREAK-EVEN'; badgeEl.className = 'category-badge badge-even'; }
+    if (pctValEl) pctValEl.textContent = '0.00%';
+    if (marginValEl) marginValEl.textContent = '0.00%';
+    if (markupValEl) markupValEl.textContent = '0.00%';
+    return;
+  }
+
+  const diff = sp - totalCost;
+
+  if (diff > 0) {
+    const profitPct = totalCost > 0 ? (diff / totalCost) * 100 : 0;
+    const marginPct = sp > 0 ? (diff / sp) * 100 : 0;
+    const markupPct = totalCost > 0 ? (diff / totalCost) * 100 : 0;
+
+    if (amountValEl) {
+      amountValEl.textContent = `+${formatINR(diff)}`;
+      amountValEl.className = 'highlight-number text-emerald';
+    }
+    if (badgeEl) {
+      badgeEl.textContent = 'PROFIT';
+      badgeEl.className = 'category-badge badge-profit';
+    }
+    if (pctValEl) {
+      pctValEl.textContent = `+${profitPct.toFixed(2)}%`;
+      pctValEl.className = 'metric-value text-emerald';
+    }
+    if (marginValEl) marginValEl.textContent = `${marginPct.toFixed(2)}%`;
+    if (markupValEl) markupValEl.textContent = `${markupPct.toFixed(2)}%`;
+  } else if (diff < 0) {
+    const loss = Math.abs(diff);
+    const lossPct = totalCost > 0 ? (loss / totalCost) * 100 : 0;
+    const marginPct = sp > 0 ? (diff / sp) * 100 : 0;
+    const markupPct = totalCost > 0 ? (diff / totalCost) * 100 : 0;
+
+    if (amountValEl) {
+      amountValEl.textContent = `-${formatINR(loss)}`;
+      amountValEl.className = 'highlight-number text-rose';
+    }
+    if (badgeEl) {
+      badgeEl.textContent = 'LOSS';
+      badgeEl.className = 'category-badge badge-loss';
+    }
+    if (pctValEl) {
+      pctValEl.textContent = `-${lossPct.toFixed(2)}%`;
+      pctValEl.className = 'metric-value text-rose';
+    }
+    if (marginValEl) marginValEl.textContent = `${marginPct.toFixed(2)}%`;
+    if (markupValEl) markupValEl.textContent = `${markupPct.toFixed(2)}%`;
+  } else {
+    if (amountValEl) {
+      amountValEl.textContent = '₹0.00';
+      amountValEl.className = 'highlight-number text-muted';
+    }
+    if (badgeEl) {
+      badgeEl.textContent = 'BREAK-EVEN';
+      badgeEl.className = 'category-badge badge-even';
+    }
+    if (pctValEl) {
+      pctValEl.textContent = '0.00%';
+      pctValEl.className = 'metric-value';
+    }
+    if (marginValEl) marginValEl.textContent = '0.00%';
+    if (markupValEl) markupValEl.textContent = '0.00%';
+  }
+}
+
+function resetProfitLoss() {
+  const cpEl = document.getElementById('pl-cost-price');
+  const spEl = document.getElementById('pl-selling-price');
+  const ovEl = document.getElementById('pl-overhead');
+  if (cpEl) cpEl.value = '1200';
+  if (spEl) spEl.value = '1500';
+  if (ovEl) ovEl.value = '0';
+  calculateProfitLoss();
+}
+
+// ================= 10. SIP CALCULATOR =================
+function calculateSip() {
+  const mEl = document.getElementById('sip-monthly');
+  const rEl = document.getElementById('sip-rate');
+  const yEl = document.getElementById('sip-years');
+  if (!mEl || !rEl || !yEl) return;
+
+  const P = Math.max(0, parseFloat(mEl.value) || 0);
+  const annualRate = Math.max(0, parseFloat(rEl.value) || 0);
+  const years = Math.max(0, parseFloat(yEl.value) || 0);
+  const months = Math.round(years * 12);
+  const i = (annualRate / 12) / 100;
+
+  const invested = P * months;
+  let maturity = 0;
+  if (i > 0 && months > 0) {
+    maturity = P * ((Math.pow(1 + i, months) - 1) / i) * (1 + i);
+  } else {
+    maturity = invested;
+  }
+  const returns = Math.max(0, maturity - invested);
+  const multiplier = invested > 0 ? (maturity / invested).toFixed(2) : '1.00';
+
+  const totalValEl = document.getElementById('sip-total-val');
+  const investedValEl = document.getElementById('sip-invested-val');
+  const returnsValEl = document.getElementById('sip-returns-val');
+  const multValEl = document.getElementById('sip-mult-val');
+  const monthsSubEl = document.getElementById('sip-months-sub');
+
+  if (totalValEl) totalValEl.textContent = formatINR(maturity);
+  if (investedValEl) investedValEl.textContent = formatINR(invested);
+  if (returnsValEl) returnsValEl.textContent = formatINR(returns);
+  if (multValEl) multValEl.textContent = `${multiplier}x wealth multiplier`;
+  if (monthsSubEl) monthsSubEl.textContent = `${months} monthly installments of ${formatINR(P)}`;
+
+  let invPct = maturity > 0 ? (invested / maturity) * 100 : 100;
+  let retPct = maturity > 0 ? (returns / maturity) * 100 : 0;
+
+  const barInvPct = document.getElementById('sip-bar-invested-pct');
+  const barRetPct = document.getElementById('sip-bar-returns-pct');
+  const barInv = document.getElementById('sip-bar-invested');
+  const barRet = document.getElementById('sip-bar-returns');
+
+  if (barInvPct) barInvPct.textContent = invPct.toFixed(1) + '%';
+  if (barRetPct) barRetPct.textContent = retPct.toFixed(1) + '%';
+  if (barInv) barInv.style.width = invPct.toFixed(1) + '%';
+  if (barRet) barRet.style.width = retPct.toFixed(1) + '%';
+}
+
+function resetSip() {
+  const mEl = document.getElementById('sip-monthly');
+  const rEl = document.getElementById('sip-rate');
+  const yEl = document.getElementById('sip-years');
+  if (mEl) mEl.value = '5000';
+  if (rEl) rEl.value = '12';
+  if (yEl) yEl.value = '10';
+  calculateSip();
+}
+
+// ================= 11. FD CALCULATOR =================
+function calculateFd() {
+  const depEl = document.getElementById('fd-deposit');
+  const rateEl = document.getElementById('fd-rate');
+  const yEl = document.getElementById('fd-years');
+  const mEl = document.getElementById('fd-months');
+  const fEl = document.getElementById('fd-freq');
+  if (!depEl || !rateEl || !yEl || !mEl || !fEl) return;
+
+  const P = Math.max(0, parseFloat(depEl.value) || 0);
+  const r = Math.max(0, parseFloat(rateEl.value) || 0) / 100;
+  const years = Math.max(0, parseFloat(yEl.value) || 0);
+  const months = Math.max(0, parseFloat(mEl.value) || 0);
+  const t = years + (months / 12);
+  const n = parseInt(fEl.value, 10) || 4;
+
+  let maturity = 0;
+  if (P > 0 && t > 0) {
+    maturity = P * Math.pow(1 + (r / n), n * t);
+  } else {
+    maturity = P;
+  }
+  const interest = Math.max(0, maturity - P);
+  const roi = P > 0 ? (interest / P) * 100 : 0;
+
+  const matValEl = document.getElementById('fd-maturity-val');
+  const intValEl = document.getElementById('fd-interest-val');
+  const roiValEl = document.getElementById('fd-roi-val');
+  const princValEl = document.getElementById('fd-principal-val');
+
+  if (matValEl) matValEl.textContent = formatINR(maturity);
+  if (intValEl) intValEl.textContent = formatINR(interest);
+  if (roiValEl) roiValEl.textContent = `${roi.toFixed(2)}% aggregate growth`;
+  if (princValEl) princValEl.textContent = formatINR(P);
+
+  let princPct = maturity > 0 ? (P / maturity) * 100 : 100;
+  let intPct = maturity > 0 ? (interest / maturity) * 100 : 0;
+
+  const barPPct = document.getElementById('fd-bar-principal-pct');
+  const barIPct = document.getElementById('fd-bar-interest-pct');
+  const barP = document.getElementById('fd-bar-principal');
+  const barI = document.getElementById('fd-bar-interest');
+
+  if (barPPct) barPPct.textContent = princPct.toFixed(1) + '%';
+  if (barIPct) barIPct.textContent = intPct.toFixed(1) + '%';
+  if (barP) barP.style.width = princPct.toFixed(1) + '%';
+  if (barI) barI.style.width = intPct.toFixed(1) + '%';
+}
+
+function resetFd() {
+  const depEl = document.getElementById('fd-deposit');
+  const rateEl = document.getElementById('fd-rate');
+  const yEl = document.getElementById('fd-years');
+  const mEl = document.getElementById('fd-months');
+  const fEl = document.getElementById('fd-freq');
+  if (depEl) depEl.value = '100000';
+  if (rateEl) rateEl.value = '7.0';
+  if (yEl) yEl.value = '3';
+  if (mEl) mEl.value = '0';
+  if (fEl) fEl.value = '4';
+  calculateFd();
+}
+
+// ================= 12. DATE DIFFERENCE CALCULATOR =================
+function setDatePreset(days) {
+  const startEl = document.getElementById('date-diff-start');
+  const endEl = document.getElementById('date-diff-end');
+  if (!startEl || !endEl) return;
+
+  const startDate = startEl.value ? new Date(startEl.value) : new Date();
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + days);
+
+  endEl.value = endDate.toISOString().split('T')[0];
+  calculateDateDiff();
+}
+
+function calculateDateDiff() {
+  const startEl = document.getElementById('date-diff-start');
+  const endEl = document.getElementById('date-diff-end');
+  const incEndEl = document.getElementById('date-diff-include-end');
+  if (!startEl || !endEl) return;
+
+  if (!startEl.value || !endEl.value) return;
+
+  let d1 = new Date(startEl.value + 'T00:00:00');
+  let d2 = new Date(endEl.value + 'T00:00:00');
+
+  let isReversed = false;
+  if (d1 > d2) {
+    const tmp = d1;
+    d1 = d2;
+    d2 = tmp;
+    isReversed = true;
+  }
+
+  const includeEnd = incEndEl ? incEndEl.checked : false;
+
+  let y1 = d1.getFullYear(), m1 = d1.getMonth(), day1 = d1.getDate();
+  let y2 = d2.getFullYear(), m2 = d2.getMonth(), day2 = d2.getDate();
+
+  let diffYears = y2 - y1;
+  let diffMonths = m2 - m1;
+  let diffDays = day2 - day1;
+
+  if (diffDays < 0) {
+    diffMonths--;
+    const prevMonthLastDay = new Date(y2, m2, 0).getDate();
+    diffDays += prevMonthLastDay;
+  }
+  if (diffMonths < 0) {
+    diffYears--;
+    diffMonths += 12;
+  }
+
+  if (includeEnd) {
+    diffDays++;
+    const currentMonthLastDay = new Date(y2, m2 + 1, 0).getDate();
+    if (diffDays >= currentMonthLastDay) {
+      diffDays = 0;
+      diffMonths++;
+      if (diffMonths >= 12) {
+        diffMonths = 0;
+        diffYears++;
+      }
+    }
+  }
+
+  const oneDayMs = 24 * 60 * 60 * 1000;
+  let totalDays = Math.round((d2 - d1) / oneDayMs) + (includeEnd ? 1 : 0);
+
+  let weekdays = 0;
+  let weekends = 0;
+  let cur = new Date(d1);
+  const endCheck = new Date(d2);
+  if (!includeEnd) {
+    endCheck.setDate(endCheck.getDate() - 1);
+  }
+
+  while (cur <= endCheck) {
+    const dayOfWeek = cur.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      weekends++;
+    } else {
+      weekdays++;
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  const totalWeeks = Math.floor(totalDays / 7);
+  const remDays = totalDays % 7;
+  const totalHours = totalDays * 24;
+  const totalMinutes = totalHours * 60;
+
+  const exactEl = document.getElementById('date-diff-exact-val');
+  const daysEl = document.getElementById('date-diff-days-val');
+  const weeksEl = document.getElementById('date-diff-weeks-val');
+  const weekdaysEl = document.getElementById('date-diff-weekdays-val');
+  const weekendsEl = document.getElementById('date-diff-weekends-val');
+  const hoursEl = document.getElementById('date-diff-hours-val');
+  const minsEl = document.getElementById('date-diff-mins-val');
+  const leapEl = document.getElementById('date-diff-leap-val');
+
+  const exactStr = `${diffYears} Year${diffYears !== 1 ? 's' : ''}, ${diffMonths} Month${diffMonths !== 1 ? 's' : ''}, ${diffDays} Day${diffDays !== 1 ? 's' : ''}${isReversed ? ' (earlier)' : ''}`;
+
+  if (exactEl) exactEl.textContent = exactStr;
+  if (daysEl) daysEl.textContent = `${totalDays.toLocaleString()} Days`;
+  if (weeksEl) weeksEl.textContent = `${totalWeeks.toLocaleString()} Weeks and ${remDays} Day${remDays !== 1 ? 's' : ''}`;
+  if (weekdaysEl) weekdaysEl.textContent = `${weekdays.toLocaleString()} Weekdays`;
+  if (weekendsEl) weekendsEl.textContent = `${weekends.toLocaleString()} Weekend Days`;
+  if (hoursEl) hoursEl.textContent = `${totalHours.toLocaleString()} Hours`;
+  if (minsEl) minsEl.textContent = `${totalMinutes.toLocaleString()} Minutes`;
+  if (leapEl) {
+    let hasLeap = false;
+    for (let y = y1; y <= y2; y++) {
+      if ((y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0)) {
+        const leapDay = new Date(y, 1, 29);
+        if (leapDay >= d1 && leapDay <= d2) hasLeap = true;
+      }
+    }
+    leapEl.textContent = hasLeap ? 'Includes Leap Year (Feb 29)' : 'Standard calendar interval';
+  }
+}
+
+function resetDateDiff() {
+  const startEl = document.getElementById('date-diff-start');
+  const endEl = document.getElementById('date-diff-end');
+  const incEndEl = document.getElementById('date-diff-include-end');
+  const today = new Date();
+  const nextYear = new Date(today);
+  nextYear.setFullYear(nextYear.getFullYear() + 1);
+
+  if (startEl) startEl.value = today.toISOString().split('T')[0];
+  if (endEl) endEl.value = nextYear.toISOString().split('T')[0];
+  if (incEndEl) incEndEl.checked = false;
+  calculateDateDiff();
+}
+
+// ================= 13. TIME CALCULATOR =================
+let currentTimeTab = 0;
+let currentTimeOp = 'add';
+
+function switchTimeTab(index) {
+  currentTimeTab = index;
+  const tabs = [
+    document.getElementById('time-tab-0'),
+    document.getElementById('time-tab-1'),
+    document.getElementById('time-tab-2')
+  ];
+  const panes = [
+    document.getElementById('time-pane-0'),
+    document.getElementById('time-pane-1'),
+    document.getElementById('time-pane-2')
+  ];
+  tabs.forEach((t, i) => {
+    if (t) {
+      if (i === index) t.classList.add('active');
+      else t.classList.remove('active');
+    }
+  });
+  panes.forEach((p, i) => {
+    if (p) {
+      if (i === index) p.classList.add('active');
+      else p.classList.remove('active');
+    }
+  });
+
+  if (index === 0) calculateTime();
+  else if (index === 1) calculateTimeAddSub();
+  else calculateTimeUnit();
+}
+
+function setTimeOp(op) {
+  currentTimeOp = op;
+  const addBtn = document.getElementById('time-op-add');
+  const subBtn = document.getElementById('time-op-sub');
+  if (op === 'add') {
+    if (addBtn) addBtn.classList.add('active');
+    if (subBtn) subBtn.classList.remove('active');
+  } else {
+    if (subBtn) subBtn.classList.add('active');
+    if (addBtn) addBtn.classList.remove('active');
+  }
+  calculateTimeAddSub();
+}
+
+function calculateTime() {
+  const startEl = document.getElementById('time-m1-start');
+  const endEl = document.getElementById('time-m1-end');
+  const nextDayEl = document.getElementById('time-m1-next-day');
+  if (!startEl || !endEl) return;
+
+  const sVal = startEl.value;
+  const eVal = endEl.value;
+  if (!sVal || !eVal) return;
+
+  const [sh, sm] = sVal.split(':').map(Number);
+  const [eh, em] = eVal.split(':').map(Number);
+
+  let startSec = (sh * 3600) + (sm * 60);
+  let endSec = (eh * 3600) + (em * 60);
+
+  if (nextDayEl && nextDayEl.checked) {
+    endSec += 24 * 3600;
+  } else if (endSec < startSec) {
+    endSec += 24 * 3600;
+  }
+
+  const diffSec = endSec - startSec;
+  renderTimeResult(diffSec);
+}
+
+function calculateTimeAddSub() {
+  const h1 = parseInt(document.getElementById('time-m2-h1')?.value || 0, 10);
+  const m1 = parseInt(document.getElementById('time-m2-m1')?.value || 0, 10);
+  const s1 = parseInt(document.getElementById('time-m2-s1')?.value || 0, 10);
+
+  const h2 = parseInt(document.getElementById('time-m2-h2')?.value || 0, 10);
+  const m2 = parseInt(document.getElementById('time-m2-m2')?.value || 0, 10);
+  const s2 = parseInt(document.getElementById('time-m2-s2')?.value || 0, 10);
+
+  const sec1 = (h1 * 3600) + (m1 * 60) + s1;
+  const sec2 = (h2 * 3600) + (m2 * 60) + s2;
+
+  let totalSec = currentTimeOp === 'add' ? (sec1 + sec2) : (sec1 - sec2);
+  renderTimeResult(totalSec);
+}
+
+function calculateTimeUnit() {
+  const valEl = document.getElementById('time-m3-val');
+  const unitEl = document.getElementById('time-m3-unit');
+  if (!valEl || !unitEl) return;
+
+  const val = parseFloat(valEl.value) || 0;
+  const unit = unitEl.value;
+  let sec = 0;
+  if (unit === 'hours') sec = val * 3600;
+  else if (unit === 'minutes') sec = val * 60;
+  else if (unit === 'seconds') sec = val;
+  else if (unit === 'days') sec = val * 86400;
+
+  renderTimeResult(Math.round(sec));
+}
+
+function renderTimeResult(totalSeconds) {
+  const isNegative = totalSeconds < 0;
+  const absSec = Math.abs(totalSeconds);
+
+  const h = Math.floor(absSec / 3600);
+  const m = Math.floor((absSec % 3600) / 60);
+  const s = absSec % 60;
+
+  const decimalHours = (absSec / 3600) * (isNegative ? -1 : 1);
+  const totalMins = (absSec / 60) * (isNegative ? -1 : 1);
+
+  const resValEl = document.getElementById('time-res-val');
+  const resSubEl = document.getElementById('time-res-sub');
+  const resDecEl = document.getElementById('time-res-decimal');
+  const resMinsEl = document.getElementById('time-res-mins');
+  const resSecsEl = document.getElementById('time-res-secs');
+
+  const prefix = isNegative ? '-' : '';
+  if (resValEl) resValEl.textContent = `${prefix}${h}h ${m}m ${s > 0 ? s + 's' : ''}`.trim();
+  if (resSubEl) resSubEl.textContent = `${prefix}${h} Hours, ${m} Minutes, ${s} Seconds`;
+  if (resDecEl) resDecEl.textContent = `${decimalHours.toFixed(2)} Hours`;
+  if (resMinsEl) resMinsEl.textContent = `${Math.round(totalMins).toLocaleString()} Minutes`;
+  if (resSecsEl) resSecsEl.textContent = `${(totalSeconds).toLocaleString()} Total Seconds`;
+}
+
+function resetTime() {
+  const startEl = document.getElementById('time-m1-start');
+  const endEl = document.getElementById('time-m1-end');
+  const nextDayEl = document.getElementById('time-m1-next-day');
+  if (startEl) startEl.value = '09:15';
+  if (endEl) endEl.value = '17:45';
+  if (nextDayEl) nextDayEl.checked = false;
+  calculateTime();
+}
+
+function resetTimeAddSub() {
+  if (document.getElementById('time-m2-h1')) document.getElementById('time-m2-h1').value = '4';
+  if (document.getElementById('time-m2-m1')) document.getElementById('time-m2-m1').value = '45';
+  if (document.getElementById('time-m2-s1')) document.getElementById('time-m2-s1').value = '0';
+  if (document.getElementById('time-m2-h2')) document.getElementById('time-m2-h2').value = '2';
+  if (document.getElementById('time-m2-m2')) document.getElementById('time-m2-m2').value = '30';
+  if (document.getElementById('time-m2-s2')) document.getElementById('time-m2-s2').value = '0';
+  setTimeOp('add');
+}
+
+// ================= 14. UNIT CONVERTER =================
+const UC_DEFINITIONS = {
+  length: {
+    base: 'm',
+    units: {
+      m: { name: 'Meters (m)', factor: 1 },
+      km: { name: 'Kilometers (km)', factor: 1000 },
+      cm: { name: 'Centimeters (cm)', factor: 0.01 },
+      mm: { name: 'Millimeters (mm)', factor: 0.001 },
+      mi: { name: 'Miles (mi)', factor: 1609.344 },
+      yd: { name: 'Yards (yd)', factor: 0.9144 },
+      ft: { name: 'Feet (ft)', factor: 0.3048 },
+      in: { name: 'Inches (in)', factor: 0.0254 }
+    },
+    defaultFrom: 'm',
+    defaultTo: 'ft'
+  },
+  weight: {
+    base: 'kg',
+    units: {
+      kg: { name: 'Kilograms (kg)', factor: 1 },
+      g: { name: 'Grams (g)', factor: 0.001 },
+      mg: { name: 'Milligrams (mg)', factor: 0.000001 },
+      lb: { name: 'Pounds (lbs)', factor: 0.45359237 },
+      oz: { name: 'Ounces (oz)', factor: 0.028349523125 },
+      ton: { name: 'Metric Tons (t)', factor: 1000 }
+    },
+    defaultFrom: 'kg',
+    defaultTo: 'lb'
+  },
+  temperature: {
+    isSpecial: true,
+    units: {
+      c: { name: 'Celsius (°C)' },
+      f: { name: 'Fahrenheit (°F)' },
+      k: { name: 'Kelvin (K)' }
+    },
+    defaultFrom: 'c',
+    defaultTo: 'f'
+  },
+  area: {
+    base: 'sqm',
+    units: {
+      sqm: { name: 'Square Meters (m²)', factor: 1 },
+      sqkm: { name: 'Square Kilometers (km²)', factor: 1000000 },
+      sqft: { name: 'Square Feet (ft²)', factor: 0.09290304 },
+      sqyd: { name: 'Square Yards (yd²)', factor: 0.83612736 },
+      acre: { name: 'Acres (ac)', factor: 4046.8564224 },
+      hectare: { name: 'Hectares (ha)', factor: 10000 }
+    },
+    defaultFrom: 'sqm',
+    defaultTo: 'sqft'
+  },
+  speed: {
+    base: 'kmh',
+    units: {
+      kmh: { name: 'Kilometers per hour (km/h)', factor: 1 },
+      mph: { name: 'Miles per hour (mph)', factor: 1.609344 },
+      ms: { name: 'Meters per second (m/s)', factor: 3.6 },
+      knot: { name: 'Knots (kn)', factor: 1.852 }
+    },
+    defaultFrom: 'kmh',
+    defaultTo: 'mph'
+  },
+  volume: {
+    base: 'l',
+    units: {
+      l: { name: 'Liters (L)', factor: 1 },
+      ml: { name: 'Milliliters (mL)', factor: 0.001 },
+      cum: { name: 'Cubic Meters (m³)', factor: 1000 },
+      gal: { name: 'US Gallons (gal)', factor: 3.785411784 },
+      floz: { name: 'US Fluid Ounces (fl oz)', factor: 0.0295735295625 }
+    },
+    defaultFrom: 'l',
+    defaultTo: 'gal'
+  }
+};
+
+function changeUcCategory() {
+  const cat = document.getElementById('uc-category')?.value || 'length';
+  const def = UC_DEFINITIONS[cat];
+  if (!def) return;
+
+  const fromSel = document.getElementById('uc-from');
+  const toSel = document.getElementById('uc-to');
+  if (!fromSel || !toSel) return;
+
+  fromSel.innerHTML = '';
+  toSel.innerHTML = '';
+
+  Object.keys(def.units).forEach(key => {
+    const opt1 = document.createElement('option');
+    opt1.value = key;
+    opt1.textContent = def.units[key].name;
+    fromSel.appendChild(opt1);
+
+    const opt2 = document.createElement('option');
+    opt2.value = key;
+    opt2.textContent = def.units[key].name;
+    toSel.appendChild(opt2);
+  });
+
+  fromSel.value = def.defaultFrom;
+  toSel.value = def.defaultTo;
+  convertUnits();
+}
+
+function swapUnits() {
+  const fromSel = document.getElementById('uc-from');
+  const toSel = document.getElementById('uc-to');
+  if (!fromSel || !toSel) return;
+  const tmp = fromSel.value;
+  fromSel.value = toSel.value;
+  toSel.value = tmp;
+  convertUnits();
+}
+
+function convertUnits() {
+  const cat = document.getElementById('uc-category')?.value || 'length';
+  const valEl = document.getElementById('uc-value');
+  const fromSel = document.getElementById('uc-from');
+  const toSel = document.getElementById('uc-to');
+  if (!valEl || !fromSel || !toSel) return;
+
+  const val = parseFloat(valEl.value) || 0;
+  const from = fromSel.value;
+  const to = toSel.value;
+  const def = UC_DEFINITIONS[cat];
+  if (!def) return;
+
+  let result = 0;
+  let formulaText = '';
+
+  if (cat === 'temperature') {
+    let celsius = 0;
+    if (from === 'c') celsius = val;
+    else if (from === 'f') celsius = (val - 32) * (5 / 9);
+    else if (from === 'k') celsius = val - 273.15;
+
+    if (to === 'c') result = celsius;
+    else if (to === 'f') result = (celsius * (9 / 5)) + 32;
+    else if (to === 'k') result = celsius + 273.15;
+
+    formulaText = `${val} ${def.units[from].name} = ${result.toFixed(4).replace(/\.?0+$/, '')} ${def.units[to].name}`;
+  } else {
+    const fromFactor = def.units[from].factor;
+    const toFactor = def.units[to].factor;
+    const inBase = val * fromFactor;
+    result = inBase / toFactor;
+    const mult = fromFactor / toFactor;
+    formulaText = `${val} ${def.units[from].name.split(' ')[0]} = ${formatUnitNum(result)} ${def.units[to].name.split(' ')[0]} (Factor: ×${formatUnitNum(mult)})`;
+  }
+
+  const resValEl = document.getElementById('uc-res-val');
+  const resFormEl = document.getElementById('uc-res-formula');
+  if (resValEl) {
+    const toUnitName = def.units[to].name;
+    resValEl.textContent = `${formatUnitNum(result)} ${toUnitName.split(' ')[0]}`;
+  }
+  if (resFormEl) resFormEl.textContent = formulaText;
+
+  const tableBody = document.getElementById('uc-table-body');
+  if (tableBody) {
+    let rowsHtml = '';
+    Object.keys(def.units).forEach(key => {
+      let rowVal = 0;
+      if (cat === 'temperature') {
+        let c = 0;
+        if (from === 'c') c = val;
+        else if (from === 'f') c = (val - 32) * (5 / 9);
+        else if (from === 'k') c = val - 273.15;
+
+        if (key === 'c') rowVal = c;
+        else if (key === 'f') rowVal = (c * (9 / 5)) + 32;
+        else if (key === 'k') rowVal = c + 273.15;
+      } else {
+        const fromFactor = def.units[from].factor;
+        const keyFactor = def.units[key].factor;
+        rowVal = (val * fromFactor) / keyFactor;
+      }
+      const isSelected = key === to ? 'style="font-weight:700; color:var(--primary); background:var(--primary-bg);"' : '';
+      rowsHtml += `<tr ${isSelected}>
+        <td>${def.units[key].name}</td>
+        <td>${formatUnitNum(rowVal)}</td>
+      </tr>`;
+    });
+    tableBody.innerHTML = rowsHtml;
+  }
+}
+
+function formatUnitNum(num) {
+  if (Math.abs(num) >= 1e9 || (Math.abs(num) < 1e-4 && num !== 0)) {
+    return num.toExponential(4);
+  }
+  return parseFloat(num.toFixed(6)).toLocaleString('en-US', { maximumFractionDigits: 6 });
+}
+
+function resetUnits() {
+  const valEl = document.getElementById('uc-value');
+  if (valEl) valEl.value = '10';
+  changeUcCategory();
+}
+
+// ================= 15. AVERAGE CALCULATOR =================
+function setAvgSample(type) {
+  const inputEl = document.getElementById('avg-input');
+  if (!inputEl) return;
+  if (type === 'integers') {
+    inputEl.value = '1, 2, 3, 4, 5, 6, 7, 8, 9, 10';
+  } else if (type === 'scores') {
+    inputEl.value = '78, 85, 92, 65, 88, 95, 82, 90, 74, 88';
+  } else if (type === 'temps') {
+    inputEl.value = '28.5, 30.2, 31.0, 29.4, 27.8, 32.1, 30.5';
+  }
+  calculateAverage();
+}
+
+function calculateAverage() {
+  const inputEl = document.getElementById('avg-input');
+  const errEl = document.getElementById('avg-error');
+  if (!inputEl) return;
+
+  const raw = inputEl.value;
+  const tokens = raw.split(/[\s,;\n\r]+/).map(s => s.trim()).filter(Boolean);
+  const nums = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const n = parseFloat(tokens[i]);
+    if (!isNaN(n)) nums.push(n);
+  }
+
+  if (nums.length === 0) {
+    if (errEl) {
+      errEl.textContent = 'Please enter at least one valid number.';
+      errEl.style.display = 'block';
+    }
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+
+  const sorted = [...nums].sort((a, b) => a - b);
+  const count = sorted.length;
+  const sum = sorted.reduce((acc, curr) => acc + curr, 0);
+  const mean = sum / count;
+
+  let median = 0;
+  const mid = Math.floor(count / 2);
+  if (count % 2 !== 0) {
+    median = sorted[mid];
+  } else {
+    median = (sorted[mid - 1] + sorted[mid]) / 2;
+  }
+
+  const freqMap = {};
+  let maxFreq = 0;
+  sorted.forEach(num => {
+    freqMap[num] = (freqMap[num] || 0) + 1;
+    if (freqMap[num] > maxFreq) maxFreq = freqMap[num];
+  });
+
+  let modeText = 'No Mode (All Unique)';
+  if (maxFreq > 1) {
+    const modes = Object.keys(freqMap).filter(k => freqMap[k] === maxFreq).map(Number);
+    if (modes.length === count) {
+      modeText = 'No Mode (All Equal)';
+    } else if (modes.length <= 4) {
+      modeText = modes.join(', ') + ` (${maxFreq}×)`;
+    } else {
+      modeText = `Multimodal (${modes.length} modes)`;
+    }
+  }
+
+  const min = sorted[0];
+  const max = sorted[count - 1];
+  const range = max - min;
+
+  let sampleStd = 0;
+  let popStd = 0;
+  if (count > 1) {
+    const varianceSum = sorted.reduce((acc, curr) => acc + Math.pow(curr - mean, 2), 0);
+    sampleStd = Math.sqrt(varianceSum / (count - 1));
+    popStd = Math.sqrt(varianceSum / count);
+  }
+
+  let geoMeanText = 'N/A (Requires > 0)';
+  const allPositive = sorted.every(n => n > 0);
+  if (allPositive) {
+    const logSum = sorted.reduce((acc, curr) => acc + Math.log(curr), 0);
+    const geoMean = Math.exp(logSum / count);
+    geoMeanText = geoMean.toFixed(2);
+  }
+
+  const meanEl = document.getElementById('avg-mean-val');
+  const medianEl = document.getElementById('avg-median-val');
+  const modeEl = document.getElementById('avg-mode-val');
+  const sumEl = document.getElementById('avg-sum-val');
+  const countEl = document.getElementById('avg-count-val');
+  const rangeEl = document.getElementById('avg-range-val');
+  const minMaxEl = document.getElementById('avg-minmax-sub');
+  const stdEl = document.getElementById('avg-std-val');
+  const popStdEl = document.getElementById('avg-popstd-sub');
+  const geoMeanEl = document.getElementById('avg-geomean-val');
+  const pillsEl = document.getElementById('avg-sorted-pills');
+
+  if (meanEl) meanEl.textContent = mean.toFixed(2);
+  if (medianEl) medianEl.textContent = median.toFixed(2);
+  if (modeEl) modeEl.textContent = modeText;
+  if (sumEl) sumEl.textContent = sum.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  if (countEl) countEl.textContent = `Count (n): ${count} number${count !== 1 ? 's' : ''}`;
+  if (rangeEl) rangeEl.textContent = `Range: ${range.toFixed(2)}`;
+  if (minMaxEl) minMaxEl.textContent = `Min: ${min} | Max: ${max}`;
+  if (stdEl) stdEl.textContent = sampleStd.toFixed(2);
+  if (popStdEl) popStdEl.textContent = `Population σ: ${popStd.toFixed(2)}`;
+  if (geoMeanEl) geoMeanEl.textContent = geoMeanText;
+
+  if (pillsEl) {
+    pillsEl.innerHTML = sorted.map(n => `<span class="data-num-pill">${n}</span>`).join('');
+  }
+}
+
+function resetAverage() {
+  const inputEl = document.getElementById('avg-input');
+  if (inputEl) inputEl.value = '';
+  calculateAverage();
 }

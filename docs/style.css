@@ -1129,3 +1129,91 @@ input, textarea, select {
   padding-top: 14px;
   border-top: 1px solid var(--surface-border);
 }
+
+/* Helper styles for new calculators */
+.badge-profit { background: var(--emerald-100); color: var(--emerald-600); }
+.badge-loss { background: var(--rose-100); color: var(--rose-600); }
+.badge-even { background: var(--slate-200); color: var(--slate-700); }
+
+.unit-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.unit-col {
+  flex: 1;
+}
+
+.icon-swap-btn {
+  background: var(--bg-color);
+  border: 1px solid var(--surface-border);
+  color: var(--primary);
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.icon-swap-btn:active {
+  background: var(--primary-bg);
+}
+
+.data-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 14px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.data-table th,
+.data-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.data-table th {
+  background: var(--bg-color);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.data-table tr:hover {
+  background: var(--primary-bg);
+}
+
+.data-pills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.data-num-pill {
+  background: var(--bg-color);
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+}

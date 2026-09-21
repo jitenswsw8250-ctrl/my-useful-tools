@@ -48,6 +48,86 @@
     <priority>0.9</priority>
   </url>
 
+  <!-- 6. GST Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#gst</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 7. Simple Interest Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#simple-interest</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 8. Compound Interest Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#compound-interest</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 9. Profit & Loss Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#profit-loss</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 10. SIP Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#sip</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 11. FD Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#fd</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 12. Date Difference Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#date-difference</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 13. Time Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#time</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 14. Unit Converter -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#unit-converter</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 15. Average Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#average</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
   <!-- About Us -->
   <url>
     <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#about</loc>
