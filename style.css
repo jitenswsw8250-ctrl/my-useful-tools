@@ -974,6 +974,74 @@ input, textarea, select {
   margin-bottom: 4px;
 }
 
+.prose-card ol {
+  padding-left: 20px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.prose-card ol li {
+  margin-bottom: 6px;
+  padding-left: 4px;
+}
+
+.prose-card .example-box {
+  background: var(--bg-body);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--primary);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 12px 0 16px;
+  font-size: 0.92rem;
+  color: var(--text-main);
+}
+
+.prose-card .example-box p {
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+
+.prose-card .example-box p:last-child {
+  margin-bottom: 0;
+}
+
+.prose-card .faq-group {
+  margin-top: 10px;
+}
+
+.prose-card .faq-item {
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 0;
+}
+
+.prose-card .faq-item:last-child {
+  border-bottom: none;
+}
+
+.prose-card .faq-q {
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+  font-size: 0.96rem;
+}
+
+.prose-card .faq-a {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.prose-card .disclaimer-note {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 14px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-color);
+  line-height: 1.5;
+}
+
 /* ================= BANNERS ================= */
 .error-banner {
   background: var(--rose-100);
