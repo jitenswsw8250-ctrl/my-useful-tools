@@ -222,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   parseInitialRoute();
+  initSearchTools();
 });
 
 // ================= THEME TOGGLE =================
@@ -537,6 +538,142 @@ function handleShare() {
   } else {
     prompt('Copy website link:', window.location.href);
   }
+}
+
+// ================= SEARCH TOOLS =================
+function initSearchTools() {
+  const searchInput = document.getElementById('tool-search-input');
+  const clearBtn = document.getElementById('search-clear-btn');
+  const searchBtn = document.getElementById('search-btn');
+  const noToolsFound = document.getElementById('no-tools-found');
+  const toolsGrid = document.querySelector('.tools-grid') || document.getElementById('tools-grid');
+
+  if (!searchInput || !toolsGrid) return;
+
+  const cards = Array.from(toolsGrid.querySelectorAll('.tool-card'));
+
+  const toolItems = cards.map(card => {
+    const titleEl = card.querySelector('.tool-title');
+    const descEl = card.querySelector('.tool-desc');
+    const tagsEls = card.querySelectorAll('.tool-tags .tag');
+
+    const title = titleEl ? titleEl.textContent.trim() : '';
+    const desc = descEl ? descEl.textContent.trim() : '';
+    const tags = Array.from(tagsEls).map(t => t.textContent.trim()).join(' ');
+
+    const onclickAttr = card.getAttribute('onclick') || '';
+    const match = onclickAttr.match(/navigateTo\('([^']+)'\)/);
+    const toolId = match ? match[1] : '';
+
+    const tLower = title.toLowerCase();
+    const aliases = [];
+
+    // Specific aliases and synonyms for user test queries
+    if (toolId === 'emi' || tLower.includes('emi')) {
+      aliases.push('emi calculator', 'loan emi', 'emi');
+    }
+    if (toolId === 'bmi' || tLower.includes('bmi')) {
+      aliases.push('bmi calculator', 'bmi health', 'body mass index');
+    }
+    if (tLower.includes('temperature') || toolId.includes('temperature')) {
+      aliases.push('temperature converter', 'temperature calculator', 'temp converter');
+    }
+    if (tLower.includes('discount') || toolId.includes('discount')) {
+      aliases.push('discount calculator', 'sale calculator');
+    }
+    if (tLower.includes('loan') || toolId.startsWith('loan') || toolId === 'emi') {
+      aliases.push('loan calculator', 'loans');
+    }
+
+    return {
+      card,
+      title,
+      toolId,
+      titleLower: tLower,
+      aliasesLower: aliases.map(a => a.toLowerCase()),
+      searchableText: `${title} ${desc} ${tags} ${toolId} ${aliases.join(' ')}`.toLowerCase()
+    };
+  });
+
+  function performSearch() {
+    const rawVal = searchInput.value;
+    const query = rawVal.trim().toLowerCase();
+
+    // Toggle clear button
+    if (clearBtn) {
+      clearBtn.style.display = rawVal.length > 0 ? 'inline-flex' : 'none';
+    }
+
+    if (query === '') {
+      toolItems.forEach(item => {
+        item.card.style.display = '';
+      });
+      if (noToolsFound) noToolsFound.style.display = 'none';
+      return;
+    }
+
+    let matchCount = 0;
+    const queryTokens = query.split(/\s+/).filter(Boolean);
+
+    toolItems.forEach(item => {
+      // 1. Direct title contains search string
+      let isMatch = item.titleLower.includes(query);
+
+      // 2. Query matches alias
+      if (!isMatch && item.aliasesLower.some(a => a.includes(query) || query.includes(a))) {
+        isMatch = true;
+      }
+
+      // 3. All tokens in title or aliases
+      if (!isMatch && queryTokens.length > 0) {
+        const titleAndAliases = item.titleLower + ' ' + item.aliasesLower.join(' ');
+        isMatch = queryTokens.every(tok => titleAndAliases.includes(tok));
+      }
+
+      if (isMatch) {
+        item.card.style.display = '';
+        matchCount++;
+      } else {
+        item.card.style.display = 'none';
+      }
+    });
+
+    if (noToolsFound) {
+      noToolsFound.style.display = matchCount === 0 ? 'block' : 'none';
+    }
+  }
+
+  // Instant search as the user types
+  searchInput.addEventListener('input', performSearch);
+
+  // Clear button click
+  if (clearBtn) {
+    clearBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      searchInput.value = '';
+      performSearch();
+      searchInput.focus();
+    });
+  }
+
+  // Search button click
+  if (searchBtn) {
+    searchBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      performSearch();
+    });
+  }
+
+  // Escape clears search
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      searchInput.value = '';
+      performSearch();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      performSearch();
+    }
+  });
 }
 
 // ================= 1. AGE CALCULATOR =================

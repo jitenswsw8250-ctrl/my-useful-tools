@@ -337,9 +337,44 @@
         </div>
       </div>
 
+      <!-- Search Tools Section -->
+      <div class="search-container" id="search-container">
+        <div class="search-bar-wrap">
+          <span class="search-lead-icon" aria-hidden="true">🔍</span>
+          <input
+            type="text"
+            id="tool-search-input"
+            class="tool-search-input"
+            placeholder="Search tools..."
+            aria-label="Search tools"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button
+            type="button"
+            id="search-clear-btn"
+            class="search-clear-btn"
+            aria-label="Clear search"
+            title="Clear search"
+            style="display: none;"
+          >×</button>
+          <button
+            type="button"
+            id="search-btn"
+            class="search-btn"
+            aria-label="Search tools"
+            title="Search tools"
+          >
+            <span class="search-btn-icon" aria-hidden="true">🔍</span>
+            <span class="search-btn-text">Search</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Tools Grid -->
       <h2 id="all-tools-grid" class="section-title">All Calculators &amp; Tools</h2>
-      <div class="tools-grid">
+      <div id="no-tools-found" class="no-tools-found" style="display: none;">No tools found.</div>
+      <div class="tools-grid" id="tools-grid">
 
         <!-- Tool 1: Age -->
         <div class="tool-card" onclick="navigateTo('age')">
