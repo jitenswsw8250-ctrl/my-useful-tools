@@ -167,4 +167,164 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <!-- 16. Loan Interest Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#loan-interest</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 17. Loan Eligibility Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#loan-eligibility</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 18. Loan Tenure Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#loan-tenure</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 19. Salary Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#salary</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 20. Overtime Pay Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#overtime</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 21. Tax Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#tax</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 22. Calorie Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#calorie</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 23. BMR Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#bmr</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 24. TDEE Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#tdee</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 25. Pregnancy Due Date Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#pregnancy-due-date</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 26. Hours to Minutes Converter -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#hours-to-minutes</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 27. Minutes to Hours Converter -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#minutes-to-hours</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 28. Length Converter -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#length-converter</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 29. Weight Converter -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#weight-converter</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 30. Temperature Converter -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#temperature-converter</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 31. Area Converter -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#area-converter</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 32. Volume Converter -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#volume-converter</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 33. Tip Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#tip</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 34. Discount + Final Price Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#discount-final-price</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 35. Sales Tax Calculator -->
+  <url>
+    <loc>https://ais-pre-vatqw65fky76dekso6xcwb-447578213146.asia-southeast1.run.app/#sales-tax</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
 </urlset>
