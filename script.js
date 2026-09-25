@@ -223,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   parseInitialRoute();
   initSearchTools();
+  initNewFeatures();
 });
 
 // ================= THEME TOGGLE =================
@@ -453,6 +454,16 @@ function navigateTo(screenId, updateHash = true) {
   currentScreen = effectiveScreen;
   closeDrawer();
 
+  // Record recently used tool
+  if (effectiveScreen !== 'home' && effectiveScreen !== 'all-tools' && !['about', 'contact', 'privacy', 'terms', 'disclaimer'].includes(effectiveScreen)) {
+    if (typeof recordRecentTool === 'function') {
+      recordRecentTool(effectiveScreen);
+    }
+  } else if (effectiveScreen === 'home') {
+    if (typeof renderFavoritesSection === 'function') renderFavoritesSection();
+    if (typeof renderRecentToolsSection === 'function') renderRecentToolsSection();
+  }
+
   // Dynamic SEO Title & Meta Description update
   const seo = PAGE_SEO[screenId] || PAGE_SEO[effectiveScreen] || PAGE_SEO.home;
   document.title = seo.title;
@@ -523,21 +534,7 @@ function closeDrawer() {
 }
 
 function handleShare() {
-  if (navigator.share) {
-    navigator.share({
-      title: 'MY USEFUL TOOLS - Free Online Calculators',
-      text: 'Check out MY USEFUL TOOLS: 100% free, fast, and privacy-friendly online calculators.',
-      url: window.location.href
-    }).catch(() => {});
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      alert('Website URL copied to clipboard!');
-    }).catch(() => {
-      prompt('Copy website link:', window.location.href);
-    });
-  } else {
-    prompt('Copy website link:', window.location.href);
-  }
+  shareWebsite();
 }
 
 // ================= SEARCH TOOLS =================
@@ -595,6 +592,23 @@ function initSearchTools() {
     };
   });
 
+  let activeCategory = 'all';
+
+  window.filterByCategory = function(category) {
+    activeCategory = category;
+    const pills = document.querySelectorAll('.category-pill');
+    pills.forEach(p => {
+      if (p.getAttribute('data-category') === category) {
+        p.classList.add('active');
+        p.setAttribute('aria-selected', 'true');
+      } else {
+        p.classList.remove('active');
+        p.setAttribute('aria-selected', 'false');
+      }
+    });
+    performSearch();
+  };
+
   function performSearch() {
     const rawVal = searchInput.value;
     const query = rawVal.trim().toLowerCase();
@@ -604,18 +618,25 @@ function initSearchTools() {
       clearBtn.style.display = rawVal.length > 0 ? 'inline-flex' : 'none';
     }
 
-    if (query === '') {
-      toolItems.forEach(item => {
-        item.card.style.display = '';
-      });
-      if (noToolsFound) noToolsFound.style.display = 'none';
-      return;
-    }
-
     let matchCount = 0;
     const queryTokens = query.split(/\s+/).filter(Boolean);
 
     toolItems.forEach(item => {
+      // Category check
+      const cardCategory = item.card.getAttribute('data-category') || '';
+      const categoryMatch = (activeCategory === 'all' || cardCategory === activeCategory);
+
+      if (!categoryMatch) {
+        item.card.style.display = 'none';
+        return;
+      }
+
+      if (query === '') {
+        item.card.style.display = '';
+        matchCount++;
+        return;
+      }
+
       // 1. Direct title contains search string
       let isMatch = item.titleLower.includes(query);
 
@@ -4261,3 +4282,505 @@ function resetSalesTax() {
   setStMode('add');
   calculateSalesTax();
 }
+
+
+// =========================================================================
+// 8 NEW FEATURES IMPLEMENTATION
+// 1. Favorite Tools | 2. Recently Used Tools | 3. Copy Result
+// 4. Share Result  | 5. Share Website       | 6. Tool Categories
+// 7. Related Tools | 8. Add to Home Screen / PWA
+// =========================================================================
+
+const TOOLS_INFO = {
+  'age': { name: 'Age Calculator', icon: '🎂', category: 'datetime', desc: 'Exact age in years, months, days, countdown to next birthday.' },
+  'emi': { name: 'EMI Loan Calculator', icon: '🏦', category: 'finance', desc: 'Monthly loan installment, total interest payable, repayment split.' },
+  'percentage': { name: 'Percentage Calculator', icon: '📊', category: 'math', desc: 'Solve X% of Y, percent increase/decrease, and proportions.' },
+  'discount': { name: 'Discount Calculator', icon: '🏷️', category: 'finance', desc: 'Sale price after discount, savings amount, and optional sales tax.' },
+  'bmi': { name: 'BMI Health Calculator', icon: '⚖️', category: 'health', desc: 'Body Mass Index calculator with metric/imperial units and weight ranges.' },
+  'gst': { name: 'GST Calculator', icon: '🧾', category: 'finance', desc: 'Calculate GST Exclusive and GST Inclusive prices with CGST/SGST/IGST.' },
+  'simple-interest': { name: 'Simple Interest Calculator', icon: '📈', category: 'finance', desc: 'Calculate simple interest, maturity payoff, and monthly breakdown.' },
+  'compound-interest': { name: 'Compound Interest Calculator', icon: '💹', category: 'finance', desc: 'Calculate compound interest growth with multiple compounding frequencies.' },
+  'profit-loss': { name: 'Profit & Loss Calculator', icon: '💰', category: 'finance', desc: 'Compute profit or loss, profit margin, and percentage markup.' },
+  'sip': { name: 'SIP Calculator', icon: '🪙', category: 'finance', desc: 'Estimate mutual fund Systematic Investment Plan future wealth.' },
+  'fd': { name: 'FD Calculator', icon: '🏛️', category: 'finance', desc: 'Bank Fixed Deposit maturity amount, interest earned, and quarterly APY.' },
+  'date-difference': { name: 'Date Difference Calculator', icon: '📅', category: 'datetime', desc: 'Calculate exact duration between two calendar dates in years, months, and days.' },
+  'time': { name: 'Time Calculator', icon: '⏱️', category: 'datetime', desc: 'Add or subtract hours and minutes, or calculate time elapsed.' },
+  'unit-converter': { name: 'Unit Converter', icon: '🔄', category: 'converters', desc: 'Multi-category converter for length, weight, temperature, and volume.' },
+  'average': { name: 'Average Calculator', icon: '🔢', category: 'math', desc: 'Arithmetic mean, median, mode, sum, range, and standard deviation.' },
+  'loan-interest': { name: 'Loan Interest Calculator', icon: '💳', category: 'finance', desc: 'Compute total interest cost and effective interest proportion.' },
+  'loan-eligibility': { name: 'Loan Eligibility Calculator', icon: '🎯', category: 'finance', desc: 'Maximum eligible loan amount based on net income and obligations.' },
+  'loan-tenure': { name: 'Loan Tenure Calculator', icon: '⏳', category: 'finance', desc: 'Calculate payoff duration and debt-free date based on monthly payment.' },
+  'salary': { name: 'Salary Calculator', icon: '💵', category: 'finance', desc: 'Calculate net in-hand take-home pay from annual CTC.' },
+  'overtime': { name: 'Overtime Pay Calculator', icon: '⏱️', category: 'finance', desc: 'Calculate overtime wages with standard 1.5x / 2.0x multipliers.' },
+  'tax': { name: 'Tax Calculator', icon: '📜', category: 'finance', desc: 'Estimate tax liability and compare Old vs New tax regimes.' },
+  'calorie': { name: 'Calorie Calculator', icon: '🥗', category: 'health', desc: 'Daily calories for weight maintenance, healthy loss, or gain.' },
+  'bmr': { name: 'BMR Calculator', icon: '🔥', category: 'health', desc: 'Basal Metabolic Rate based on Mifflin-St Jeor formula.' },
+  'tdee': { name: 'TDEE Calculator', icon: '⚡', category: 'health', desc: 'Total Daily Energy Expenditure factoring physical activity level.' },
+  'pregnancy-due-date': { name: 'Pregnancy Due Date Calculator', icon: '👶', category: 'health', desc: 'Estimate delivery date and current trimester from last menstrual period.' },
+  'hours-to-minutes': { name: 'Hours to Minutes Converter', icon: '⏲️', category: 'datetime', desc: 'Convert decimal hours and minutes into total minutes and seconds.' },
+  'minutes-to-hours': { name: 'Minutes to Hours Converter', icon: '🕰️', category: 'datetime', desc: 'Convert minutes into decimal hours, hours + minutes, and work shifts.' },
+  'length-converter': { name: 'Length Converter', icon: '📏', category: 'converters', desc: 'Convert millimeters, centimeters, meters, kilometers, feet, inches, miles.' },
+  'weight-converter': { name: 'Weight Converter', icon: '⚖️', category: 'converters', desc: 'Convert grams, kilograms, tonnes, ounces, pounds, and stones.' },
+  'temperature-converter': { name: 'Temperature Converter', icon: '🌡️', category: 'converters', desc: 'Convert Celsius, Fahrenheit, and Kelvin with reference markers.' },
+  'area-converter': { name: 'Area Converter', icon: '🗺️', category: 'converters', desc: 'Convert square meters, square feet, acres, and hectares.' },
+  'volume-converter': { name: 'Volume Converter', icon: '🧪', category: 'converters', desc: 'Convert liters, milliliters, gallons, cups, and fluid ounces.' },
+  'tip': { name: 'Tip Calculator', icon: '🍽️', category: 'finance', desc: 'Calculate dining gratuity, total bill, and split evenly per guest.' },
+  'discount-final-price': { name: 'Discount + Final Price Calculator', icon: '🛍️', category: 'finance', desc: 'Calculate stacked double discounts plus optional sales tax.' },
+  'sales-tax': { name: 'Sales Tax Calculator', icon: '🏷️', category: 'finance', desc: 'Add sales tax or reverse-calculate pre-tax price from retail total.' }
+};
+
+const RELATED_TOOLS_MAP = {
+  'age': ['date-difference', 'time', 'hours-to-minutes', 'pregnancy-due-date'],
+  'emi': ['loan-interest', 'loan-eligibility', 'loan-tenure', 'fd'],
+  'percentage': ['discount', 'profit-loss', 'gst', 'average'],
+  'discount': ['discount-final-price', 'sales-tax', 'percentage', 'tip'],
+  'bmi': ['calorie', 'bmr', 'tdee', 'pregnancy-due-date'],
+  'gst': ['sales-tax', 'tax', 'profit-loss', 'discount'],
+  'simple-interest': ['compound-interest', 'loan-interest', 'sip', 'fd'],
+  'compound-interest': ['simple-interest', 'sip', 'fd', 'loan-interest'],
+  'profit-loss': ['discount', 'percentage', 'gst', 'sales-tax'],
+  'sip': ['compound-interest', 'fd', 'simple-interest', 'salary'],
+  'fd': ['sip', 'compound-interest', 'simple-interest', 'emi'],
+  'date-difference': ['age', 'time', 'hours-to-minutes', 'minutes-to-hours'],
+  'time': ['hours-to-minutes', 'minutes-to-hours', 'date-difference', 'overtime'],
+  'unit-converter': ['length-converter', 'weight-converter', 'temperature-converter', 'volume-converter'],
+  'average': ['percentage', 'profit-loss', 'time', 'salary'],
+  'loan-interest': ['emi', 'loan-eligibility', 'loan-tenure', 'simple-interest'],
+  'loan-eligibility': ['emi', 'loan-interest', 'loan-tenure', 'salary'],
+  'loan-tenure': ['emi', 'loan-interest', 'loan-eligibility', 'simple-interest'],
+  'salary': ['overtime', 'tax', 'loan-eligibility', 'sip'],
+  'overtime': ['salary', 'time', 'hours-to-minutes', 'tax'],
+  'tax': ['salary', 'gst', 'sales-tax', 'overtime'],
+  'calorie': ['bmr', 'tdee', 'bmi', 'pregnancy-due-date'],
+  'bmr': ['tdee', 'calorie', 'bmi', 'pregnancy-due-date'],
+  'tdee': ['bmr', 'calorie', 'bmi', 'pregnancy-due-date'],
+  'pregnancy-due-date': ['age', 'date-difference', 'bmi', 'calorie'],
+  'hours-to-minutes': ['minutes-to-hours', 'time', 'date-difference', 'overtime'],
+  'minutes-to-hours': ['hours-to-minutes', 'time', 'date-difference', 'overtime'],
+  'length-converter': ['unit-converter', 'area-converter', 'weight-converter', 'volume-converter'],
+  'weight-converter': ['unit-converter', 'volume-converter', 'bmi', 'length-converter'],
+  'temperature-converter': ['unit-converter', 'length-converter', 'weight-converter', 'volume-converter'],
+  'area-converter': ['length-converter', 'volume-converter', 'unit-converter', 'weight-converter'],
+  'volume-converter': ['unit-converter', 'area-converter', 'weight-converter', 'length-converter'],
+  'tip': ['discount', 'discount-final-price', 'sales-tax', 'percentage'],
+  'discount-final-price': ['discount', 'sales-tax', 'tip', 'percentage'],
+  'sales-tax': ['tax', 'gst', 'discount', 'discount-final-price']
+};
+
+// ================= TOAST NOTIFICATION SYSTEM =================
+let toastTimeout = null;
+function showToast(message, duration = 2500) {
+  let toast = document.getElementById('toast-notification');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-notification';
+    toast.className = 'toast-notification';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add('show');
+  toast.style.display = 'flex';
+
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      if (!toast.classList.contains('show')) {
+        toast.style.display = 'none';
+      }
+    }, 200);
+  }, duration);
+}
+
+// ================= FEATURE 1: FAVORITE TOOLS =================
+function getFavorites() {
+  try {
+    const raw = localStorage.getItem('mut_favorites');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveFavorites(favs) {
+  try {
+    localStorage.setItem('mut_favorites', JSON.stringify(favs));
+  } catch (e) {}
+}
+
+function toggleFavorite(toolId, event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  const favs = getFavorites();
+  const idx = favs.indexOf(toolId);
+  let isFav = false;
+
+  if (idx > -1) {
+    favs.splice(idx, 1);
+    isFav = false;
+  } else {
+    favs.push(toolId);
+    isFav = true;
+  }
+  saveFavorites(favs);
+  updateFavoriteButtons();
+  renderFavoritesSection();
+
+  const toolName = TOOLS_INFO[toolId] ? TOOLS_INFO[toolId].name : 'Tool';
+  showToast(isFav ? `⭐ Added "${toolName}" to Favorites` : `Removed "${toolName}" from Favorites`);
+}
+
+function updateFavoriteButtons() {
+  const favs = getFavorites();
+
+  // Update card buttons
+  document.querySelectorAll('.card-fav-btn').forEach(btn => {
+    const tid = btn.getAttribute('data-tool-id');
+    const isFav = favs.includes(tid);
+    if (isFav) {
+      btn.classList.add('active');
+      btn.setAttribute('title', 'Remove from favorites');
+      btn.innerHTML = '<span class="fav-star">★</span>';
+    } else {
+      btn.classList.remove('active');
+      btn.setAttribute('title', 'Add to favorites');
+      btn.innerHTML = '<span class="fav-star">☆</span>';
+    }
+  });
+
+  // Update header buttons on tool screens
+  document.querySelectorAll('.header-fav-btn').forEach(btn => {
+    const tid = btn.getAttribute('data-tool-id');
+    const isFav = favs.includes(tid);
+    if (isFav) {
+      btn.classList.add('active');
+      btn.innerHTML = '<span class="header-fav-star">★</span> <span class="header-fav-text">Favorited</span>';
+    } else {
+      btn.classList.remove('active');
+      btn.innerHTML = '<span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span>';
+    }
+  });
+}
+
+function renderFavoritesSection() {
+  const sec = document.getElementById('favorite-tools-section');
+  const grid = document.getElementById('favorite-tools-grid');
+  const countBadge = document.getElementById('fav-count-badge');
+  if (!sec || !grid) return;
+
+  const favs = getFavorites().filter(tid => TOOLS_INFO[tid]);
+
+  if (favs.length === 0) {
+    sec.style.display = 'none';
+    return;
+  }
+
+  sec.style.display = 'block';
+  if (countBadge) countBadge.textContent = favs.length;
+
+  grid.innerHTML = favs.map(tid => {
+    const info = TOOLS_INFO[tid];
+    return `
+      <div class="compact-tool-item" onclick="navigateTo('${tid}')" role="button" tabindex="0" title="Open ${info.name}">
+        <button type="button" class="compact-unfav-btn" onclick="event.stopPropagation(); toggleFavorite('${tid}', event);" title="Remove favorite" aria-label="Remove favorite">★</button>
+        <div class="compact-tool-icon">${info.icon}</div>
+        <div class="compact-tool-name">${info.name}</div>
+        <div class="compact-tool-action">Open Tool →</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ================= FEATURE 2: RECENTLY USED TOOLS =================
+function getRecentTools() {
+  try {
+    const raw = localStorage.getItem('mut_recent_tools');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function recordRecentTool(toolId) {
+  if (!TOOLS_INFO[toolId]) return;
+  try {
+    let recent = getRecentTools().filter(id => id !== toolId && TOOLS_INFO[id]);
+    recent.unshift(toolId);
+    if (recent.length > 6) recent = recent.slice(0, 6);
+    localStorage.setItem('mut_recent_tools', JSON.stringify(recent));
+    renderRecentToolsSection();
+  } catch (e) {}
+}
+
+function clearRecentTools() {
+  try {
+    localStorage.removeItem('mut_recent_tools');
+  } catch (e) {}
+  renderRecentToolsSection();
+  showToast('✓ Recent tools history cleared');
+}
+
+function renderRecentToolsSection() {
+  const sec = document.getElementById('recent-tools-section');
+  const grid = document.getElementById('recent-tools-grid');
+  const countBadge = document.getElementById('recent-count-badge');
+  if (!sec || !grid) return;
+
+  const recent = getRecentTools().filter(tid => TOOLS_INFO[tid]);
+
+  if (recent.length === 0) {
+    sec.style.display = 'none';
+    return;
+  }
+
+  sec.style.display = 'block';
+  if (countBadge) countBadge.textContent = recent.length;
+
+  grid.innerHTML = recent.map(tid => {
+    const info = TOOLS_INFO[tid];
+    return `
+      <div class="compact-tool-item" onclick="navigateTo('${tid}')" role="button" tabindex="0" title="Open ${info.name}">
+        <div class="compact-tool-icon">${info.icon}</div>
+        <div class="compact-tool-name">${info.name}</div>
+        <div class="compact-tool-action">Open Tool →</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ================= FEATURE 3 & 4: COPY RESULT & SHARE RESULT =================
+function getResultText(toolId) {
+  const info = TOOLS_INFO[toolId];
+  const toolName = info ? info.name : 'Calculator';
+  const url = `https://jitenswsw8250-ctrl.github.io/my-useful-tools/#${toolId}`;
+
+  // Dedicated formatters for primary high-detail tools
+  if (toolId === 'age') {
+    const years = document.getElementById('age-years-num')?.textContent?.trim() || '';
+    const breakdown = document.getElementById('age-breakdown')?.textContent?.trim() || '';
+    const nextBday = document.getElementById('age-next-bday')?.textContent?.trim() || '';
+    return `MY USEFUL TOOLS - ${toolName}\nExact Age: ${years} Years Old (${breakdown})\nNext Birthday: In ${nextBday}\n${url}`;
+  }
+  if (toolId === 'emi') {
+    const emi = document.getElementById('emi-monthly-val')?.textContent?.trim() || '';
+    const interest = document.getElementById('emi-total-interest')?.textContent?.trim() || '';
+    const payment = document.getElementById('emi-total-payment')?.textContent?.trim() || '';
+    return `MY USEFUL TOOLS - ${toolName}\nMonthly EMI: ${emi}\nTotal Interest: ${interest}\nTotal Payment: ${payment}\n${url}`;
+  }
+  if (toolId === 'percentage') {
+    let res = '';
+    const p1 = document.getElementById('pct-mode-0');
+    const p2 = document.getElementById('pct-mode-1');
+    const p3 = document.getElementById('pct-mode-2');
+    if (p1 && p1.classList.contains('active')) {
+      res = document.getElementById('pct-m1-expl')?.textContent?.trim() || document.getElementById('pct-m1-res')?.textContent?.trim();
+    } else if (p2 && p2.classList.contains('active')) {
+      res = document.getElementById('pct-m2-expl')?.textContent?.trim() || document.getElementById('pct-m2-res')?.textContent?.trim();
+    } else if (p3 && p3.classList.contains('active')) {
+      res = document.getElementById('pct-m3-expl')?.textContent?.trim() || document.getElementById('pct-m3-res')?.textContent?.trim();
+    } else {
+      res = document.getElementById('pct-m1-res')?.textContent?.trim() || '';
+    }
+    return `MY USEFUL TOOLS - ${toolName}\nResult: ${res}\n${url}`;
+  }
+  if (toolId === 'discount') {
+    const finalVal = document.getElementById('disc-final-val')?.textContent?.trim() || '';
+    const saveVal = document.getElementById('disc-savings-val')?.textContent?.trim() || '';
+    return `MY USEFUL TOOLS - ${toolName}\nFinal Sale Price: ${finalVal}\nTotal Savings: ${saveVal}\n${url}`;
+  }
+  if (toolId === 'bmi') {
+    const score = document.getElementById('bmi-score-val')?.textContent?.trim() || '';
+    const cat = document.getElementById('bmi-category-badge')?.textContent?.trim() || '';
+    const range = document.getElementById('bmi-healthy-range')?.textContent?.trim() || '';
+    return `MY USEFUL TOOLS - ${toolName}\nBMI Score: ${score} (${cat})\nHealthy Range: ${range}\n${url}`;
+  }
+
+  // Generic extractor for all other tools
+  const section = document.getElementById(`screen-${toolId}`);
+  if (!section) return `MY USEFUL TOOLS - ${toolName}\n${url}`;
+
+  const card = section.querySelector('.result-card');
+  if (!card) return `MY USEFUL TOOLS - ${toolName}\n${url}`;
+
+  const header = card.querySelector('.stat-header, .result-header')?.textContent?.trim() || 'Calculated Result';
+  const num = card.querySelector('.highlight-number')?.textContent?.trim() || '';
+  const unit = card.querySelector('.highlight-unit')?.textContent?.trim() || '';
+
+  const metrics = [];
+  card.querySelectorAll('.metric-box').forEach(mb => {
+    const lbl = mb.querySelector('.metric-label')?.textContent?.trim();
+    const val = mb.querySelector('.metric-val, .metric-number')?.textContent?.trim();
+    if (lbl && val) metrics.push(`${lbl}: ${val}`);
+  });
+
+  let text = `MY USEFUL TOOLS - ${toolName}\n${header}: ${num} ${unit}`.trim();
+  if (metrics.length) {
+    text += '\n' + metrics.slice(0, 3).join('\n');
+  }
+  text += `\n${url}`;
+  return text;
+}
+
+function copyCurrentResult(toolId) {
+  const text = getResultText(toolId);
+  const doFeedback = () => {
+    showToast('✓ Copied!');
+    const btn = document.querySelector(`#result-actions-${toolId} .copy-btn`);
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
+      setTimeout(() => { btn.innerHTML = orig; }, 2000);
+    }
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(doFeedback).catch(() => {
+      fallbackCopy(text, doFeedback);
+    });
+  } else {
+    fallbackCopy(text, doFeedback);
+  }
+}
+
+function fallbackCopy(text, callback) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand('copy');
+    if (callback) callback();
+  } catch (err) {
+    prompt('Copy result:', text);
+  }
+  document.body.removeChild(ta);
+}
+
+function shareCurrentResult(toolId) {
+  const text = getResultText(toolId);
+  const info = TOOLS_INFO[toolId];
+  const toolName = info ? info.name : 'Calculator';
+  const url = `https://jitenswsw8250-ctrl.github.io/my-useful-tools/#${toolId}`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: `MY USEFUL TOOLS - ${toolName}`,
+      text: text,
+      url: url
+    }).catch(() => {});
+  } else {
+    copyCurrentResult(toolId);
+    showToast('✓ Result copied to clipboard for sharing!');
+  }
+}
+
+// ================= FEATURE 5: SHARE APP / SHARE WEBSITE =================
+function shareWebsite() {
+  const shareData = {
+    title: 'MY USEFUL TOOLS',
+    text: 'Free online calculators and useful tools.',
+    url: 'https://jitenswsw8250-ctrl.github.io/my-useful-tools/'
+  };
+
+  if (navigator.share) {
+    navigator.share(shareData).catch(() => {});
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareData.url).then(() => {
+      showToast('✓ Link copied!');
+    }).catch(() => {
+      prompt('Copy website link:', shareData.url);
+    });
+  } else {
+    prompt('Copy website link:', shareData.url);
+  }
+}
+
+// ================= FEATURE 7: RELATED TOOLS =================
+function initRelatedTools() {
+  document.querySelectorAll('.related-tools-section').forEach(container => {
+    const tid = container.getAttribute('data-tool');
+    const relatedIds = RELATED_TOOLS_MAP[tid] || [];
+    if (!relatedIds.length) return;
+
+    const cardsHtml = relatedIds.map(rid => {
+      const info = TOOLS_INFO[rid];
+      if (!info) return '';
+      return `
+        <div class="related-tool-card" onclick="navigateTo('${rid}')" role="button" tabindex="0" title="Open ${info.name}">
+          <div class="related-tool-icon">${info.icon}</div>
+          <div class="related-tool-info">
+            <div class="related-tool-name">${info.name}</div>
+            <div class="related-tool-sub">${info.desc}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <h3 class="related-tools-title"><span>🔗</span> Related Calculators &amp; Tools</h3>
+      <div class="related-tools-grid">
+        ${cardsHtml}
+      </div>
+    `;
+  });
+}
+
+// ================= FEATURE 8: PWA & SERVICE WORKER =================
+let deferredPwaPrompt = null;
+
+function setupPwa() {
+  if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPwaPrompt = e;
+    const heroBtn = document.getElementById('pwa-install-btn');
+    if (heroBtn) heroBtn.style.display = 'inline-flex';
+    const drawerBtn = document.getElementById('drawer-install-btn');
+    if (drawerBtn) drawerBtn.style.display = 'flex';
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPwaPrompt = null;
+    const heroBtn = document.getElementById('pwa-install-btn');
+    if (heroBtn) heroBtn.style.display = 'none';
+    const drawerBtn = document.getElementById('drawer-install-btn');
+    if (drawerBtn) drawerBtn.style.display = 'none';
+    showToast('✓ App installed successfully!');
+  });
+}
+
+function installPwa() {
+  if (deferredPwaPrompt) {
+    deferredPwaPrompt.prompt();
+    deferredPwaPrompt.userChoice.then((choice) => {
+      if (choice && choice.outcome === 'accepted') {
+        showToast('✓ Adding MY USEFUL TOOLS to Home Screen...');
+      }
+      deferredPwaPrompt = null;
+      const heroBtn = document.getElementById('pwa-install-btn');
+      if (heroBtn) heroBtn.style.display = 'none';
+    });
+  } else {
+    showToast('To install: open browser menu (⋮) and tap "Add to Home screen"');
+  }
+}
+
+// ================= MASTER INITIALIZER FOR NEW FEATURES =================
+function initNewFeatures() {
+  updateFavoriteButtons();
+  renderFavoritesSection();
+  renderRecentToolsSection();
+  initRelatedTools();
+  setupPwa();
+}
+

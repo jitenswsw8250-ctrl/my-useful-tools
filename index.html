@@ -73,6 +73,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+    <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MY TOOLS">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
@@ -131,6 +138,14 @@
       <a href="#all-tools" onclick="navigateTo('all-tools')" class="drawer-item" data-screen="all-tools">
         <span class="drawer-icon">🧰</span>
         <span>All Tools</span>
+      </a>
+      <a href="#share" onclick="closeDrawer(); shareWebsite(); return false;" class="drawer-item">
+        <span class="drawer-icon">🔗</span>
+        <span>Share Website</span>
+      </a>
+      <a href="#install" id="drawer-install-btn" onclick="closeDrawer(); installPwa(); return false;" class="drawer-item" style="display:none;">
+        <span class="drawer-icon">📲</span>
+        <span>Add to Home Screen</span>
       </a>
     </nav>
 
@@ -317,6 +332,8 @@
           <span class="pill">⚡ Instant Calculations</span>
           <span class="pill">🔒 100% Client-Side Privacy</span>
           <span class="pill">📱 Mobile &amp; Desktop Friendly</span>
+          <button type="button" class="pill pill-btn" onclick="shareWebsite()" title="Share Website"><span class="pill-icon">🔗</span> Share Website</button>
+          <button type="button" id="pwa-install-btn" class="pill pill-btn pwa-btn" onclick="installPwa()" style="display:none;" title="Add to Home Screen"><span class="pill-icon">📲</span> Add to Home Screen</button>
         </div>
       </div>
 
@@ -370,6 +387,46 @@
           </button>
         </div>
       </div>
+      <!-- FAVORITE TOOLS SECTION (Shows only when user has favorites) -->
+      <div id="favorite-tools-section" class="featured-tools-section" style="display: none;">
+        <div class="featured-section-header">
+          <h2 class="featured-title">⭐ Favorite Tools <span id="fav-count-badge" class="count-badge">0</span></h2>
+        </div>
+        <div id="favorite-tools-grid" class="compact-tools-grid"></div>
+      </div>
+
+      <!-- RECENTLY USED TOOLS SECTION (Shows only when recent tools exist) -->
+      <div id="recent-tools-section" class="featured-tools-section" style="display: none;">
+        <div class="featured-section-header">
+          <h2 class="featured-title">🕒 Recently Used Tools <span id="recent-count-badge" class="count-badge">0</span></h2>
+          <button type="button" class="clear-history-btn" onclick="clearRecentTools()" title="Clear Recent History">Clear</button>
+        </div>
+        <div id="recent-tools-grid" class="compact-tools-grid"></div>
+      </div>
+
+      <!-- TOOL CATEGORIES FILTER -->
+      <div class="category-filters-container">
+        <div class="category-pills" id="category-pills" role="tablist" aria-label="Tool Categories">
+          <button type="button" class="category-pill active" data-category="all" onclick="filterByCategory('all')" role="tab" aria-selected="true">
+            <span class="cat-label">All</span> <span class="cat-badge">35</span>
+          </button>
+          <button type="button" class="category-pill" data-category="finance" onclick="filterByCategory('finance')" role="tab" aria-selected="false">
+            <span class="cat-icon">💰</span> <span class="cat-label">Finance</span> <span class="cat-badge">17</span>
+          </button>
+          <button type="button" class="category-pill" data-category="health" onclick="filterByCategory('health')" role="tab" aria-selected="false">
+            <span class="cat-icon">🥗</span> <span class="cat-label">Health</span> <span class="cat-badge">5</span>
+          </button>
+          <button type="button" class="category-pill" data-category="datetime" onclick="filterByCategory('datetime')" role="tab" aria-selected="false">
+            <span class="cat-icon">⏱️</span> <span class="cat-label">Date &amp; Time</span> <span class="cat-badge">5</span>
+          </button>
+          <button type="button" class="category-pill" data-category="converters" onclick="filterByCategory('converters')" role="tab" aria-selected="false">
+            <span class="cat-icon">🔄</span> <span class="cat-label">Converters</span> <span class="cat-badge">6</span>
+          </button>
+          <button type="button" class="category-pill" data-category="math" onclick="filterByCategory('math')" role="tab" aria-selected="false">
+            <span class="cat-icon">🔢</span> <span class="cat-label">Math</span> <span class="cat-badge">2</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Tools Grid -->
       <h2 id="all-tools-grid" class="section-title">All Calculators &amp; Tools</h2>
@@ -377,7 +434,8 @@
       <div class="tools-grid" id="tools-grid">
 
         <!-- Tool 1: Age -->
-        <div class="tool-card" onclick="navigateTo('age')">
+        <div class="tool-card" onclick="navigateTo('age')" data-tool-id="age" data-category="datetime">
+          <button type="button" class="card-fav-btn" data-tool-id="age" onclick="event.stopPropagation(); toggleFavorite('age', event);" aria-label="Favorite age" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper age-icon">🎂</div>
           <div class="tool-info">
             <h3 class="tool-title">Age Calculator</h3>
@@ -387,12 +445,13 @@
               <span class="tag">Countdown</span>
               <span class="tag">Zodiac</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 2: EMI -->
-        <div class="tool-card" onclick="navigateTo('emi')">
+        <div class="tool-card" onclick="navigateTo('emi')" data-tool-id="emi" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="emi" onclick="event.stopPropagation(); toggleFavorite('emi', event);" aria-label="Favorite emi" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper emi-icon">🏦</div>
           <div class="tool-info">
             <h3 class="tool-title">EMI Loan Calculator</h3>
@@ -402,12 +461,13 @@
               <span class="tag">Home</span>
               <span class="tag">Car</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 3: Percentage -->
-        <div class="tool-card" onclick="navigateTo('percentage')">
+        <div class="tool-card" onclick="navigateTo('percentage')" data-tool-id="percentage" data-category="math">
+          <button type="button" class="card-fav-btn" data-tool-id="percentage" onclick="event.stopPropagation(); toggleFavorite('percentage', event);" aria-label="Favorite percentage" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper pct-icon">📊</div>
           <div class="tool-info">
             <h3 class="tool-title">Percentage Calculator</h3>
@@ -416,12 +476,13 @@
               <span class="tag">Increase/Decrease</span>
               <span class="tag">Proportions</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 4: Discount -->
-        <div class="tool-card" onclick="navigateTo('discount')">
+        <div class="tool-card" onclick="navigateTo('discount')" data-tool-id="discount" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="discount" onclick="event.stopPropagation(); toggleFavorite('discount', event);" aria-label="Favorite discount" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper dsc-icon">🏷️</div>
           <div class="tool-info">
             <h3 class="tool-title">Discount Calculator</h3>
@@ -431,12 +492,13 @@
               <span class="tag">Sales Tax</span>
               <span class="tag">Savings</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 5: BMI -->
-        <div class="tool-card" onclick="navigateTo('bmi')">
+        <div class="tool-card" onclick="navigateTo('bmi')" data-tool-id="bmi" data-category="health">
+          <button type="button" class="card-fav-btn" data-tool-id="bmi" onclick="event.stopPropagation(); toggleFavorite('bmi', event);" aria-label="Favorite bmi" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper bmi-icon">⚖️</div>
           <div class="tool-info">
             <h3 class="tool-title">BMI Health Calculator</h3>
@@ -446,12 +508,13 @@
               <span class="tag">Fitness</span>
               <span class="tag">Metric / Imperial</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 6: GST Calculator -->
-        <div class="tool-card" onclick="navigateTo('gst')">
+        <div class="tool-card" onclick="navigateTo('gst')" data-tool-id="gst" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="gst" onclick="event.stopPropagation(); toggleFavorite('gst', event);" aria-label="Favorite gst" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper gst-icon">🧾</div>
           <div class="tool-info">
             <h3 class="tool-title">GST Calculator</h3>
@@ -461,12 +524,13 @@
               <span class="tag">India GST</span>
               <span class="tag">CGST / SGST</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 7: Simple Interest Calculator -->
-        <div class="tool-card" onclick="navigateTo('simple-interest')">
+        <div class="tool-card" onclick="navigateTo('simple-interest')" data-tool-id="simple-interest" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="simple-interest" onclick="event.stopPropagation(); toggleFavorite('simple-interest', event);" aria-label="Favorite simple-interest" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper si-icon">📈</div>
           <div class="tool-info">
             <h3 class="tool-title">Simple Interest Calculator</h3>
@@ -476,12 +540,13 @@
               <span class="tag">Interest</span>
               <span class="tag">P × R × T</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 8: Compound Interest Calculator -->
-        <div class="tool-card" onclick="navigateTo('compound-interest')">
+        <div class="tool-card" onclick="navigateTo('compound-interest')" data-tool-id="compound-interest" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="compound-interest" onclick="event.stopPropagation(); toggleFavorite('compound-interest', event);" aria-label="Favorite compound-interest" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper ci-icon">💹</div>
           <div class="tool-info">
             <h3 class="tool-title">Compound Interest Calculator</h3>
@@ -491,12 +556,13 @@
               <span class="tag">Compounding</span>
               <span class="tag">APY / EAR</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 9: Profit & Loss Calculator -->
-        <div class="tool-card" onclick="navigateTo('profit-loss')">
+        <div class="tool-card" onclick="navigateTo('profit-loss')" data-tool-id="profit-loss" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="profit-loss" onclick="event.stopPropagation(); toggleFavorite('profit-loss', event);" aria-label="Favorite profit-loss" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper pl-icon">💰</div>
           <div class="tool-info">
             <h3 class="tool-title">Profit &amp; Loss Calculator</h3>
@@ -506,12 +572,13 @@
               <span class="tag">Margins</span>
               <span class="tag">Markup</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 10: SIP Calculator -->
-        <div class="tool-card" onclick="navigateTo('sip')">
+        <div class="tool-card" onclick="navigateTo('sip')" data-tool-id="sip" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="sip" onclick="event.stopPropagation(); toggleFavorite('sip', event);" aria-label="Favorite sip" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper sip-icon">🪙</div>
           <div class="tool-info">
             <h3 class="tool-title">SIP Calculator</h3>
@@ -521,12 +588,13 @@
               <span class="tag">SIP</span>
               <span class="tag">Long-Term Wealth</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 11: FD Calculator -->
-        <div class="tool-card" onclick="navigateTo('fd')">
+        <div class="tool-card" onclick="navigateTo('fd')" data-tool-id="fd" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="fd" onclick="event.stopPropagation(); toggleFavorite('fd', event);" aria-label="Favorite fd" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper fd-icon">🏛️</div>
           <div class="tool-info">
             <h3 class="tool-title">FD Calculator</h3>
@@ -536,12 +604,13 @@
               <span class="tag">Fixed Deposit</span>
               <span class="tag">Maturity</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 12: Date Difference Calculator -->
-        <div class="tool-card" onclick="navigateTo('date-difference')">
+        <div class="tool-card" onclick="navigateTo('date-difference')" data-tool-id="date-difference" data-category="datetime">
+          <button type="button" class="card-fav-btn" data-tool-id="date-difference" onclick="event.stopPropagation(); toggleFavorite('date-difference', event);" aria-label="Favorite date-difference" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper date-icon">📅</div>
           <div class="tool-info">
             <h3 class="tool-title">Date Difference Calculator</h3>
@@ -551,12 +620,13 @@
               <span class="tag">Days Count</span>
               <span class="tag">Workdays</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 13: Time Calculator -->
-        <div class="tool-card" onclick="navigateTo('time')">
+        <div class="tool-card" onclick="navigateTo('time')" data-tool-id="time" data-category="datetime">
+          <button type="button" class="card-fav-btn" data-tool-id="time" onclick="event.stopPropagation(); toggleFavorite('time', event);" aria-label="Favorite time" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper time-icon">⏱️</div>
           <div class="tool-info">
             <h3 class="tool-title">Time Calculator</h3>
@@ -566,12 +636,13 @@
               <span class="tag">Timesheet</span>
               <span class="tag">Hours &amp; Mins</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 14: Unit Converter -->
-        <div class="tool-card" onclick="navigateTo('unit-converter')">
+        <div class="tool-card" onclick="navigateTo('unit-converter')" data-tool-id="unit-converter" data-category="converters">
+          <button type="button" class="card-fav-btn" data-tool-id="unit-converter" onclick="event.stopPropagation(); toggleFavorite('unit-converter', event);" aria-label="Favorite unit-converter" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper unit-icon">🔄</div>
           <div class="tool-info">
             <h3 class="tool-title">Unit Converter</h3>
@@ -581,12 +652,13 @@
               <span class="tag">Metric / Imperial</span>
               <span class="tag">Converter</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 15: Average Calculator -->
-        <div class="tool-card" onclick="navigateTo('average')">
+        <div class="tool-card" onclick="navigateTo('average')" data-tool-id="average" data-category="math">
+          <button type="button" class="card-fav-btn" data-tool-id="average" onclick="event.stopPropagation(); toggleFavorite('average', event);" aria-label="Favorite average" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper avg-icon">🔢</div>
           <div class="tool-info">
             <h3 class="tool-title">Average Calculator</h3>
@@ -596,12 +668,13 @@
               <span class="tag">Mean &amp; Median</span>
               <span class="tag">Mode</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 16: Loan Interest Calculator -->
-        <div class="tool-card" onclick="navigateTo('loan-interest')">
+        <div class="tool-card" onclick="navigateTo('loan-interest')" data-tool-id="loan-interest" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="loan-interest" onclick="event.stopPropagation(); toggleFavorite('loan-interest', event);" aria-label="Favorite loan-interest" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">💳</div>
           <div class="tool-info">
             <h3 class="tool-title">Loan Interest Calculator</h3>
@@ -609,12 +682,13 @@
             <div class="tool-tags">
               <span class="tag">Interest Cost</span><span class="tag">Borrowing</span><span class="tag">Loans</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 17: Loan Eligibility Calculator -->
-        <div class="tool-card" onclick="navigateTo('loan-eligibility')">
+        <div class="tool-card" onclick="navigateTo('loan-eligibility')" data-tool-id="loan-eligibility" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="loan-eligibility" onclick="event.stopPropagation(); toggleFavorite('loan-eligibility', event);" aria-label="Favorite loan-eligibility" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🎯</div>
           <div class="tool-info">
             <h3 class="tool-title">Loan Eligibility Calculator</h3>
@@ -622,12 +696,13 @@
             <div class="tool-tags">
               <span class="tag">FOIR</span><span class="tag">Affordability</span><span class="tag">Home Loan</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 18: Loan Tenure Calculator -->
-        <div class="tool-card" onclick="navigateTo('loan-tenure')">
+        <div class="tool-card" onclick="navigateTo('loan-tenure')" data-tool-id="loan-tenure" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="loan-tenure" onclick="event.stopPropagation(); toggleFavorite('loan-tenure', event);" aria-label="Favorite loan-tenure" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">⏳</div>
           <div class="tool-info">
             <h3 class="tool-title">Loan Tenure Calculator</h3>
@@ -635,12 +710,13 @@
             <div class="tool-tags">
               <span class="tag">Payoff Time</span><span class="tag">Debt Free</span><span class="tag">EMI Budget</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 19: Salary Calculator -->
-        <div class="tool-card" onclick="navigateTo('salary')">
+        <div class="tool-card" onclick="navigateTo('salary')" data-tool-id="salary" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="salary" onclick="event.stopPropagation(); toggleFavorite('salary', event);" aria-label="Favorite salary" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">💵</div>
           <div class="tool-info">
             <h3 class="tool-title">Salary Calculator</h3>
@@ -648,12 +724,13 @@
             <div class="tool-tags">
               <span class="tag">Take-Home</span><span class="tag">In-Hand Pay</span><span class="tag">CTC Breakdown</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 20: Overtime Pay Calculator -->
-        <div class="tool-card" onclick="navigateTo('overtime')">
+        <div class="tool-card" onclick="navigateTo('overtime')" data-tool-id="overtime" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="overtime" onclick="event.stopPropagation(); toggleFavorite('overtime', event);" aria-label="Favorite overtime" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">⏱️</div>
           <div class="tool-info">
             <h3 class="tool-title">Overtime Pay Calculator</h3>
@@ -661,12 +738,13 @@
             <div class="tool-tags">
               <span class="tag">Overtime</span><span class="tag">1.5x Pay</span><span class="tag">Wages</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 21: Tax Calculator -->
-        <div class="tool-card" onclick="navigateTo('tax')">
+        <div class="tool-card" onclick="navigateTo('tax')" data-tool-id="tax" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="tax" onclick="event.stopPropagation(); toggleFavorite('tax', event);" aria-label="Favorite tax" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">📜</div>
           <div class="tool-info">
             <h3 class="tool-title">Tax Calculator</h3>
@@ -674,12 +752,13 @@
             <div class="tool-tags">
               <span class="tag">Income Tax</span><span class="tag">New vs Old</span><span class="tag">Tax Slabs</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 22: Calorie Calculator -->
-        <div class="tool-card" onclick="navigateTo('calorie')">
+        <div class="tool-card" onclick="navigateTo('calorie')" data-tool-id="calorie" data-category="health">
+          <button type="button" class="card-fav-btn" data-tool-id="calorie" onclick="event.stopPropagation(); toggleFavorite('calorie', event);" aria-label="Favorite calorie" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🥗</div>
           <div class="tool-info">
             <h3 class="tool-title">Calorie Calculator</h3>
@@ -687,12 +766,13 @@
             <div class="tool-tags">
               <span class="tag">Nutrition</span><span class="tag">Weight Loss</span><span class="tag">Macros</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 23: BMR Calculator -->
-        <div class="tool-card" onclick="navigateTo('bmr')">
+        <div class="tool-card" onclick="navigateTo('bmr')" data-tool-id="bmr" data-category="health">
+          <button type="button" class="card-fav-btn" data-tool-id="bmr" onclick="event.stopPropagation(); toggleFavorite('bmr', event);" aria-label="Favorite bmr" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🔥</div>
           <div class="tool-info">
             <h3 class="tool-title">BMR Calculator</h3>
@@ -700,12 +780,13 @@
             <div class="tool-tags">
               <span class="tag">Metabolism</span><span class="tag">Resting Burn</span><span class="tag">Mifflin-St Jeor</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 24: TDEE Calculator -->
-        <div class="tool-card" onclick="navigateTo('tdee')">
+        <div class="tool-card" onclick="navigateTo('tdee')" data-tool-id="tdee" data-category="health">
+          <button type="button" class="card-fav-btn" data-tool-id="tdee" onclick="event.stopPropagation(); toggleFavorite('tdee', event);" aria-label="Favorite tdee" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">⚡</div>
           <div class="tool-info">
             <h3 class="tool-title">TDEE Calculator</h3>
@@ -713,12 +794,13 @@
             <div class="tool-tags">
               <span class="tag">Energy Burn</span><span class="tag">TDEE</span><span class="tag">Fitness</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 25: Pregnancy Due Date Calculator -->
-        <div class="tool-card" onclick="navigateTo('pregnancy-due-date')">
+        <div class="tool-card" onclick="navigateTo('pregnancy-due-date')" data-tool-id="pregnancy-due-date" data-category="health">
+          <button type="button" class="card-fav-btn" data-tool-id="pregnancy-due-date" onclick="event.stopPropagation(); toggleFavorite('pregnancy-due-date', event);" aria-label="Favorite pregnancy-due-date" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">👶</div>
           <div class="tool-info">
             <h3 class="tool-title">Pregnancy Due Date Calculator</h3>
@@ -726,12 +808,13 @@
             <div class="tool-tags">
               <span class="tag">Due Date</span><span class="tag">Trimesters</span><span class="tag">Pregnancy</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 26: Hours to Minutes Converter -->
-        <div class="tool-card" onclick="navigateTo('hours-to-minutes')">
+        <div class="tool-card" onclick="navigateTo('hours-to-minutes')" data-tool-id="hours-to-minutes" data-category="datetime">
+          <button type="button" class="card-fav-btn" data-tool-id="hours-to-minutes" onclick="event.stopPropagation(); toggleFavorite('hours-to-minutes', event);" aria-label="Favorite hours-to-minutes" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">⏲️</div>
           <div class="tool-info">
             <h3 class="tool-title">Hours to Minutes Converter</h3>
@@ -739,12 +822,13 @@
             <div class="tool-tags">
               <span class="tag">Hours to Mins</span><span class="tag">Time Conversion</span><span class="tag">Payroll</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 27: Minutes to Hours Converter -->
-        <div class="tool-card" onclick="navigateTo('minutes-to-hours')">
+        <div class="tool-card" onclick="navigateTo('minutes-to-hours')" data-tool-id="minutes-to-hours" data-category="datetime">
+          <button type="button" class="card-fav-btn" data-tool-id="minutes-to-hours" onclick="event.stopPropagation(); toggleFavorite('minutes-to-hours', event);" aria-label="Favorite minutes-to-hours" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🕰️</div>
           <div class="tool-info">
             <h3 class="tool-title">Minutes to Hours Converter</h3>
@@ -752,12 +836,13 @@
             <div class="tool-tags">
               <span class="tag">Mins to Hours</span><span class="tag">Timesheets</span><span class="tag">Decimal Hours</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 28: Length Converter -->
-        <div class="tool-card" onclick="navigateTo('length-converter')">
+        <div class="tool-card" onclick="navigateTo('length-converter')" data-tool-id="length-converter" data-category="converters">
+          <button type="button" class="card-fav-btn" data-tool-id="length-converter" onclick="event.stopPropagation(); toggleFavorite('length-converter', event);" aria-label="Favorite length-converter" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">📏</div>
           <div class="tool-info">
             <h3 class="tool-title">Length Converter</h3>
@@ -765,12 +850,13 @@
             <div class="tool-tags">
               <span class="tag">Metric / Imperial</span><span class="tag">Meters to Feet</span><span class="tag">Distance</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 29: Weight Converter -->
-        <div class="tool-card" onclick="navigateTo('weight-converter')">
+        <div class="tool-card" onclick="navigateTo('weight-converter')" data-tool-id="weight-converter" data-category="converters">
+          <button type="button" class="card-fav-btn" data-tool-id="weight-converter" onclick="event.stopPropagation(); toggleFavorite('weight-converter', event);" aria-label="Favorite weight-converter" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">⚖️</div>
           <div class="tool-info">
             <h3 class="tool-title">Weight Converter</h3>
@@ -778,12 +864,13 @@
             <div class="tool-tags">
               <span class="tag">Kg to Lbs</span><span class="tag">Grams</span><span class="tag">Mass</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 30: Temperature Converter -->
-        <div class="tool-card" onclick="navigateTo('temperature-converter')">
+        <div class="tool-card" onclick="navigateTo('temperature-converter')" data-tool-id="temperature-converter" data-category="converters">
+          <button type="button" class="card-fav-btn" data-tool-id="temperature-converter" onclick="event.stopPropagation(); toggleFavorite('temperature-converter', event);" aria-label="Favorite temperature-converter" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🌡️</div>
           <div class="tool-info">
             <h3 class="tool-title">Temperature Converter</h3>
@@ -791,12 +878,13 @@
             <div class="tool-tags">
               <span class="tag">Celsius to Fahrenheit</span><span class="tag">Kelvin</span><span class="tag">Thermal Scales</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 31: Area Converter -->
-        <div class="tool-card" onclick="navigateTo('area-converter')">
+        <div class="tool-card" onclick="navigateTo('area-converter')" data-tool-id="area-converter" data-category="converters">
+          <button type="button" class="card-fav-btn" data-tool-id="area-converter" onclick="event.stopPropagation(); toggleFavorite('area-converter', event);" aria-label="Favorite area-converter" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🗺️</div>
           <div class="tool-info">
             <h3 class="tool-title">Area Converter</h3>
@@ -804,12 +892,13 @@
             <div class="tool-tags">
               <span class="tag">Square Feet</span><span class="tag">Acres</span><span class="tag">Land Units</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 32: Volume Converter -->
-        <div class="tool-card" onclick="navigateTo('volume-converter')">
+        <div class="tool-card" onclick="navigateTo('volume-converter')" data-tool-id="volume-converter" data-category="converters">
+          <button type="button" class="card-fav-btn" data-tool-id="volume-converter" onclick="event.stopPropagation(); toggleFavorite('volume-converter', event);" aria-label="Favorite volume-converter" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🧪</div>
           <div class="tool-info">
             <h3 class="tool-title">Volume Converter</h3>
@@ -817,12 +906,13 @@
             <div class="tool-tags">
               <span class="tag">Liters to Gallons</span><span class="tag">Cooking Units</span><span class="tag">Capacity</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 33: Tip Calculator -->
-        <div class="tool-card" onclick="navigateTo('tip')">
+        <div class="tool-card" onclick="navigateTo('tip')" data-tool-id="tip" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="tip" onclick="event.stopPropagation(); toggleFavorite('tip', event);" aria-label="Favorite tip" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🍽️</div>
           <div class="tool-info">
             <h3 class="tool-title">Tip Calculator</h3>
@@ -830,12 +920,13 @@
             <div class="tool-tags">
               <span class="tag">Dining</span><span class="tag">Gratuity</span><span class="tag">Bill Split</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 34: Discount + Final Price Calculator -->
-        <div class="tool-card" onclick="navigateTo('discount-final-price')">
+        <div class="tool-card" onclick="navigateTo('discount-final-price')" data-tool-id="discount-final-price" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="discount-final-price" onclick="event.stopPropagation(); toggleFavorite('discount-final-price', event);" aria-label="Favorite discount-final-price" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🛍️</div>
           <div class="tool-info">
             <h3 class="tool-title">Discount + Final Price Calculator</h3>
@@ -843,12 +934,13 @@
             <div class="tool-tags">
               <span class="tag">Stacked Discounts</span><span class="tag">Double Sale</span><span class="tag">Shopping</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
         <!-- Tool 35: Sales Tax Calculator -->
-        <div class="tool-card" onclick="navigateTo('sales-tax')">
+        <div class="tool-card" onclick="navigateTo('sales-tax')" data-tool-id="sales-tax" data-category="finance">
+          <button type="button" class="card-fav-btn" data-tool-id="sales-tax" onclick="event.stopPropagation(); toggleFavorite('sales-tax', event);" aria-label="Favorite sales-tax" title="Toggle Favorite"><span class="fav-star">☆</span></button>
           <div class="tool-icon-wrapper">🏷️</div>
           <div class="tool-info">
             <h3 class="tool-title">Sales Tax Calculator</h3>
@@ -856,7 +948,7 @@
             <div class="tool-tags">
               <span class="tag">Sales Tax</span><span class="tag">Tax Inclusive</span><span class="tag">Tax Exclusive</span>
             </div>
-          </div>
+        </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
@@ -871,6 +963,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Age Calculator</h1>
         <p class="tool-page-subtitle">Calculate your exact age in years, months, and days, plus days left until your next birthday.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="age" onclick="toggleFavorite('age', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -969,7 +1062,13 @@
             <div class="faq-a">Multiplying by 365 overlooks the extra day added during leap years and the differing lengths of individual months (28, 29, 30, or 31 days). Our tool counts every actual calendar day for complete accuracy.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-age">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('age')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('age')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -987,6 +1086,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="age"></div>
     </section>
 
 
@@ -996,6 +1098,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">EMI Loan Calculator</h1>
         <p class="tool-page-subtitle">Calculate your monthly Equated Monthly Installment (EMI), total interest, and total repayment for home, car, or personal loans.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="emi" onclick="toggleFavorite('emi', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -1118,7 +1221,13 @@
         <div class="disclaimer-note">
           <strong>Financial Disclaimer:</strong> Calculations provided by this tool are informational estimates based on standard amortization formulas. Actual lender loan terms, interest compounding methods, processing fees, GST, and final EMI amounts may vary based on your lender's policies and credit assessment.
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-emi">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('emi')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('emi')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -1136,6 +1245,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="emi"></div>
     </section>
 
 
@@ -1145,6 +1257,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Percentage Calculator</h1>
         <p class="tool-page-subtitle">Solve common percentage problems instantly: find X% of Y, calculate percent increase/decrease, or determine what percentage one number is of another.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="percentage" onclick="toggleFavorite('percentage', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <!-- Mode Tabs -->
@@ -1171,6 +1284,10 @@
           <div class="res-sub">Result:</div>
           <div id="pct-m1-res" class="res-bold">37.5</div>
           <div id="pct-m1-expl" class="res-formula">15% of 250 = 37.5</div>
+        </div>
+        <div class="result-actions-bar" id="result-actions-percentage">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('percentage')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('percentage')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
         </div>
       </div>
 
@@ -1270,6 +1387,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="percentage"></div>
     </section>
 
 
@@ -1279,6 +1399,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Discount Calculator</h1>
         <p class="tool-page-subtitle">Quickly figure out the final sale price, amount saved, and after-tax total during shopping sales.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="discount" onclick="toggleFavorite('discount', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -1394,7 +1515,13 @@
         <div class="disclaimer-note">
           <strong>Commercial Notice:</strong> Final checkout totals at merchant cash registers may reflect slight differences due to merchant-specific rounding rules, delivery fees, or regional tax categories.
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-discount">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('discount')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('discount')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -1412,6 +1539,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="discount"></div>
     </section>
 
 
@@ -1421,6 +1551,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">BMI Health Calculator</h1>
         <p class="tool-page-subtitle">Determine your Body Mass Index (BMI) and check which category your weight falls under according to standard World Health Organization criteria.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="bmi" onclick="toggleFavorite('bmi', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -1545,7 +1676,13 @@
         <div class="disclaimer-note">
           <strong>Medical Disclaimer:</strong> Body Mass Index (BMI) is a simple statistical screening metric for adult populations and is NOT a medical diagnosis. It does not measure body fat distribution, muscle mass, bone density, age, genetic factors, or overall physical health. Please consult a licensed physician or registered healthcare provider for personalized medical evaluation and dietary advice.
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-bmi">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('bmi')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('bmi')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -1563,6 +1700,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="bmi"></div>
     </section>
 
 
@@ -1572,6 +1712,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">GST Calculator</h1>
         <p class="tool-page-subtitle">Calculate Goods and Services Tax (GST) easily. Compute GST exclusive (add tax) or GST inclusive (remove tax) amounts with CGST, SGST, and IGST breakdowns in INR (₹).</p>
+        <button type="button" class="header-fav-btn" data-tool-id="gst" onclick="toggleFavorite('gst', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -1694,7 +1835,13 @@
         <div class="disclaimer-note">
           <strong>Taxation Disclaimer:</strong> This calculator provides general computational estimates for commercial convenience. Actual tax assessments depend on current Goods and Services Tax notifications, HSN/SAC classifications, reverse charge mechanisms, and statutory filing guidelines.
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-gst">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('gst')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('gst')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -1712,6 +1859,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="gst"></div>
     </section>
 
 
@@ -1721,6 +1871,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Simple Interest Calculator</h1>
         <p class="tool-page-subtitle">Calculate simple interest, total repayment amount, and annualized interest breakdown on loans or deposits in INR (₹).</p>
+        <button type="button" class="header-fav-btn" data-tool-id="simple-interest" onclick="toggleFavorite('simple-interest', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -1834,7 +1985,13 @@
         <div class="disclaimer-note">
           <strong>Financial Disclaimer:</strong> Calculations are provided for informational and educational purposes based on mathematical formulas. Actual loan agreements or savings contracts may involve administrative charges, prepayment restrictions, or differing calendar-day conventions (360 vs. 365 days).
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-simple-interest">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('simple-interest')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('simple-interest')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -1852,6 +2009,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="simple-interest"></div>
     </section>
 
 
@@ -1861,6 +2021,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Compound Interest Calculator</h1>
         <p class="tool-page-subtitle">Calculate the compounding growth of investments and loans with flexible annual, quarterly, or monthly compounding schedules in INR (₹).</p>
+        <button type="button" class="header-fav-btn" data-tool-id="compound-interest" onclick="toggleFavorite('compound-interest', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -1977,7 +2138,13 @@
         <div class="disclaimer-note">
           <strong>Investment Disclaimer:</strong> Projected compounding values are mathematical estimates based on constant assumed interest rates. Real-world financial market returns, dividend yields, taxation on interest, and inflation will affect your actual net wealth accumulation.
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-compound-interest">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('compound-interest')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('compound-interest')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -1995,6 +2162,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="compound-interest"></div>
     </section>
 
 
@@ -2004,6 +2174,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Profit &amp; Loss Calculator</h1>
         <p class="tool-page-subtitle">Determine net profit or loss, profit percentage, markup percentage, and profit margin for business, retail, and commerce in INR (₹).</p>
+        <button type="button" class="header-fav-btn" data-tool-id="profit-loss" onclick="toggleFavorite('profit-loss', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -2106,7 +2277,13 @@
         <div class="disclaimer-note">
           <strong>Business Disclaimer:</strong> Calculations are operational guidelines intended for general pricing assistance. They do not substitute for certified auditing, formal bookkeeping, or corporate income tax returns.
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-profit-loss">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('profit-loss')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('profit-loss')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -2124,6 +2301,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="profit-loss"></div>
     </section>
 
 
@@ -2133,6 +2313,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">SIP Calculator</h1>
         <p class="tool-page-subtitle">Calculate projected wealth creation and estimated returns on monthly Systematic Investment Plans (SIP) in mutual funds in INR (₹).</p>
+        <button type="button" class="header-fav-btn" data-tool-id="sip" onclick="toggleFavorite('sip', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -2238,7 +2419,13 @@
         <div class="disclaimer-note">
           <strong>Mutual Fund Disclaimer:</strong> Mutual fund investments are subject to market risks. SIP calculations are based on assumed annual growth rates for illustrative purposes only and do not guarantee future performance. Please read all scheme-related documents carefully before investing.
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-sip">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('sip')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('sip')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -2256,6 +2443,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="sip"></div>
     </section>
 
 
@@ -2265,6 +2455,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">FD Calculator</h1>
         <p class="tool-page-subtitle">Calculate the maturity value and interest earnings for Bank Fixed Deposits (FD) with standard quarterly compounding in INR (₹).</p>
+        <button type="button" class="header-fav-btn" data-tool-id="fd" onclick="toggleFavorite('fd', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -2384,7 +2575,13 @@
         <div class="disclaimer-note">
           <strong>Banking Disclaimer:</strong> Fixed deposit maturity calculations are estimates based on standard quarterly compounding conventions. Final payout amounts may vary slightly depending on individual bank day-count conventions, premature withdrawal clauses, or applicable TDS deductions.
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-fd">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('fd')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('fd')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -2402,6 +2599,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="fd"></div>
     </section>
 
 
@@ -2411,6 +2611,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Date Difference Calculator</h1>
         <p class="tool-page-subtitle">Calculate the exact duration between two dates in years, months, weeks, days, weekdays (Mon-Fri), and hours.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="date-difference" onclick="toggleFavorite('date-difference', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -2522,7 +2723,13 @@
             <div class="faq-a">Yes. If you enter an earlier end date, the calculator automatically organizes the chronological sequence and calculates the positive duration between the two dates.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-date-difference">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('date-difference')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('date-difference')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -2540,6 +2747,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="date-difference"></div>
     </section>
 
 
@@ -2549,6 +2759,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Time Calculator</h1>
         <p class="tool-page-subtitle">Calculate elapsed duration between clock times, add or subtract time units, and convert to decimal hours for payroll &amp; timesheets.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="time" onclick="toggleFavorite('time', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <!-- Mode Tabs -->
@@ -2716,7 +2927,13 @@
             <div class="faq-a">Yes. In the Unit Converter tab, enter any decimal figure (e.g. 7.5 hours) to see it instantly converted into 450 minutes, 27,000 seconds, or 0.3125 days.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-time">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('time')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('time')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -2734,6 +2951,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="time"></div>
     </section>
 
 
@@ -2743,6 +2963,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Unit Converter</h1>
         <p class="tool-page-subtitle">Instant, high-precision conversion across Length, Weight, Temperature, Area, Speed, and Volume.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="unit-converter" onclick="toggleFavorite('unit-converter', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -2849,7 +3070,13 @@
             <div class="faq-a">No. Area and volume scale quadratically and cubically. While 1 foot = 12 inches, 1 square foot = 144 square inches (12²), and 1 cubic foot = 1,728 cubic inches (12³). Our tool applies the proper dimensional powers automatically.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-unit-converter">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('unit-converter')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('unit-converter')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -2867,6 +3094,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="unit-converter"></div>
     </section>
 
 
@@ -2876,6 +3106,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Average Calculator</h1>
         <p class="tool-page-subtitle">Calculate the arithmetic mean, median, mode, total sum, range, and standard deviation for any dataset.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="average" onclick="toggleFavorite('average', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -3000,7 +3231,13 @@
         <div class="disclaimer-note">
           <strong>Statistical Reference:</strong> Standard deviation and mean calculations assume numerical real values. For specialized datasets involving logarithmic growth, finance rates, or categorical data, consider evaluating geometric means or domain-specific weighting.
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-average">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('average')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('average')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -3018,6 +3255,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="average"></div>
     </section>
 
 
@@ -3028,6 +3268,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Loan Interest Calculator</h1>
         <p class="tool-page-subtitle">Calculate total interest expense, compare reducing balance vs flat interest rates, and evaluate your cost of borrowing.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="loan-interest" onclick="toggleFavorite('loan-interest', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -3173,7 +3414,13 @@
             <div class="faq-a">Home loan interest qualifies for deduction up to ₹2,00,000 per year under Section 24(b) of the Income Tax Act for self-occupied properties in the Old Tax Regime.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-loan-interest">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('loan-interest')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('loan-interest')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -3191,6 +3438,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="loan-interest"></div>
     </section>
 
 
@@ -3201,6 +3451,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Loan Eligibility Calculator</h1>
         <p class="tool-page-subtitle">Check your maximum home, car, or personal loan eligibility based on net monthly salary and Fixed Obligation to Income Ratio (FOIR).</p>
+        <button type="button" class="header-fav-btn" data-tool-id="loan-eligibility" onclick="toggleFavorite('loan-eligibility', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -3338,7 +3589,13 @@
             <div class="faq-a">Yes. Self-employed borrowers can input their average monthly net profit after business expenses and taxes as reflected in their latest Income Tax Returns (ITR).</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-loan-eligibility">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('loan-eligibility')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('loan-eligibility')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -3356,6 +3613,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="loan-eligibility"></div>
     </section>
 
 
@@ -3366,6 +3626,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Loan Tenure Calculator</h1>
         <p class="tool-page-subtitle">Calculate the exact number of months and years needed to pay off your loan based on your affordable monthly repayment budget.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="loan-tenure" onclick="toggleFavorite('loan-tenure', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -3490,7 +3751,13 @@
             <div class="faq-a">Yes. Credit cards carry much higher interest rates (36% to 42% p.a.). If you only make minimum 5% payments, payoff tenure often exceeds 15-20 years with astronomical interest costs.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-loan-tenure">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('loan-tenure')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('loan-tenure')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -3508,6 +3775,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="loan-tenure"></div>
     </section>
 
 
@@ -3518,6 +3788,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Salary Calculator</h1>
         <p class="tool-page-subtitle">Calculate in-hand monthly take-home salary from your Annual Cost to Company (CTC) or Monthly Gross Pay with EPF and deductions.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="salary" onclick="toggleFavorite('salary', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -3672,7 +3943,13 @@
             <div class="faq-a">Employers reconcile your annual tax investment declarations (80C, 80D, rent receipts) in January-February. Any shortfall or excess tax withholding is adjusted in the final payroll months of the financial year.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-salary">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('salary')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('salary')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -3690,6 +3967,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="salary"></div>
     </section>
 
 
@@ -3700,6 +3980,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Overtime Pay Calculator</h1>
         <p class="tool-page-subtitle">Calculate overtime earnings, 1.5x time-and-a-half, 2.0x double-time rates, and total gross paycheck wages.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="overtime" onclick="toggleFavorite('overtime', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -3838,7 +4119,13 @@
             <div class="faq-a">Some jurisdictions and public sector organizations allow comp-time in lieu of cash wages, typically at the same 1.5 hours of paid time off per 1 hour of overtime worked.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-overtime">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('overtime')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('overtime')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -3856,6 +4143,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="overtime"></div>
     </section>
 
 
@@ -3866,6 +4156,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Tax Calculator</h1>
         <p class="tool-page-subtitle">Compare Indian Income Tax liability under the New Tax Regime vs Old Tax Regime with standard deduction, Section 87A rebate, and 4% cess.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="tax" onclick="toggleFavorite('tax', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -4006,7 +4297,13 @@
             <div class="faq-a">Individuals with business or professional income (filing ITR-3 or ITR-4) can opt out of the New Regime once, but once they switch back, they cannot change regimes again unless their business income ceases.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-tax">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('tax')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('tax')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -4024,6 +4321,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="tax"></div>
     </section>
 
 
@@ -4034,6 +4334,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Calorie Calculator</h1>
         <p class="tool-page-subtitle">Calculate daily caloric requirements for weight loss, maintenance, or muscle gain with macro breakdowns using the Mifflin-St Jeor formula.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="calorie" onclick="toggleFavorite('calorie', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <!-- Medical & Health Disclaimer -->
@@ -4200,7 +4501,13 @@
             <div class="faq-a">Fitness watches often overestimate exercise calorie burn by 15% to 30%. Using a consistent activity category in this calculator provides a more reliable baseline.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-calorie">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('calorie')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('calorie')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -4218,6 +4525,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="calorie"></div>
     </section>
 
 
@@ -4228,6 +4538,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">BMR Calculator</h1>
         <p class="tool-page-subtitle">Calculate your Basal Metabolic Rate—the exact daily calorie expenditure burned by vital organs at complete physical rest.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="bmr" onclick="toggleFavorite('bmr', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <!-- Medical & Health Disclaimer -->
@@ -4370,7 +4681,13 @@
             <div class="faq-a">Short-term intermittent fasting (16-24 hours) does not reduce BMR. Prolonged severe starvation or chronic extreme caloric restriction over multiple weeks, however, triggers adaptive thermogenesis.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-bmr">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('bmr')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('bmr')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -4388,6 +4705,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="bmr"></div>
     </section>
 
 
@@ -4398,6 +4718,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">TDEE Calculator</h1>
         <p class="tool-page-subtitle">Calculate Total Daily Energy Expenditure factoring in basal metabolism, physical activity levels, and daily exercise energy burn.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="tdee" onclick="toggleFavorite('tdee', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <!-- Medical & Health Disclaimer -->
@@ -4552,7 +4873,13 @@
             <div class="faq-a">Caffeine provides a mild temporary thermogenic boost of roughly 3-11% for 1-2 hours, but this does not replace consistent dietary habit adherence.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-tdee">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('tdee')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('tdee')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -4570,6 +4897,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="tdee"></div>
     </section>
 
 
@@ -4580,6 +4910,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Pregnancy Due Date Calculator</h1>
         <p class="tool-page-subtitle">Estimate your baby's delivery due date (EDD), gestational age in weeks &amp; days, current trimester, and key developmental milestones.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="pregnancy-due-date" onclick="toggleFavorite('pregnancy-due-date', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <!-- Medical & Health Disclaimer -->
@@ -4715,7 +5046,13 @@
             <div class="faq-a">If your cycles are irregular or unpredictable, calculating by LMP can be inaccurate. In such cases, an early dating ultrasound is required to establish gestational age.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-pregnancy-due-date">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('pregnancy-due-date')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('pregnancy-due-date')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -4733,6 +5070,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="pregnancy-due-date"></div>
     </section>
 
 
@@ -4743,6 +5083,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Hours to Minutes Converter</h1>
         <p class="tool-page-subtitle">Convert decimal hours or combined hours and minutes into total minutes, seconds, milliseconds, and decimal workday ratios.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="hours-to-minutes" onclick="toggleFavorite('hours-to-minutes', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -4898,7 +5239,13 @@
             <div class="faq-a">Yes. If you input decimal hours such as 1.33 hours, it accurately computes 79.8 minutes and shows the breakdown in seconds.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-hours-to-minutes">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('hours-to-minutes')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('hours-to-minutes')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -4916,6 +5263,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="hours-to-minutes"></div>
     </section>
 
 
@@ -4926,6 +5276,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Minutes to Hours Converter</h1>
         <p class="tool-page-subtitle">Convert elapsed minutes into decimal hours, clock time (HH:MM:SS), and workday progress percentages.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="minutes-to-hours" onclick="toggleFavorite('minutes-to-hours', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -5062,7 +5413,13 @@
             <div class="faq-a">Negative values are automatically bounded to 0 because elapsed physical time is non-negative.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-minutes-to-hours">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('minutes-to-hours')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('minutes-to-hours')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -5080,6 +5437,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="minutes-to-hours"></div>
     </section>
 
 
@@ -5090,6 +5450,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Length Converter</h1>
         <p class="tool-page-subtitle">Convert length and distance between millimeters, centimeters, meters, kilometers, inches, feet, yards, miles, and nautical miles.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="length-converter" onclick="toggleFavorite('length-converter', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -5227,7 +5588,13 @@
             <div class="faq-a">Convert to total inches first: (5 × 12) + 9 = 69 inches. Then multiply by 2.54: 69 × 2.54 = 175.26 cm.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-length-converter">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('length-converter')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('length-converter')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -5245,6 +5612,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="length-converter"></div>
     </section>
 
 
@@ -5255,6 +5625,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Weight Converter</h1>
         <p class="tool-page-subtitle">Convert weight and mass across milligrams, grams, kilograms, metric tonnes, ounces, pounds, stones, and Indian quintals.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="weight-converter" onclick="toggleFavorite('weight-converter', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -5390,7 +5761,13 @@
             <div class="faq-a">Multiply your weight in kg by 2, then add 10% of that number. For example: 70 kg × 2 = 140; 140 + 14 = 154 lbs (actual is 154.32 lbs).</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-weight-converter">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('weight-converter')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('weight-converter')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -5408,6 +5785,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="weight-converter"></div>
     </section>
 
 
@@ -5418,6 +5798,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Temperature Converter</h1>
         <p class="tool-page-subtitle">Convert temperatures accurately between Celsius (°C), Fahrenheit (°F), and Kelvin (K) with step-by-step mathematical formulas.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="temperature-converter" onclick="toggleFavorite('temperature-converter', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -5549,7 +5930,13 @@
             <div class="faq-a">Subtract 30 and then divide by 2. For example, 70 °F − 30 = 40; 40 / 2 = 20 °C (exact conversion is 21.1 °C).</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-temperature-converter">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('temperature-converter')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('temperature-converter')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -5567,6 +5954,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="temperature-converter"></div>
     </section>
 
 
@@ -5577,6 +5967,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Area Converter</h1>
         <p class="tool-page-subtitle">Convert land, real estate, and construction area across square feet, square meters, acres, hectares, guntha, bigha, and square yards.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="area-converter" onclick="toggleFavorite('area-converter', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -5713,7 +6104,13 @@
             <div class="faq-a">One hectare is equal to approximately 2.47105 acres (10,000 square meters).</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-area-converter">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('area-converter')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('area-converter')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -5731,6 +6128,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="area-converter"></div>
     </section>
 
 
@@ -5741,6 +6141,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Volume Converter</h1>
         <p class="tool-page-subtitle">Convert liquid capacity and cubic volume between milliliters, liters, cubic meters, gallons, cups, fluid ounces, and cubic feet.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="volume-converter" onclick="toggleFavorite('volume-converter', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -5876,7 +6277,13 @@
             <div class="faq-a">One liter is approximately 4.2268 standard US cups (where 1 US cup is 236.59 ml). In metric culinary countries, a metric cup is defined as exactly 250 ml, yielding exactly 4 metric cups per liter.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-volume-converter">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('volume-converter')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('volume-converter')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -5894,6 +6301,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="volume-converter"></div>
     </section>
 
 
@@ -5904,6 +6314,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Tip Calculator</h1>
         <p class="tool-page-subtitle">Calculate restaurant tips, service gratuities, custom percentage additions, and fair bill splits per person in INR (₹) or USD ($).</p>
+        <button type="button" class="header-fav-btn" data-tool-id="tip" onclick="toggleFavorite('tip', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -6045,7 +6456,13 @@
             <div class="faq-a">This calculator divides the bill equally across all diners. If someone ordered significantly more expensive items, calculate their individual subtotal first with their proportional tip share.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-tip">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('tip')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('tip')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -6063,6 +6480,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="tip"></div>
     </section>
 
 
@@ -6073,6 +6493,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Discount + Final Price Calculator</h1>
         <p class="tool-page-subtitle">Calculate stacked / double promotional discounts (e.g., 30% off + extra 15% coupon) with optional sales tax and net savings.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="discount-final-price" onclick="toggleFavorite('discount-final-price', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -6211,7 +6632,13 @@
             <div class="faq-a">Yes. Simply leave the Extra Discount field at 0% to use it as a standard single-discount calculator with tax.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-discount-final-price">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('discount-final-price')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('discount-final-price')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -6229,6 +6656,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="discount-final-price"></div>
     </section>
 
 
@@ -6239,6 +6669,7 @@
         <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
         <h1 class="tool-page-title">Sales Tax Calculator</h1>
         <p class="tool-page-subtitle">Add sales tax to pre-tax amounts or reverse-calculate pre-tax list price and tax amounts from tax-inclusive retail totals.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="sales-tax" onclick="toggleFavorite('sales-tax', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
       </div>
 
       <div class="card">
@@ -6373,7 +6804,13 @@
             <div class="faq-a">Since the US Supreme Court ruling in <em>South Dakota v. Wayfair (2018)</em>, online retailers are required to collect state and local sales tax based on the delivery destination address of the customer.</div>
           </div>
         </div>
-      </div>
+      
+        <!-- Copy & Share Result Actions -->
+        <div class="result-actions-bar" id="result-actions-sales-tax">
+          <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('sales-tax')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+          <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('sales-tax')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+        </div>
+</div>
 
       <!-- Advertisement - Adsterra Banner 320x50 -->
       <div class="ad-banner-wrapper" aria-label="Advertisement">
@@ -6391,6 +6828,9 @@
           <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
         </div>
       </div>
+    
+      <!-- Related Tools Section -->
+      <div class="related-tools-section" data-tool="sales-tax"></div>
     </section>
 
 
@@ -6853,5 +7293,7 @@
       </div>
     </div>
   </footer>
+  <!-- Floating Toast Notification -->
+  <div id="toast-notification" class="toast-notification" aria-live="polite" style="display:none;"></div>
 </body>
 </html>
