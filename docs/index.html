@@ -81,6 +81,9 @@
   <meta name="apple-mobile-web-app-title" content="MY TOOLS">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="stylesheet" href="style.css">
+    <!-- PDF-Lib & PDF.js for 100% Client-Side PDF Tools -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.9/dist/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="script.js" defer></script>
 </head>
 <body class="light-theme">
@@ -149,7 +152,7 @@
       </a>
     </nav>
 
-    <div class="drawer-section-label">ALL CALCULATORS &amp; UTILITIES (35 TOOLS)</div>
+    <div class="drawer-section-label">ALL TOOLS &amp; UTILITIES (45 TOOLS)</div>
     <nav class="drawer-nav">
       <a href="#age" onclick="navigateTo('age')" class="drawer-item" data-screen="age">
         <span class="drawer-icon">🎂</span>
@@ -293,6 +296,47 @@
         <span class="drawer-icon">🏷️</span>
         <span>Sales Tax Calculator</span>
       </a>
+      <a href="#pdf-merge" onclick="navigateTo('pdf-merge')" class="drawer-item" data-screen="pdf-merge">
+        <span class="drawer-icon">📑</span>
+        <span>PDF Merge</span>
+      </a>
+      <a href="#pdf-split" onclick="navigateTo('pdf-split')" class="drawer-item" data-screen="pdf-split">
+        <span class="drawer-icon">✂️</span>
+        <span>PDF Split</span>
+      </a>
+      <a href="#pdf-to-images" onclick="navigateTo('pdf-to-images')" class="drawer-item" data-screen="pdf-to-images">
+        <span class="drawer-icon">🖼️</span>
+        <span>PDF to Images</span>
+      </a>
+      <a href="#images-to-pdf" onclick="navigateTo('images-to-pdf')" class="drawer-item" data-screen="images-to-pdf">
+        <span class="drawer-icon">📑</span>
+        <span>Images to PDF</span>
+      </a>
+      <a href="#image-compressor" onclick="navigateTo('image-compressor')" class="drawer-item" data-screen="image-compressor">
+        <span class="drawer-icon">🗜️</span>
+        <span>Image Compressor</span>
+      </a>
+      <a href="#image-resizer" onclick="navigateTo('image-resizer')" class="drawer-item" data-screen="image-resizer">
+        <span class="drawer-icon">📐</span>
+        <span>Image Resizer</span>
+      </a>
+      <a href="#jpg-to-png" onclick="navigateTo('jpg-to-png')" class="drawer-item" data-screen="jpg-to-png">
+        <span class="drawer-icon">🔁</span>
+        <span>JPG to PNG Converter</span>
+      </a>
+      <a href="#png-to-jpg" onclick="navigateTo('png-to-jpg')" class="drawer-item" data-screen="png-to-jpg">
+        <span class="drawer-icon">🔄</span>
+        <span>PNG to JPG Converter</span>
+      </a>
+      <a href="#image-cropper" onclick="navigateTo('image-cropper')" class="drawer-item" data-screen="image-cropper">
+        <span class="drawer-icon">✂️</span>
+        <span>Image Cropper</span>
+      </a>
+      <a href="#image-to-webp" onclick="navigateTo('image-to-webp')" class="drawer-item" data-screen="image-to-webp">
+        <span class="drawer-icon">⚡</span>
+        <span>Image to WebP Converter</span>
+      </a>
+
 
     <div class="drawer-section-label">INFORMATION &amp; LEGAL</div>
     <nav class="drawer-nav">
@@ -408,7 +452,7 @@
       <div class="category-filters-container">
         <div class="category-pills" id="category-pills" role="tablist" aria-label="Tool Categories">
           <button type="button" class="category-pill active" data-category="all" onclick="filterByCategory('all')" role="tab" aria-selected="true">
-            <span class="cat-label">All</span> <span class="cat-badge">35</span>
+            <span class="cat-label">All</span> <span class="cat-badge">45</span>
           </button>
           <button type="button" class="category-pill" data-category="finance" onclick="filterByCategory('finance')" role="tab" aria-selected="false">
             <span class="cat-icon">💰</span> <span class="cat-label">Finance</span> <span class="cat-badge">17</span>
@@ -422,7 +466,10 @@
           <button type="button" class="category-pill" data-category="converters" onclick="filterByCategory('converters')" role="tab" aria-selected="false">
             <span class="cat-icon">🔄</span> <span class="cat-label">Converters</span> <span class="cat-badge">6</span>
           </button>
-          <button type="button" class="category-pill" data-category="math" onclick="filterByCategory('math')" role="tab" aria-selected="false">
+                    <button type="button" class="category-pill" data-category="pdf-images" onclick="filterByCategory('pdf-images')" role="tab" aria-selected="false">
+            <span class="cat-icon">📄</span> <span class="cat-label">PDF &amp; Image Tools</span> <span class="cat-badge">10</span>
+          </button>
+<button type="button" class="category-pill" data-category="math" onclick="filterByCategory('math')" role="tab" aria-selected="false">
             <span class="cat-icon">🔢</span> <span class="cat-label">Math</span> <span class="cat-badge">2</span>
           </button>
         </div>
@@ -949,6 +996,136 @@
               <span class="tag">Sales Tax</span><span class="tag">Tax Inclusive</span><span class="tag">Tax Exclusive</span>
             </div>
         </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 36: PDF Merge -->
+        <div class="tool-card" onclick="navigateTo('pdf-merge')" data-tool-id="pdf-merge" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="pdf-merge" onclick="event.stopPropagation(); toggleFavorite('pdf-merge', event);" aria-label="Favorite pdf-merge" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">📑</div>
+          <div class="tool-info">
+            <h3 class="tool-title">PDF Merge</h3>
+            <p class="tool-desc">Combine multiple PDF documents into one file in custom page order.</p>
+            <div class="tool-tags">
+              <span class="tag">PDF</span><span class="tag">Merge</span><span class="tag">Combine</span><span class="tag">Join</span><span class="tag">Docs</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 37: PDF Split -->
+        <div class="tool-card" onclick="navigateTo('pdf-split')" data-tool-id="pdf-split" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="pdf-split" onclick="event.stopPropagation(); toggleFavorite('pdf-split', event);" aria-label="Favorite pdf-split" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">✂️</div>
+          <div class="tool-info">
+            <h3 class="tool-title">PDF Split</h3>
+            <p class="tool-desc">Extract custom page ranges or split single pages from any PDF document.</p>
+            <div class="tool-tags">
+              <span class="tag">PDF</span><span class="tag">Split</span><span class="tag">Extract</span><span class="tag">Pages</span><span class="tag">Separate</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 38: PDF to Images -->
+        <div class="tool-card" onclick="navigateTo('pdf-to-images')" data-tool-id="pdf-to-images" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="pdf-to-images" onclick="event.stopPropagation(); toggleFavorite('pdf-to-images', event);" aria-label="Favorite pdf-to-images" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">🖼️</div>
+          <div class="tool-info">
+            <h3 class="tool-title">PDF to Images</h3>
+            <p class="tool-desc">Convert multi-page PDF documents into high-resolution JPG or PNG images.</p>
+            <div class="tool-tags">
+              <span class="tag">PDF</span><span class="tag">Images</span><span class="tag">Convert</span><span class="tag">JPG</span><span class="tag">PNG</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 39: Images to PDF -->
+        <div class="tool-card" onclick="navigateTo('images-to-pdf')" data-tool-id="images-to-pdf" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="images-to-pdf" onclick="event.stopPropagation(); toggleFavorite('images-to-pdf', event);" aria-label="Favorite images-to-pdf" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">📑</div>
+          <div class="tool-info">
+            <h3 class="tool-title">Images to PDF</h3>
+            <p class="tool-desc">Combine multiple JPG, PNG, and WebP images into a single clean PDF.</p>
+            <div class="tool-tags">
+              <span class="tag">Images</span><span class="tag">PDF</span><span class="tag">Photos</span><span class="tag">Album</span><span class="tag">Combine</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 40: Image Compressor -->
+        <div class="tool-card" onclick="navigateTo('image-compressor')" data-tool-id="image-compressor" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="image-compressor" onclick="event.stopPropagation(); toggleFavorite('image-compressor', event);" aria-label="Favorite image-compressor" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">🗜️</div>
+          <div class="tool-info">
+            <h3 class="tool-title">Image Compressor</h3>
+            <p class="tool-desc">Reduce image file size while keeping visual clarity 100% locally.</p>
+            <div class="tool-tags">
+              <span class="tag">Image</span><span class="tag">Compress</span><span class="tag">Reduce</span><span class="tag">Optimize</span><span class="tag">Size</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 41: Image Resizer -->
+        <div class="tool-card" onclick="navigateTo('image-resizer')" data-tool-id="image-resizer" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="image-resizer" onclick="event.stopPropagation(); toggleFavorite('image-resizer', event);" aria-label="Favorite image-resizer" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">📐</div>
+          <div class="tool-info">
+            <h3 class="tool-title">Image Resizer</h3>
+            <p class="tool-desc">Resize images to exact pixel dimensions or percentage scales.</p>
+            <div class="tool-tags">
+              <span class="tag">Image</span><span class="tag">Resize</span><span class="tag">Scale</span><span class="tag">Dimensions</span><span class="tag">Pixels</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 42: JPG to PNG Converter -->
+        <div class="tool-card" onclick="navigateTo('jpg-to-png')" data-tool-id="jpg-to-png" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="jpg-to-png" onclick="event.stopPropagation(); toggleFavorite('jpg-to-png', event);" aria-label="Favorite jpg-to-png" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">🔁</div>
+          <div class="tool-info">
+            <h3 class="tool-title">JPG to PNG Converter</h3>
+            <p class="tool-desc">Convert JPG and JPEG images to lossless high-clarity PNG format.</p>
+            <div class="tool-tags">
+              <span class="tag">JPG</span><span class="tag">PNG</span><span class="tag">Convert</span><span class="tag">Image</span><span class="tag">Format</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 43: PNG to JPG Converter -->
+        <div class="tool-card" onclick="navigateTo('png-to-jpg')" data-tool-id="png-to-jpg" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="png-to-jpg" onclick="event.stopPropagation(); toggleFavorite('png-to-jpg', event);" aria-label="Favorite png-to-jpg" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">🔄</div>
+          <div class="tool-info">
+            <h3 class="tool-title">PNG to JPG Converter</h3>
+            <p class="tool-desc">Transform PNG graphics into compressed JPGs with custom background color.</p>
+            <div class="tool-tags">
+              <span class="tag">PNG</span><span class="tag">JPG</span><span class="tag">Convert</span><span class="tag">Transparent</span><span class="tag">Image</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 44: Image Cropper -->
+        <div class="tool-card" onclick="navigateTo('image-cropper')" data-tool-id="image-cropper" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="image-cropper" onclick="event.stopPropagation(); toggleFavorite('image-cropper', event);" aria-label="Favorite image-cropper" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">✂️</div>
+          <div class="tool-info">
+            <h3 class="tool-title">Image Cropper</h3>
+            <p class="tool-desc">Crop photos and graphics with standard aspect ratio presets or custom box.</p>
+            <div class="tool-tags">
+              <span class="tag">Image</span><span class="tag">Crop</span><span class="tag">Trim</span><span class="tag">Square</span><span class="tag">16:9</span>
+            </div>
+          </div>
+          <button class="tool-action-btn">Open Tool →</button>
+        </div>
+        <!-- Tool 45: Image to WebP Converter -->
+        <div class="tool-card" onclick="navigateTo('image-to-webp')" data-tool-id="image-to-webp" data-category="pdf-images">
+          <button type="button" class="card-fav-btn" data-tool-id="image-to-webp" onclick="event.stopPropagation(); toggleFavorite('image-to-webp', event);" aria-label="Favorite image-to-webp" title="Toggle Favorite"><span class="fav-star">☆</span></button>
+          <div class="tool-icon-wrapper">⚡</div>
+          <div class="tool-info">
+            <h3 class="tool-title">Image to WebP Converter</h3>
+            <p class="tool-desc">Convert JPG and PNG images to ultra-lightweight next-gen WebP format.</p>
+            <div class="tool-tags">
+              <span class="tag">WebP</span><span class="tag">Image</span><span class="tag">Fast</span><span class="tag">Next-Gen</span><span class="tag">Convert</span>
+            </div>
+          </div>
           <button class="tool-action-btn">Open Tool →</button>
         </div>
 
@@ -6870,6 +7047,1550 @@
       </div>
     </section>
 
+    <!-- ==================== 36. PDF MERGE ==================== -->
+    <section id="screen-pdf-merge" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">PDF Merge</h1>
+        <p class="tool-page-subtitle">Combine multiple PDF documents into a single organized file with drag-and-drop order control. 100% private and browser-based.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="pdf-merge" onclick="toggleFavorite('pdf-merge', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="pdf-merge-dropzone" onclick="document.getElementById('pdf-merge-input').click()">
+          <input type="file" id="pdf-merge-input" accept="application/pdf" multiple style="display:none;" onchange="handlePdfMergeFiles(this.files)">
+          <div class="dropzone-icon">📑</div>
+          <div class="dropzone-text"><strong>Choose PDF files</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Select 2 or more PDF documents to merge</div>
+        </div>
+
+        <div id="pdf-merge-list-container" class="file-list-container" style="display:none;">
+          <div class="file-list-header">
+            <span class="file-list-title">Selected PDF Files (<span id="pdf-merge-count">0</span>)</span>
+            <button type="button" class="btn-text-sm" onclick="document.getElementById('pdf-merge-input').click()">+ Add More PDFs</button>
+          </div>
+          <div id="pdf-merge-file-list" class="file-item-list"></div>
+        </div>
+
+        <div id="pdf-merge-error" class="error-banner" style="display:none;"></div>
+        <div id="pdf-merge-progress" class="status-banner" style="display:none;"></div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="pdf-merge-btn" onclick="processPdfMerge()">Merge PDFs</button>
+          <button type="button" class="btn btn-outline" onclick="resetPdfMerge()">Reset</button>
+        </div>
+
+        <div id="pdf-merge-result" class="result-card" style="display:none;">
+          <h3 class="result-header">Merged PDF Ready</h3>
+          <div class="stat-highlight">
+            <span id="pdf-merge-result-pages" class="highlight-number">0</span>
+            <span class="highlight-unit">Pages Combined</span>
+          </div>
+          <div class="stats-pills-row">
+            <div class="stat-pill">Files Merged: <strong id="pdf-merge-result-count">0</strong></div>
+            <div class="stat-pill">Total Size: <strong id="pdf-merge-result-size">0 KB</strong></div>
+          </div>
+          <div style="margin-top: 16px;">
+            <a id="pdf-merge-download-btn" class="btn btn-primary btn-block download-btn" download="merged-document.pdf">⬇ Download Merged PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-pdf-merge">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('pdf-merge')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('pdf-merge')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="pdf-merge"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About PDF Merge - Free Client-Side PDF Combiner</h2>
+        <p class="prose-lead">PDF Merge allows you to effortlessly join multiple separate PDF documents into a single, cohesive document. Whether merging invoices, academic assignments, legal contracts, or scanned paper forms, our tool runs entirely inside your web browser. No files are transmitted to any remote servers, providing supreme privacy and instantaneous performance.</p>
+
+        <h3 class="prose-h3">How to Use PDF Merge</h3>
+        <ol class="prose-list">
+          <li><strong>Select or Drop PDFs:</strong> Click the file upload box or drag your PDF documents directly onto the upload zone.</li>
+          <li><strong>Reorder Files:</strong> Use the convenient Up (⬆) and Down (⬇) buttons next to each file to arrange your pages in the exact sequence you want them to appear.</li>
+          <li><strong>Remove Unwanted Files:</strong> Click the remove (✕) button on any accidentally added file.</li>
+          <li><strong>Click Merge PDFs:</strong> Our client-side PDF engine stitches all documents together in seconds.</li>
+          <li><strong>Download:</strong> Click the "Download Merged PDF" button to save your combined PDF immediately to your device.</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>Zero Server Upload:</strong> Sensitive financial statements, medical files, and personal IDs never leave your device.</li>
+          <li><strong>Unlimited File Combination:</strong> Merge 2, 5, 10, or more documents seamlessly.</li>
+          <li><strong>Intuitive Sequence Controls:</strong> Position title pages, body chapters, and appendices in the perfect reading sequence.</li>
+          <li><strong>High Fidelity Rendering:</strong> Preserves original document fonts, vector diagrams, hyperlinks, and page orientations.</li>
+          <li><strong>Mobile Optimized:</strong> Smoothly reorder and merge documents on Android smartphones, tablets, and desktop workstations.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Consolidating Tax &amp; Expense Receipts</div>
+          <p class="example-desc">A freelancer collects monthly bank statements, freelance invoices, and utility utility receipts as 6 separate PDFs. By dropping them into PDF Merge, arranging them chronologically from January to June, and clicking Merge, they create a single audit-ready annual submission PDF in under five seconds.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: Academic Thesis Chapters &amp; Cover Sheets</div>
+          <p class="example-desc">A graduate student has their thesis cover page, table of contents, bibliography, and 4 experimental chapters saved in distinct PDFs from Word and LaTeX. With PDF Merge, they join all 7 files in the prescribed university order without purchasing costly PDF editor software.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">Is my sensitive PDF uploaded to any cloud server?</div>
+            <div class="faq-a">No. All PDF page parsing, binary assembling, and file generation execute entirely locally within your browser using WebAssembly and Web Standards. Zero bytes of your documents are uploaded to our servers or third parties.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I merge PDFs that have different page orientations or sizes?</div>
+            <div class="faq-a">Yes. Each PDF page maintains its original dimensions (Letter, A4, Legal) and orientation (Portrait or Landscape) throughout the merging process without distorting content.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Is there a limit on the number of PDFs I can combine?</div>
+            <div class="faq-a">There is no hardcoded software limit. Because the tool runs directly on your device, it depends only on your device's available memory. Most mobile devices comfortably merge dozens of PDFs at once.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Does merging reduce the text quality or blur scanned images?</div>
+            <div class="faq-a">No. PDF Merge preserves the raw vector paths, true-type fonts, embedded raster graphics, and text content verbatim with 100% loss-free reproduction.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 37. PDF SPLIT ==================== -->
+    <section id="screen-pdf-split" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">PDF Split</h1>
+        <p class="tool-page-subtitle">Extract specific page ranges or extract single pages from your PDF document. Secure and processed entirely in your browser.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="pdf-split" onclick="toggleFavorite('pdf-split', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="pdf-split-dropzone" onclick="document.getElementById('pdf-split-input').click()">
+          <input type="file" id="pdf-split-input" accept="application/pdf" style="display:none;" onchange="handlePdfSplitFile(this.files[0])">
+          <div class="dropzone-icon">✂️</div>
+          <div class="dropzone-text"><strong>Choose a PDF file</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Select a multi-page PDF document to split or extract</div>
+        </div>
+
+        <div id="pdf-split-controls" style="display:none; margin-top: 18px;">
+          <div class="file-summary-card">
+            <div class="file-summary-icon">📄</div>
+            <div class="file-summary-info">
+              <div class="file-summary-name" id="pdf-split-filename">document.pdf</div>
+              <div class="file-summary-meta">Total Pages: <strong id="pdf-split-total-pages" class="text-primary">0</strong> | File Size: <span id="pdf-split-filesize">0 KB</span></div>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-top: 16px;">
+            <label for="pdf-split-range"><strong>Pages to Extract</strong> (e.g., <code>1-3, 5, 8-10</code>)</label>
+            <input type="text" id="pdf-split-range" class="form-input" placeholder="e.g. 1-3, 5" value="1">
+            <span class="input-hint">Specify individual pages separated by commas, or page ranges with hyphens.</span>
+          </div>
+
+          <div class="quick-preset-chips">
+            <span class="preset-label">Quick Presets:</span>
+            <button type="button" class="preset-chip" onclick="setPdfSplitPreset('all')">All Pages</button>
+            <button type="button" class="preset-chip" onclick="setPdfSplitPreset('first')">First Page (1)</button>
+            <button type="button" class="preset-chip" onclick="setPdfSplitPreset('odd')">Odd Pages</button>
+            <button type="button" class="preset-chip" onclick="setPdfSplitPreset('even')">Even Pages</button>
+          </div>
+        </div>
+
+        <div id="pdf-split-error" class="error-banner" style="display:none;"></div>
+        <div id="pdf-split-progress" class="status-banner" style="display:none;"></div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="pdf-split-btn" onclick="processPdfSplit()" disabled>Extract Pages</button>
+          <button type="button" class="btn btn-outline" onclick="resetPdfSplit()">Reset</button>
+        </div>
+
+        <div id="pdf-split-result" class="result-card" style="display:none;">
+          <h3 class="result-header">Extracted PDF Created</h3>
+          <div class="stat-highlight">
+            <span id="pdf-split-result-pages" class="highlight-number">0</span>
+            <span class="highlight-unit">Pages Extracted</span>
+          </div>
+          <div class="stats-pills-row">
+            <div class="stat-pill">Extracted Range: <strong id="pdf-split-result-range">-</strong></div>
+            <div class="stat-pill">New File Size: <strong id="pdf-split-result-size">0 KB</strong></div>
+          </div>
+          <div style="margin-top: 16px;">
+            <a id="pdf-split-download-btn" class="btn btn-primary btn-block download-btn" download="extracted-pages.pdf">⬇ Download Extracted PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-pdf-split">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('pdf-split')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('pdf-split')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="pdf-split"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About PDF Split - Extract Pages from PDF Online</h2>
+        <p class="prose-lead">PDF Split empowers you to isolate and extract select pages or custom page ranges from any multi-page PDF document. If you only need pages 4 through 7 of a lengthy 100-page manual, or need to separate a signature page from a contract, PDF Split handles it seamlessly right in your browser with zero server uploads.</p>
+
+        <h3 class="prose-h3">How to Split and Extract PDF Pages</h3>
+        <ol class="prose-list">
+          <li><strong>Upload Your PDF:</strong> Drag and drop your file or tap the upload box to pick your PDF document.</li>
+          <li><strong>Review Total Pages:</strong> The tool automatically reads and displays the total page count of your document.</li>
+          <li><strong>Specify Pages:</strong> Type the desired pages using numbers, commas, and hyphens (such as <code>1-3, 5, 9-12</code>), or click convenient quick preset buttons like "Odd Pages" or "First Page".</li>
+          <li><strong>Click Extract Pages:</strong> The browser builds a lightweight new PDF containing strictly your chosen pages.</li>
+          <li><strong>Download:</strong> Click the "Download Extracted PDF" button to immediately obtain your customized PDF.</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>Complete Local Confidentiality:</strong> Perfect for confidential legal agreements, payroll sheets, and financial disclosures.</li>
+          <li><strong>Flexible Syntax:</strong> Supports discrete page lists (<code>2, 4, 6</code>) as well as continuous intervals (<code>10-25</code>).</li>
+          <li><strong>Validation Safeguards:</strong> Automatically prevents typos, out-of-range page numbers, and empty selections.</li>
+          <li><strong>Zero Installation:</strong> Runs instantly on Google Chrome, Samsung Internet, Safari, Firefox, and Edge.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Extracting Certificate from an Annual Report</div>
+          <p class="example-desc">An employee receives a 50-page company benefits guide where page 42 is an insurance enrollment certificate. By entering <code>42</code> into PDF Split, they download a standalone 1-page PDF file ready for submission to HR without cumbersome third-party software.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: Splitting Textbook Chapters for Mobile Reading</div>
+          <p class="example-desc">A university student needs to read Chapter 3 (pages 45 to 68) of a heavy 600-page academic textbook. Entering <code>45-68</code> creates an ultra-compact PDF that opens instantly on their mobile phone without battery drain or lag.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">Can I extract non-consecutive pages in a single split?</div>
+            <div class="faq-a">Yes. You can combine ranges and single pages using commas, such as <code>1, 3-5, 9, 12-14</code>. All specified pages will be gathered in order into a single output PDF.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Will splitting remove pages from my original file?</div>
+            <div class="faq-a">No. Your original PDF stored on your device remains completely untouched. The browser simply reads the page data and writes a brand new PDF with the selected pages.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">What happens if I type a page number larger than the document's total pages?</div>
+            <div class="faq-a">The validator automatically flags out-of-range numbers with a friendly inline message and prevents invalid PDF generation.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Does PDF Split require an active internet connection?</div>
+            <div class="faq-a">Once the web app is loaded in your browser, the PDF splitting algorithm runs 100% offline via client-side JavaScript.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 38. PDF TO IMAGES ==================== -->
+    <section id="screen-pdf-to-images" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">PDF to Images</h1>
+        <p class="tool-page-subtitle">Convert PDF document pages into high-resolution JPG or PNG image files with live browser rendering. 100% client-side privacy.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="pdf-to-images" onclick="toggleFavorite('pdf-to-images', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="pdf2img-dropzone" onclick="document.getElementById('pdf2img-input').click()">
+          <input type="file" id="pdf2img-input" accept="application/pdf" style="display:none;" onchange="handlePdfToImagesFile(this.files[0])">
+          <div class="dropzone-icon">🖼️</div>
+          <div class="dropzone-text"><strong>Choose a PDF file</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Render each PDF page into clean, high-resolution JPG or PNG images</div>
+        </div>
+
+        <div id="pdf2img-controls" style="display:none; margin-top: 18px;">
+          <div class="file-summary-card">
+            <div class="file-summary-icon">📑</div>
+            <div class="file-summary-info">
+              <div class="file-summary-name" id="pdf2img-filename">document.pdf</div>
+              <div class="file-summary-meta">Detected Pages: <strong id="pdf2img-total-pages" class="text-primary">0</strong></div>
+            </div>
+          </div>
+
+          <div class="input-grid-2" style="margin-top: 16px;">
+            <div class="input-group">
+              <label for="pdf2img-format">Output Image Format</label>
+              <select id="pdf2img-format" class="form-input">
+                <option value="image/jpeg" selected>JPG / JPEG (Compact file size)</option>
+                <option value="image/png">PNG (Lossless clarity)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="pdf2img-quality">Rendering DPI / Quality</label>
+              <select id="pdf2img-quality" class="form-input">
+                <option value="1.5" selected>Standard Web (150 DPI)</option>
+                <option value="2.0">High Definition (200 DPI)</option>
+                <option value="1.0">Compact / Fast (100 DPI)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="pdf2img-error" class="error-banner" style="display:none;"></div>
+        <div id="pdf2img-progress" class="status-banner" style="display:none;"></div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="pdf2img-btn" onclick="processPdfToImages()" disabled>Convert to Images</button>
+          <button type="button" class="btn btn-outline" onclick="resetPdfToImages()">Reset</button>
+        </div>
+
+        <div id="pdf2img-results" class="result-card" style="display:none;">
+          <div class="result-header-row">
+            <h3 class="result-header" style="margin:0;">Converted Pages (<span id="pdf2img-rendered-count">0</span>)</h3>
+            <button type="button" class="btn btn-outline btn-sm" onclick="downloadAllPdfImages()">⬇ Download All</button>
+          </div>
+          <div id="pdf2img-gallery" class="image-gallery-grid"></div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-pdf-to-images">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('pdf-to-images')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('pdf-to-images')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="pdf-to-images"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About PDF to Images - Convert PDF Pages to JPG and PNG</h2>
+        <p class="prose-lead">PDF to Images turns every page of your PDF into crisp, standalone graphic images. If you need to embed a PDF chart in a PowerPoint presentation, share an infographic on social media, or upload a scanned letter to a form that only accepts image attachments, this tool renders each page on an HTML5 canvas right inside your browser.</p>
+
+        <h3 class="prose-h3">How to Convert PDF to Images</h3>
+        <ol class="prose-list">
+          <li><strong>Upload PDF:</strong> Select your file or drop it into the conversion zone.</li>
+          <li><strong>Choose Format &amp; Resolution:</strong> Pick JPG for smaller file sizes or PNG for razor-sharp typography and graphics.</li>
+          <li><strong>Click Convert:</strong> The client-side rendering pipeline parses vector commands and generates image representations in real time.</li>
+          <li><strong>Download:</strong> Tap the download button on any individual page thumbnail, or click "Download All" to grab every rendered page sequentially.</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>High-Definition Canvas Rendering:</strong> Utilizes native 150–200 DPI scaling for crystal clear text and graphics.</li>
+          <li><strong>No File Size Caps:</strong> Convert slides, brochures, e-books, and receipts on demand.</li>
+          <li><strong>Private &amp; Offline-Ready:</strong> Zero data packets leave your device during the conversion.</li>
+          <li><strong>JPG &amp; PNG Flexibility:</strong> Tailor your output to photo compression or lossless graphic reproduction.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Uploading ID Documents to Mobile Portals</div>
+          <p class="example-desc">An applicant has their passport scan saved as a PDF, but the mobile job application portal strictly requires a JPG under 2 MB. Using PDF to Images with standard JPG output, page 1 is rendered into a clean 450 KB JPG image ready to upload.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: Sharing Slide Deck Visuals on Social Media</div>
+          <p class="example-desc">A speaker exports their 10-slide keynote talk to PDF and wants to post 3 key infographic slides on LinkedIn. Using PDF to Images with High Quality PNG, they download individual slides as standalone images ready for immediate posting.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">Should I choose JPG or PNG for my PDF conversion?</div>
+            <div class="faq-a">Choose JPG if your PDF contains photographic artwork, scanned paper backgrounds, or if you need smaller download sizes. Choose PNG if your PDF contains fine technical drawings, barcodes, or text that must remain crisp at high zoom.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I convert multi-page PDF documents?</div>
+            <div class="faq-a">Yes. Every single page of your document is rendered into its own numbered image file (e.g., page-1.jpg, page-2.jpg).</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Does this tool support password-protected PDFs?</div>
+            <div class="faq-a">For standard unprotected PDFs, rendering is instant. If your PDF is encrypted with a master user password, please unlock it before converting.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Are my files kept secure?</div>
+            <div class="faq-a">Yes! The PDF parsing and image rasterization happen inside your device's browser memory. No servers ever see your files.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 39. IMAGES TO PDF ==================== -->
+    <section id="screen-images-to-pdf" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">Images to PDF</h1>
+        <p class="tool-page-subtitle">Turn multiple photos, graphics, and screenshots into a single organized PDF document. Fast, free, and completely local.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="images-to-pdf" onclick="toggleFavorite('images-to-pdf', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="img2pdf-dropzone" onclick="document.getElementById('img2pdf-input').click()">
+          <input type="file" id="img2pdf-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleImagesToPdfFiles(this.files)">
+          <div class="dropzone-icon">📑</div>
+          <div class="dropzone-text"><strong>Choose Images</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Supports JPG, PNG, and WebP photos</div>
+        </div>
+
+        <div id="img2pdf-controls" style="display:none; margin-top: 18px;">
+          <div class="file-list-header">
+            <span class="file-list-title">Selected Images (<span id="img2pdf-count">0</span>)</span>
+            <button type="button" class="btn-text-sm" onclick="document.getElementById('img2pdf-input').click()">+ Add More Images</button>
+          </div>
+
+          <div id="img2pdf-thumbnails" class="img2pdf-thumb-list"></div>
+
+          <div class="input-grid-2" style="margin-top: 16px;">
+            <div class="input-group">
+              <label for="img2pdf-page-size">Page Layout / Sizing</label>
+              <select id="img2pdf-page-size" class="form-input">
+                <option value="fit" selected>Fit to Image (Natural Dimensions)</option>
+                <option value="a4-portrait">Standard A4 (Portrait)</option>
+                <option value="a4-landscape">Standard A4 (Landscape)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="img2pdf-margins">Page Margins</label>
+              <select id="img2pdf-margins" class="form-input">
+                <option value="0" selected>None (Full Bleed)</option>
+                <option value="20">Small Margin (20 pt)</option>
+                <option value="40">Standard Margin (40 pt)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="img2pdf-error" class="error-banner" style="display:none;"></div>
+        <div id="img2pdf-progress" class="status-banner" style="display:none;"></div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="img2pdf-btn" onclick="processImagesToPdf()" disabled>Create PDF</button>
+          <button type="button" class="btn btn-outline" onclick="resetImagesToPdf()">Reset</button>
+        </div>
+
+        <div id="img2pdf-result" class="result-card" style="display:none;">
+          <h3 class="result-header">PDF Created Successfully</h3>
+          <div class="stat-highlight">
+            <span id="img2pdf-result-pages" class="highlight-number">0</span>
+            <span class="highlight-unit">Pages Included</span>
+          </div>
+          <div class="stats-pills-row">
+            <div class="stat-pill">Images Compiled: <strong id="img2pdf-result-count">0</strong></div>
+            <div class="stat-pill">Estimated PDF Size: <strong id="img2pdf-result-size">0 KB</strong></div>
+          </div>
+          <div style="margin-top: 16px;">
+            <a id="img2pdf-download-btn" class="btn btn-primary btn-block download-btn" download="photos-document.pdf">⬇ Download PDF Document</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-images-to-pdf">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('images-to-pdf')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('images-to-pdf')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="images-to-pdf"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About Images to PDF - Combine Photos into a Single PDF</h2>
+        <p class="prose-lead">Images to PDF transforms your phone photos, camera snapshots, whiteboard diagrams, and graphic files into a clean, presentation-ready PDF file. Perfect for submitting photo assignments, assembling receipt packets, or bundling portfolio work into an easily shareable PDF.</p>
+
+        <h3 class="prose-h3">How to Convert Images to PDF</h3>
+        <ol class="prose-list">
+          <li><strong>Select Multiple Images:</strong> Tap the upload zone to pick multiple JPG, PNG, or WebP files from your phone gallery or desktop folder.</li>
+          <li><strong>Arrange Page Order:</strong> Review image thumbnails and use the ⬆ and ⬇ buttons to sort them into your intended reading sequence.</li>
+          <li><strong>Adjust Layout:</strong> Pick between natural image sizing (Fit to Image) or standard A4 formatting with optional margins.</li>
+          <li><strong>Create PDF:</strong> Click "Create PDF" to bundle all images into a uniform document.</li>
+          <li><strong>Download:</strong> Tap the download button to save your consolidated PDF immediately.</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>Multi-Format Support:</strong> Seamlessly mix and match JPG, PNG, and WebP images in the same document.</li>
+          <li><strong>Full Client-Side Security:</strong> Images are never sent to external servers or cloud storage.</li>
+          <li><strong>Automatic Orientation Handling:</strong> Landscape and portrait photos are laid out with precision.</li>
+          <li><strong>Lightweight File Assembly:</strong> Produces compact PDF files ideal for email attachments and portal uploads.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Homework &amp; Handwritten Exam Submission</div>
+          <p class="example-desc">A student takes 4 photos of their handwritten math homework using their smartphone camera. By selecting all 4 JPGs in Images to PDF, arranging them from problem 1 to 4, and clicking Create PDF, they generate a single PDF submission accepted by Google Classroom.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: Expense Reports with Scanned Paper Receipts</div>
+          <p class="example-desc">An executive collects 8 paper taxi and hotel receipt photos during a business trip. Images to PDF combines all 8 photos into a single PDF titled "Travel-Expenses.pdf", making accounting review frictionless.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">Can I reorder images before generating the PDF?</div>
+            <div class="faq-a">Yes! Use the Up and Down arrow buttons on any thumbnail card to change the exact page sequence.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Will my photos be compressed or lose visual clarity?</div>
+            <div class="faq-a">Images are embedded into the PDF structure preserving their original pixel resolution so barcodes, signatures, and small text remain razor-sharp.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Is there a limit on how many photos I can add?</div>
+            <div class="faq-a">No arbitrary limit is imposed. You can add dozens of photos as needed based on your browser's memory.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I convert images to PDF without an internet connection?</div>
+            <div class="faq-a">Yes. Once loaded, the tool works completely offline on modern Android devices and desktops.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 40. IMAGE COMPRESSOR ==================== -->
+    <section id="screen-image-compressor" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">Image Compressor</h1>
+        <p class="tool-page-subtitle">Shrink JPG, PNG, and WebP image file sizes by up to 90% without visible quality loss. Instant local processing.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="image-compressor" onclick="toggleFavorite('image-compressor', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="imgcomp-dropzone" onclick="document.getElementById('imgcomp-input').click()">
+          <input type="file" id="imgcomp-input" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleImageCompressorFile(this.files[0])">
+          <div class="dropzone-icon">🗜️</div>
+          <div class="dropzone-text"><strong>Choose an Image</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Supports JPG, PNG, and WebP files</div>
+        </div>
+
+        <div id="imgcomp-controls" style="display:none; margin-top: 18px;">
+          <div class="file-summary-card">
+            <div class="file-summary-icon">🖼️</div>
+            <div class="file-summary-info">
+              <div class="file-summary-name" id="imgcomp-filename">image.jpg</div>
+              <div class="file-summary-meta">Original Size: <strong id="imgcomp-orig-size" class="text-primary">0 KB</strong> | Dimensions: <span id="imgcomp-orig-dims">0 × 0 px</span></div>
+            </div>
+          </div>
+
+          <div class="slider-control-group" style="margin-top: 16px;">
+            <div class="slider-header">
+              <label for="imgcomp-quality"><strong>Compression Quality</strong></label>
+              <span id="imgcomp-quality-val" class="slider-badge">75%</span>
+            </div>
+            <input type="range" id="imgcomp-quality" min="10" max="100" value="75" step="1" oninput="updateCompressorQuality(this.value)">
+            <div class="slider-ticks">
+              <span>Maximum Savings (10%)</span>
+              <span>Balanced (75%)</span>
+              <span>Best Quality (100%)</span>
+            </div>
+          </div>
+
+          <div class="input-grid-2" style="margin-top: 14px;">
+            <div class="input-group">
+              <label for="imgcomp-max-width">Max Width Scale (Optional)</label>
+              <select id="imgcomp-max-width" class="form-input" onchange="runImageCompression()">
+                <option value="original" selected>Keep Original Dimensions</option>
+                <option value="1920">1920 px (Full HD)</option>
+                <option value="1280">1280 px (HD / Web)</option>
+                <option value="800">800 px (Email / Chat)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="imgcomp-format">Output Format</label>
+              <select id="imgcomp-format" class="form-input" onchange="runImageCompression()">
+                <option value="auto" selected>Keep Original Format</option>
+                <option value="image/jpeg">Convert to JPG</option>
+                <option value="image/webp">Convert to WebP (Smallest)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="imgcomp-error" class="error-banner" style="display:none;"></div>
+
+        <div class="btn-row" id="imgcomp-action-row" style="display:none;">
+          <button type="button" class="btn btn-primary" onclick="runImageCompression()">Re-compress</button>
+          <button type="button" class="btn btn-outline" onclick="resetImageCompressor()">Reset</button>
+        </div>
+
+        <div id="imgcomp-result" class="result-card" style="display:none;">
+          <h3 class="result-header">Compression Complete</h3>
+          
+          <div class="comparison-stats-grid">
+            <div class="comp-stat-col">
+              <span class="comp-stat-label">Original Size</span>
+              <span class="comp-stat-val" id="imgcomp-res-orig">0 KB</span>
+            </div>
+            <div class="comp-stat-arrow">→</div>
+            <div class="comp-stat-col">
+              <span class="comp-stat-label">Compressed Size</span>
+              <span class="comp-stat-val text-emerald" id="imgcomp-res-new">0 KB</span>
+            </div>
+            <div class="comp-stat-col">
+              <span class="comp-stat-label">Savings</span>
+              <span class="comp-stat-badge" id="imgcomp-res-saving">-0%</span>
+            </div>
+          </div>
+
+          <div class="image-preview-wrapper" style="margin-top: 16px;">
+            <img id="imgcomp-preview" class="image-preview-box" alt="Compressed Preview">
+          </div>
+
+          <div style="margin-top: 16px;">
+            <a id="imgcomp-download-btn" class="btn btn-primary btn-block download-btn" download="compressed-image.jpg">⬇ Download Compressed Image</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-image-compressor">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('image-compressor')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('image-compressor')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="image-compressor"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About Image Compressor - Reduce Image Size Online</h2>
+        <p class="prose-lead">Image Compressor utilizes the browser's hardware-accelerated Canvas engine to reduce the byte size of JPG, PNG, and WebP graphics by up to 90%. By stripping unnecessary metadata and applying advanced lossy quantizations, your photos load faster, take up minimal disk space, and fit strict email or portal attachment size constraints.</p>
+
+        <h3 class="prose-h3">How to Compress an Image</h3>
+        <ol class="prose-list">
+          <li><strong>Upload Image:</strong> Select or drag any JPG, PNG, or WebP photo into the upload box.</li>
+          <li><strong>Adjust Quality Slider:</strong> Move the quality slider between 10% and 100%. The balanced default (75%) provides remarkable size savings with virtually no visible difference.</li>
+          <li><strong>Optional Downscaling:</strong> Choose a maximum width (such as 1920px or 1280px) if you are compressing heavy 12–48 megapixel smartphone camera shots.</li>
+          <li><strong>Review Results:</strong> Compare the original and compressed file sizes and check the preview image.</li>
+          <li><strong>Download:</strong> Click "Download Compressed Image" to store the optimized image on your device.</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>Guaranteed Private:</strong> No pictures are ever sent over the internet or uploaded to remote databases.</li>
+          <li><strong>Real-Time Size Feedback:</strong> Immediately see exact byte measurements and percentage reduction statistics.</li>
+          <li><strong>Format Flexibility:</strong> Compress native JPGs or convert directly to next-generation WebP for maximum compression efficiency.</li>
+          <li><strong>No Watermarks:</strong> Completely clean output without promotional stamps or restrictions.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Email Attachment Limits</div>
+          <p class="example-desc">A user takes a 5.2 MB photo of an apartment lease to email their landlord, but the email server has a 2 MB attachment limit. Setting the slider to 70% compresses the image to 380 KB (-92% smaller) with perfect legibility of every clause.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: Accelerating Website Page Speeds</div>
+          <p class="example-desc">A web blogger has a 3.8 MB hero banner slowing their mobile page load. Using Image Compressor with 75% quality and WebP output drops the file size to 240 KB, improving Google PageSpeed Insights and mobile visitor engagement.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">Does image compression cause visible blurriness?</div>
+            <div class="faq-a">At quality levels between 70% and 85%, human eyes cannot distinguish compression artifacts on normal screens or phone displays. High-frequency noise is eliminated while core contours and colors remain intact.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I compress PNG images with transparent backgrounds?</div>
+            <div class="faq-a">Yes! When compressing PNG with WebP or PNG output, alpha transparency channels are preserved.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Is there any fee or subscription needed?</div>
+            <div class="faq-a">No. Image Compressor is 100% free with unlimited conversions and zero account creation.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Does compression remove EXIF camera metadata?</div>
+            <div class="faq-a">Yes. Rendering through an HTML5 canvas automatically purges location geotags and camera serial numbers, enhancing your personal privacy.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 41. IMAGE RESIZER ==================== -->
+    <section id="screen-image-resizer" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">Image Resizer</h1>
+        <p class="tool-page-subtitle">Resize image dimensions by exact pixels or percentage scale with aspect ratio lock. Fast and 100% private in your browser.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="image-resizer" onclick="toggleFavorite('image-resizer', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="imgresize-dropzone" onclick="document.getElementById('imgresize-input').click()">
+          <input type="file" id="imgresize-input" accept="image/*" style="display:none;" onchange="handleImageResizerFile(this.files[0])">
+          <div class="dropzone-icon">📐</div>
+          <div class="dropzone-text"><strong>Choose an Image</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Supports JPG, PNG, and WebP graphics</div>
+        </div>
+
+        <div id="imgresize-controls" style="display:none; margin-top: 18px;">
+          <div class="file-summary-card">
+            <div class="file-summary-icon">🖼️</div>
+            <div class="file-summary-info">
+              <div class="file-summary-name" id="imgresize-filename">photo.jpg</div>
+              <div class="file-summary-meta">Original: <strong id="imgresize-orig-dims" class="text-primary">0 × 0 px</strong> (<span id="imgresize-orig-ratio">1:1</span>) | File Size: <span id="imgresize-orig-size">0 KB</span></div>
+            </div>
+          </div>
+
+          <div class="quick-preset-chips" style="margin-top: 16px;">
+            <span class="preset-label">Presets:</span>
+            <button type="button" class="preset-chip" onclick="applyResizerPreset(0.5)">50% Scale</button>
+            <button type="button" class="preset-chip" onclick="applyResizerPreset(0.75)">75% Scale</button>
+            <button type="button" class="preset-chip" onclick="applyResizerExact(1920, 1080)">1920×1080 (FHD)</button>
+            <button type="button" class="preset-chip" onclick="applyResizerExact(1280, 720)">1280×720 (HD)</button>
+            <button type="button" class="preset-chip" onclick="applyResizerExact(1080, 1080)">1080×1080 (Square)</button>
+          </div>
+
+          <div class="input-grid-2" style="margin-top: 14px;">
+            <div class="input-group">
+              <label for="imgresize-width">Width (pixels)</label>
+              <input type="number" id="imgresize-width" class="form-input" min="1" max="10000" oninput="onResizerWidthChange(this.value)">
+            </div>
+            <div class="input-group">
+              <label for="imgresize-height">Height (pixels)</label>
+              <input type="number" id="imgresize-height" class="form-input" min="1" max="10000" oninput="onResizerHeightChange(this.value)">
+            </div>
+          </div>
+
+          <div class="checkbox-row" style="margin-top: 10px;">
+            <label class="custom-checkbox">
+              <input type="checkbox" id="imgresize-lock-ratio" checked onchange="toggleResizerLock(this.checked)">
+              <span>🔒 Lock Aspect Ratio (prevents distortion)</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="imgresize-error" class="error-banner" style="display:none;"></div>
+
+        <div class="btn-row" id="imgresize-action-row" style="display:none;">
+          <button type="button" class="btn btn-primary" onclick="runImageResize()">Resize Image</button>
+          <button type="button" class="btn btn-outline" onclick="resetImageResizer()">Reset</button>
+        </div>
+
+        <div id="imgresize-result" class="result-card" style="display:none;">
+          <h3 class="result-header">Resized Image Ready</h3>
+          <div class="stat-highlight">
+            <span id="imgresize-res-dims" class="highlight-number">0 × 0</span>
+            <span class="highlight-unit">Pixels</span>
+          </div>
+          <div class="stats-pills-row">
+            <div class="stat-pill">New File Size: <strong id="imgresize-res-size">0 KB</strong></div>
+            <div class="stat-pill">Format: <strong id="imgresize-res-format">JPG</strong></div>
+          </div>
+          <div class="image-preview-wrapper" style="margin-top: 16px;">
+            <img id="imgresize-preview" class="image-preview-box" alt="Resized Preview">
+          </div>
+          <div style="margin-top: 16px;">
+            <a id="imgresize-download-btn" class="btn btn-primary btn-block download-btn" download="resized-image.jpg">⬇ Download Resized Image</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-image-resizer">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('image-resizer')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('image-resizer')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="image-resizer"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About Image Resizer - Change Image Dimensions Online</h2>
+        <p class="prose-lead">Image Resizer lets you change the resolution and dimensions of digital pictures in seconds. Whether adapting a wallpaper for smartphone screens, preparing product photos for an online store, or resizing an avatar to standard dimensions, you have full pixel-level control with smart aspect ratio preservation.</p>
+
+        <h3 class="prose-h3">How to Resize Images</h3>
+        <ol class="prose-list">
+          <li><strong>Upload Photo:</strong> Pick any image file or drag it directly onto the drop zone.</li>
+          <li><strong>Set Target Dimensions:</strong> Enter your desired Width or Height in pixels, or click a popular preset (like 1920×1080 or 50% Scale).</li>
+          <li><strong>Lock Aspect Ratio:</strong> Keep "Lock Aspect Ratio" checked to automatically calculate the paired dimension without stretching or squishing.</li>
+          <li><strong>Resize &amp; Review:</strong> Click "Resize Image" and check the preview image and updated file size.</li>
+          <li><strong>Download:</strong> Tap the download button to save the resized image file.</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>Anti-Aliased Resampling:</strong> Canvas bicubic smoothing preserves fine text, textures, and gradient details.</li>
+          <li><strong>Distortion Protection:</strong> Smart aspect ratio lock calculates proportional heights or widths in real time.</li>
+          <li><strong>One-Click Presets:</strong> Rapidly select Full HD (1080p), HD (720p), Instagram Square (1080×1080), or percentage cuts.</li>
+          <li><strong>Confidential &amp; Local:</strong> The entire resizing calculation runs inside your browser sandbox without network uploads.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Social Media Profile Picture Sizing</div>
+          <p class="example-desc">A professional needs a 400×400 pixel headshot for their employee portal, but their photographer gave them a 4000×4000 pixel raw file. Image Resizer downsamples the image to exactly 400×400 px in 0.2 seconds without loss of facial crispness.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: E-Commerce Store Listing Guidelines</div>
+          <p class="example-desc">An online seller has product photos taken in 4032×3024 resolution. The marketplace requires photos no wider than 1200 pixels. With Lock Aspect Ratio active, typing 1200 in the Width automatically computes 900 for Height, ensuring marketplace compliance.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">What is the difference between image resizing and image compressing?</div>
+            <div class="faq-a">Resizing modifies the actual pixel width and height dimensions of an image (e.g. from 3000px to 1500px). Compressing reduces file size in bytes while retaining the original pixel dimensions.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Does resizing stretch or distort my picture?</div>
+            <div class="faq-a">No, as long as "Lock Aspect Ratio" remains enabled. Changing the width will proportionally adjust the height to maintain the natural geometry of your subject.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I enlarge a small photo with this tool?</div>
+            <div class="faq-a">Yes. You can upscale smaller images, though upscaling cannot invent missing optical details that were not in the original file.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Which image formats are supported?</div>
+            <div class="faq-a">JPG, JPEG, PNG, WebP, GIF, and SVG formats are natively supported for loading and resizing.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 42. JPG TO PNG CONVERTER ==================== -->
+    <section id="screen-jpg-to-png" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">JPG to PNG Converter</h1>
+        <p class="tool-page-subtitle">Convert JPG and JPEG images to lossless high-fidelity PNG format with zero quality degradation. Completely client-side.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="jpg-to-png" onclick="toggleFavorite('jpg-to-png', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="jpg2png-dropzone" onclick="document.getElementById('jpg2png-input').click()">
+          <input type="file" id="jpg2png-input" accept=".jpg,.jpeg,image/jpeg" style="display:none;" onchange="handleJpgToPngFile(this.files[0])">
+          <div class="dropzone-icon">🔁</div>
+          <div class="dropzone-text"><strong>Choose a JPG / JPEG file</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Converts lossy JPEG files into uncompressed PNG graphics</div>
+        </div>
+
+        <div id="jpg2png-controls" style="display:none; margin-top: 18px;">
+          <div class="file-summary-card">
+            <div class="file-summary-icon">🖼️</div>
+            <div class="file-summary-info">
+              <div class="file-summary-name" id="jpg2png-filename">photo.jpg</div>
+              <div class="file-summary-meta">Source: <strong class="text-primary">JPEG</strong> | Size: <span id="jpg2png-orig-size">0 KB</span> | Resolution: <span id="jpg2png-orig-dims">0 × 0 px</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="jpg2png-error" class="error-banner" style="display:none;"></div>
+
+        <div class="btn-row" id="jpg2png-action-row" style="display:none;">
+          <button type="button" class="btn btn-primary" onclick="runJpgToPng()">Convert to PNG</button>
+          <button type="button" class="btn btn-outline" onclick="resetJpgToPng()">Reset</button>
+        </div>
+
+        <div id="jpg2png-result" class="result-card" style="display:none;">
+          <h3 class="result-header">PNG Conversion Complete</h3>
+          <div class="stat-highlight">
+            <span class="highlight-number text-emerald">PNG</span>
+            <span class="highlight-unit">Format Ready</span>
+          </div>
+          <div class="stats-pills-row">
+            <div class="stat-pill">New File Size: <strong id="jpg2png-res-size">0 KB</strong></div>
+            <div class="stat-pill">Quality: <strong>Lossless (Full Bit Depth)</strong></div>
+          </div>
+          <div class="image-preview-wrapper" style="margin-top: 16px;">
+            <img id="jpg2png-preview" class="image-preview-box" alt="PNG Preview">
+          </div>
+          <div style="margin-top: 16px;">
+            <a id="jpg2png-download-btn" class="btn btn-primary btn-block download-btn" download="converted-image.png">⬇ Download PNG Image</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-jpg-to-png">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('jpg-to-png')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('jpg-to-png')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="jpg-to-png"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About JPG to PNG Converter - Free Online Image Transformation</h2>
+        <p class="prose-lead">JPG to PNG Converter transforms standard lossy JPEG photos and illustrations into clean, uncompressed Portable Network Graphics (PNG). PNG is the gold standard format for graphic designers, digital artists, and developers who require lossless editing fidelity without cumulative compression artifacts.</p>
+
+        <h3 class="prose-h3">How to Convert JPG to PNG</h3>
+        <ol class="prose-list">
+          <li><strong>Upload JPG:</strong> Drag your .jpg or .jpeg file into the converter box or tap to browse your gallery.</li>
+          <li><strong>Verify File Details:</strong> The tool verifies image dimensions and file characteristics locally.</li>
+          <li><strong>Convert to PNG:</strong> Click "Convert to PNG" to process the bitmap directly inside an HTML5 rendering pipeline.</li>
+          <li><strong>Preview &amp; Download:</strong> Inspect the converted PNG and click "Download PNG Image" to save it without any watermarks.</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>Zero Generative Loss:</strong> Prevents JPEG re-compression degradation when preparing assets for graphic editing suites.</li>
+          <li><strong>Instantaneous:</strong> Operates at native device speed with zero network latency.</li>
+          <li><strong>Complete Privacy:</strong> Your photos never touch a cloud server.</li>
+          <li><strong>Universal Platform Support:</strong> Compatible with Android smartphones, iPhones, iPad, Chromebooks, and PCs.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Preparing Images for Alpha Transparency Editing</div>
+          <p class="example-desc">A designer has a company logo saved as a JPG with a white background. Converting it to PNG allows them to open it in an image editor and cleanly isolate the transparent background, which the JPG format does not support.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: Submitting Assets to Print &amp; Publishing Houses</div>
+          <p class="example-desc">A commercial printer requires marketing assets in PNG to prevent lossy JPEG blocking artifacts during high-DPI offset printing. JPG to PNG effortlessly provides the required format.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">Does converting JPG to PNG improve image quality?</div>
+            <div class="faq-a">Converting to PNG prevents any further quality loss during subsequent saves and edits. However, it cannot restore optical data that was already discarded when the original JPG was compressed.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Why is the resulting PNG file size sometimes larger than the original JPG?</div>
+            <div class="faq-a">PNG uses lossless compression algorithms that store exact color pixel values, whereas JPG uses lossy compression that discards subtle color frequencies to save space.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Will my converted PNG have a transparent background?</div>
+            <div class="faq-a">Original JPG files cannot contain transparency. The converted PNG accurately replicates the original image colors and enables you to add transparency in editing software if desired.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Is there any file size limit?</div>
+            <div class="faq-a">Because conversion is executed in browser memory, you can convert high-resolution camera photos smoothly without upload limitations.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 43. PNG TO JPG CONVERTER ==================== -->
+    <section id="screen-png-to-jpg" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">PNG to JPG Converter</h1>
+        <p class="tool-page-subtitle">Transform heavy PNG images into lightweight JPG files. Custom background color selection for transparent areas.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="png-to-jpg" onclick="toggleFavorite('png-to-jpg', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="png2jpg-dropzone" onclick="document.getElementById('png2jpg-input').click()">
+          <input type="file" id="png2jpg-input" accept=".png,image/png" style="display:none;" onchange="handlePngToJpgFile(this.files[0])">
+          <div class="dropzone-icon">🔄</div>
+          <div class="dropzone-text"><strong>Choose a PNG file</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Converts PNG files into lightweight, universally compatible JPG images</div>
+        </div>
+
+        <div id="png2jpg-controls" style="display:none; margin-top: 18px;">
+          <div class="file-summary-card">
+            <div class="file-summary-icon">🖼️</div>
+            <div class="file-summary-info">
+              <div class="file-summary-name" id="png2jpg-filename">graphic.png</div>
+              <div class="file-summary-meta">Original Size: <span id="png2jpg-orig-size">0 KB</span> | Resolution: <span id="png2jpg-orig-dims">0 × 0 px</span></div>
+            </div>
+          </div>
+
+          <div class="input-grid-2" style="margin-top: 16px;">
+            <div class="input-group">
+              <label for="png2jpg-bg-color">Background Color (for transparent pixels)</label>
+              <div class="color-picker-row">
+                <input type="color" id="png2jpg-bg-color" value="#ffffff" onchange="updatePng2JpgBg(this.value)">
+                <span id="png2jpg-bg-hex" class="color-hex-badge">#ffffff (White)</span>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="png2jpg-quality">JPG Quality (<span id="png2jpg-quality-val">85%</span>)</label>
+              <input type="range" id="png2jpg-quality" min="10" max="100" value="85" step="1" oninput="updatePng2JpgQuality(this.value)">
+            </div>
+          </div>
+        </div>
+
+        <div id="png2jpg-error" class="error-banner" style="display:none;"></div>
+
+        <div class="btn-row" id="png2jpg-action-row" style="display:none;">
+          <button type="button" class="btn btn-primary" onclick="runPngToJpg()">Convert to JPG</button>
+          <button type="button" class="btn btn-outline" onclick="resetPngToJpg()">Reset</button>
+        </div>
+
+        <div id="png2jpg-result" class="result-card" style="display:none;">
+          <h3 class="result-header">JPG Conversion Complete</h3>
+          <div class="comparison-stats-grid">
+            <div class="comp-stat-col">
+              <span class="comp-stat-label">Original PNG</span>
+              <span class="comp-stat-val" id="png2jpg-res-orig">0 KB</span>
+            </div>
+            <div class="comp-stat-arrow">→</div>
+            <div class="comp-stat-col">
+              <span class="comp-stat-label">New JPG Size</span>
+              <span class="comp-stat-val text-emerald" id="png2jpg-res-new">0 KB</span>
+            </div>
+            <div class="comp-stat-col">
+              <span class="comp-stat-label">Reduction</span>
+              <span class="comp-stat-badge" id="png2jpg-res-reduction">-0%</span>
+            </div>
+          </div>
+          <div class="image-preview-wrapper" style="margin-top: 16px;">
+            <img id="png2jpg-preview" class="image-preview-box" alt="JPG Preview">
+          </div>
+          <div style="margin-top: 16px;">
+            <a id="png2jpg-download-btn" class="btn btn-primary btn-block download-btn" download="converted-image.jpg">⬇ Download JPG Image</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-png-to-jpg">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('png-to-jpg')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('png-to-jpg')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="png-to-jpg"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About PNG to JPG Converter - Fast Browser-Based Image Conversion</h2>
+        <p class="prose-lead">PNG to JPG Converter transforms heavy PNG image files into compact, universally compatible JPG photos. Because PNGs do not have native JPEG compression, screenshots and illustrations can easily balloon to 5–10 megabytes. This tool shrinks file sizes while giving you full control over background color for transparent artwork.</p>
+
+        <h3 class="prose-h3">How to Convert PNG to JPG</h3>
+        <ol class="prose-list">
+          <li><strong>Upload PNG:</strong> Drag or pick your .png image into the upload card.</li>
+          <li><strong>Choose Background Color:</strong> Because JPG does not support transparent alpha pixels, pick a background color (default is pure White #FFFFFF) to fill any transparent regions.</li>
+          <li><strong>Adjust Quality:</strong> Set your preferred JPG compression quality level (default 85%).</li>
+          <li><strong>Click Convert to JPG:</strong> The canvas renders the background fill and overlays your image instantly.</li>
+          <li><strong>Download:</strong> Tap the download button to save your newly optimized JPG file.</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>Custom Transparent Pixel Fill:</strong> Avoid ugly black boxes on transparent logos by choosing white, black, or custom brand colors.</li>
+          <li><strong>Massive File Savings:</strong> Reduce screenshot and graphic file sizes by up to 70–85%.</li>
+          <li><strong>Strict Local Privacy:</strong> Works 100% inside your browser with no network transmission.</li>
+          <li><strong>Universal Compatibility:</strong> Output JPGs open flawlessly in all image viewers, legacy web browsers, and mobile devices.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Compressing Phone Screenshots for Faster Sharing</div>
+          <p class="example-desc">Screenshots taken on modern Android phones are saved automatically as 4.5 MB PNGs. Converting them with PNG to JPG produces a crisp 320 KB JPG that shares in half a second over messaging apps.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: Uploading Transparent Logos to Form Portals</div>
+          <p class="example-desc">An applicant needs to upload a company badge to a government certification portal that rejects PNGs. Using PNG to JPG with a white background fill creates an accepted JPG document in seconds.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">Why do transparent areas turn black in other JPG converters?</div>
+            <div class="faq-a">JPG does not support transparency. Standard converters default to black when discarding alpha channels. Our tool lets you choose white or custom colors so your graphics always look intentional and professional.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">How much file size reduction can I expect?</div>
+            <div class="faq-a">For continuous-tone photos and complex graphics originally saved as PNG, converting to JPG typically slashes file size by 60% to 85%.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Is the converted JPG watermark-free?</div>
+            <div class="faq-a">Yes! All converted images are 100% clean and free of watermarks or branding.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Does the converter require an internet connection?</div>
+            <div class="faq-a">No. Processing executes entirely via the client-side browser Canvas API.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 44. IMAGE CROPPER ==================== -->
+    <section id="screen-image-cropper" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">Image Cropper</h1>
+        <p class="tool-page-subtitle">Crop photos with preset aspect ratios (1:1, 4:3, 16:9, Freeform) and live interactive preview. Completely client-side.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="image-cropper" onclick="toggleFavorite('image-cropper', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="imgcrop-dropzone" onclick="document.getElementById('imgcrop-input').click()">
+          <input type="file" id="imgcrop-input" accept="image/*" style="display:none;" onchange="handleImageCropperFile(this.files[0])">
+          <div class="dropzone-icon">✂️</div>
+          <div class="dropzone-text"><strong>Choose an Image</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Crop avatars, banners, and photos to exact shapes</div>
+        </div>
+
+        <div id="imgcrop-controls" style="display:none; margin-top: 18px;">
+          <div class="aspect-ratio-selector">
+            <span class="aspect-label">Aspect Ratio:</span>
+            <div class="tab-bar aspect-tabs" style="margin-bottom: 0;">
+              <button type="button" class="tab-btn active" id="crop-ratio-free" onclick="setCropRatio('free')">Freeform</button>
+              <button type="button" class="tab-btn" id="crop-ratio-1-1" onclick="setCropRatio('1:1')">1:1 Square</button>
+              <button type="button" class="tab-btn" id="crop-ratio-4-3" onclick="setCropRatio('4:3')">4:3 Standard</button>
+              <button type="button" class="tab-btn" id="crop-ratio-16-9" onclick="setCropRatio('16:9')">16:9 Banner</button>
+            </div>
+          </div>
+
+          <div class="crop-workspace-container" style="margin-top: 16px;">
+            <div class="canvas-crop-wrapper">
+              <canvas id="imgcrop-canvas"></canvas>
+            </div>
+            <div class="crop-slider-controls">
+              <div class="crop-slider-row">
+                <label>Horizontal Position (X)</label>
+                <input type="range" id="crop-pos-x" min="0" max="100" value="50" oninput="onCropParamChange()">
+              </div>
+              <div class="crop-slider-row">
+                <label>Vertical Position (Y)</label>
+                <input type="range" id="crop-pos-y" min="0" max="100" value="50" oninput="onCropParamChange()">
+              </div>
+              <div class="crop-slider-row">
+                <label>Crop Size / Zoom</label>
+                <input type="range" id="crop-size" min="20" max="100" value="80" oninput="onCropParamChange()">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="imgcrop-error" class="error-banner" style="display:none;"></div>
+
+        <div class="btn-row" id="imgcrop-action-row" style="display:none;">
+          <button type="button" class="btn btn-primary" onclick="runImageCrop()">Apply Crop</button>
+          <button type="button" class="btn btn-outline" onclick="resetImageCropper()">Reset</button>
+        </div>
+
+        <div id="imgcrop-result" class="result-card" style="display:none;">
+          <h3 class="result-header">Cropped Image Ready</h3>
+          <div class="stat-highlight">
+            <span id="imgcrop-res-dims" class="highlight-number">0 × 0</span>
+            <span class="highlight-unit">Pixels</span>
+          </div>
+          <div class="stats-pills-row">
+            <div class="stat-pill">Ratio: <strong id="imgcrop-res-ratio">1:1</strong></div>
+            <div class="stat-pill">File Size: <strong id="imgcrop-res-size">0 KB</strong></div>
+          </div>
+          <div class="image-preview-wrapper" style="margin-top: 16px;">
+            <img id="imgcrop-preview" class="image-preview-box" alt="Cropped Preview">
+          </div>
+          <div style="margin-top: 16px;">
+            <a id="imgcrop-download-btn" class="btn btn-primary btn-block download-btn" download="cropped-image.png">⬇ Download Cropped Image</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-image-cropper">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('image-cropper')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('image-cropper')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="image-cropper"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About Image Cropper - Cut Photos to Standard Aspect Ratios</h2>
+        <p class="prose-lead">Image Cropper provides precise interactive cropping for digital images, allowing you to isolate the perfect frame from photos. With dedicated aspect ratio presets for 1:1 Square (social media avatars), 4:3 Standard (photography &amp; prints), 16:9 Widescreen (YouTube thumbnails &amp; video banners), or Freeform trimming, you get pixel-accurate results every time.</p>
+
+        <h3 class="prose-h3">How to Crop an Image</h3>
+        <ol class="prose-list">
+          <li><strong>Upload Photo:</strong> Pick any photo from your phone or drag it into the upload box.</li>
+          <li><strong>Select Ratio Preset:</strong> Click 1:1 for square profile avatars, 16:9 for YouTube/website banners, 4:3 for camera prints, or Freeform for arbitrary bounds.</li>
+          <li><strong>Adjust Crop Frame:</strong> Use the interactive position and zoom sliders to position the crop box exactly over your focal subject.</li>
+          <li><strong>Click Apply Crop:</strong> The canvas renders the high-resolution crop region in real time.</li>
+          <li><strong>Download:</strong> Tap the download button to save your cropped image immediately.</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>Popular Aspect Ratio Presets:</strong> Quickly match the dimensional specifications of YouTube, Instagram, Twitter/X, and LinkedIn.</li>
+          <li><strong>Live Canvas Feedback:</strong> See the exact crop boundaries visually overlaid before exporting.</li>
+          <li><strong>Full Resolution Output:</strong> Extracts from the native source resolution without unwanted blur.</li>
+          <li><strong>Completely Private:</strong> Processing happens entirely within the security boundary of your device.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Creating a Perfect 1:1 Profile Avatar</div>
+          <p class="example-desc">A user takes a portrait photo with extra background space. Selecting the 1:1 Square preset and adjusting the position slider places their face squarely in the center, producing a tailored avatar for WhatsApp or LinkedIn.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: Crafting a 16:9 Widescreen Blog Banner</div>
+          <p class="example-desc">A content creator captures a vertical camera shot but needs a horizontal 16:9 header image for their blog article. Image Cropper's 16:9 preset extracts the focal horizontal strip at maximum clarity.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">Does cropping lower the clarity of my photo?</div>
+            <div class="faq-a">No! The cropped region is extracted at the native pixel density of the source photo, preserving full resolution.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I crop transparent PNG images?</div>
+            <div class="faq-a">Yes. PNG transparency is preserved intact when downloading the cropped output.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Are there any file upload caps?</div>
+            <div class="faq-a">There are no artificial upload limits because your browser processes the image locally.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I use this on my mobile phone?</div>
+            <div class="faq-a">Yes. The touch-friendly controls are designed for smooth single-finger operation on mobile devices.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 45. IMAGE TO WEBP CONVERTER ==================== -->
+    <section id="screen-image-to-webp" class="screen-section">
+      <div class="tool-header">
+        <button class="back-link" onclick="navigateTo('home')">← Back to All Tools</button>
+        <h1 class="tool-page-title">Image to WebP Converter</h1>
+        <p class="tool-page-subtitle">Convert JPG and PNG images into modern, ultra-lightweight WebP format. Reduce image weight by up to 80% locally.</p>
+        <button type="button" class="header-fav-btn" data-tool-id="image-to-webp" onclick="toggleFavorite('image-to-webp', event)" aria-label="Toggle Favorite" title="Favorite"><span class="header-fav-star">☆</span> <span class="header-fav-text">Favorite</span></button>
+      </div>
+
+      <div class="card">
+        <div class="privacy-notice-box">
+          <span class="privacy-icon">🔒</span>
+          <span><strong>Privacy Note:</strong> Your files are processed locally in your browser and are not uploaded to our server.</span>
+        </div>
+
+        <div class="file-dropzone" id="img2webp-dropzone" onclick="document.getElementById('img2webp-input').click()">
+          <input type="file" id="img2webp-input" accept="image/jpeg,image/png,image/gif" style="display:none;" onchange="handleImageToWebpFile(this.files[0])">
+          <div class="dropzone-icon">⚡</div>
+          <div class="dropzone-text"><strong>Choose an Image (JPG or PNG)</strong> or drag &amp; drop here</div>
+          <div class="dropzone-sub">Converts standard images to Google's next-gen high-efficiency WebP format</div>
+        </div>
+
+        <div id="img2webp-controls" style="display:none; margin-top: 18px;">
+          <div class="file-summary-card">
+            <div class="file-summary-icon">🖼️</div>
+            <div class="file-summary-info">
+              <div class="file-summary-name" id="img2webp-filename">photo.jpg</div>
+              <div class="file-summary-meta">Original Size: <strong id="img2webp-orig-size" class="text-primary">0 KB</strong> | Resolution: <span id="img2webp-orig-dims">0 × 0 px</span></div>
+            </div>
+          </div>
+
+          <div class="slider-control-group" style="margin-top: 16px;">
+            <div class="slider-header">
+              <label for="img2webp-quality"><strong>WebP Compression Quality</strong></label>
+              <span id="img2webp-quality-val" class="slider-badge">80%</span>
+            </div>
+            <input type="range" id="img2webp-quality" min="10" max="100" value="80" step="1" oninput="updateWebpQuality(this.value)">
+            <div class="slider-ticks">
+              <span>Ultra Compact (10%)</span>
+              <span>Recommended (80%)</span>
+              <span>Lossless / Near-Lossless (100%)</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="img2webp-error" class="error-banner" style="display:none;"></div>
+
+        <div class="btn-row" id="img2webp-action-row" style="display:none;">
+          <button type="button" class="btn btn-primary" onclick="runImageToWebp()">Convert to WebP</button>
+          <button type="button" class="btn btn-outline" onclick="resetImageToWebp()">Reset</button>
+        </div>
+
+        <div id="img2webp-result" class="result-card" style="display:none;">
+          <h3 class="result-header">WebP Conversion Complete</h3>
+          <div class="comparison-stats-grid">
+            <div class="comp-stat-col">
+              <span class="comp-stat-label">Original Image</span>
+              <span class="comp-stat-val" id="img2webp-res-orig">0 KB</span>
+            </div>
+            <div class="comp-stat-arrow">→</div>
+            <div class="comp-stat-col">
+              <span class="comp-stat-label">WebP File Size</span>
+              <span class="comp-stat-val text-emerald" id="img2webp-res-new">0 KB</span>
+            </div>
+            <div class="comp-stat-col">
+              <span class="comp-stat-label">Bandwidth Saved</span>
+              <span class="comp-stat-badge" id="img2webp-res-saved">-0%</span>
+            </div>
+          </div>
+          <div class="image-preview-wrapper" style="margin-top: 16px;">
+            <img id="img2webp-preview" class="image-preview-box" alt="WebP Preview">
+          </div>
+          <div style="margin-top: 16px;">
+            <a id="img2webp-download-btn" class="btn btn-primary btn-block download-btn" download="converted-image.webp">⬇ Download WebP Image</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copy & Share Result Actions -->
+      <div class="result-actions-bar" id="result-actions-image-to-webp">
+        <button type="button" class="result-action-btn copy-btn" onclick="copyCurrentResult('image-to-webp')" title="Copy Result"><span class="btn-icon">📋</span> Copy Result</button>
+        <button type="button" class="result-action-btn share-btn" onclick="shareCurrentResult('image-to-webp')" title="Share Result"><span class="btn-icon">↗️</span> Share Result</button>
+      </div>
+
+      <!-- Related Calculators & Tools Section -->
+      <div class="related-tools-section" data-tool="image-to-webp"></div>
+
+      <!-- SEO Prose Section -->
+      <div class="card prose-card">
+        <h2 class="prose-title">About Image to WebP Converter - Next-Gen Web Optimization</h2>
+        <p class="prose-lead">Image to WebP Converter transforms traditional JPG, JPEG, and PNG images into Google's modern WebP format. WebP is specifically engineered for the modern internet, delivering 25% to 35% smaller file sizes than comparable JPEGs and up to 80% smaller than PNGs while preserving transparent backgrounds and vivid color gamuts.</p>
+
+        <h3 class="prose-h3">How to Convert Images to WebP</h3>
+        <ol class="prose-list">
+          <li><strong>Upload Image:</strong> Select or drop your JPG or PNG image into the upload box.</li>
+          <li><strong>Set Quality Level:</strong> Choose your quality level using the slider (80% is recommended for the ideal balance between small size and razor-sharp clarity).</li>
+          <li><strong>Click Convert to WebP:</strong> The browser's native canvas engine compresses the image into modern WebP binary streams.</li>
+          <li><strong>Compare &amp; Download:</strong> Review the bandwidth savings comparison and click "Download WebP Image".</li>
+        </ol>
+
+        <h3 class="prose-h3">Key Features &amp; Benefits</h3>
+        <ul class="prose-features">
+          <li><strong>Next-Gen Compression Efficiency:</strong> Slashing file sizes speeds up website load times and reduces mobile data usage.</li>
+          <li><strong>Transparency Support:</strong> Unlike JPG, WebP supports full alpha transparency channels with smaller file sizes than PNG.</li>
+          <li><strong>SEO Performance Booster:</strong> Google Search favors fast-loading websites that utilize modern image formats like WebP.</li>
+          <li><strong>Zero Cloud Uploads:</strong> Safe for proprietary company graphics and personal family photos.</li>
+        </ul>
+
+        <h3 class="prose-h3">Practical Use Case Examples</h3>
+        <div class="example-box">
+          <div class="example-title">Example 1: Boosting Website Core Web Vitals</div>
+          <p class="example-desc">A web developer has 15 PNG product photos on an e-commerce catalog page. Converting them to WebP cuts total page payload from 18 MB down to 2.4 MB, dramatically reducing Largest Contentful Paint (LCP) and bounce rates.</p>
+        </div>
+        <div class="example-box">
+          <div class="example-title">Example 2: Mobile App Asset Size Optimization</div>
+          <p class="example-desc">An Android app developer converts UI background illustrations to WebP, trimming 12 MB from the final APK download size on Google Play.</p>
+        </div>
+
+        <h3 class="prose-h3">Frequently Asked Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q">Which web browsers support WebP images?</div>
+            <div class="faq-a">WebP is natively supported across all modern browsers including Google Chrome, Apple Safari, Mozilla Firefox, Microsoft Edge, and Opera on both desktop and mobile.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Does WebP support transparency?</div>
+            <div class="faq-a">Yes! WebP supports both 8-bit alpha transparency and 24-bit RGB color depth, making it a superior, lightweight replacement for PNG.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">How much bandwidth can WebP save?</div>
+            <div class="faq-a">According to Google performance studies, WebP images are 26% smaller compared to PNGs and 25-34% smaller than JPEG images at equivalent structural similarity (SSIM) quality.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Is this converter private and secure?</div>
+            <div class="faq-a">Yes. All conversion logic runs strictly within your browser. No files are uploaded to our servers.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advertisement - Adsterra Banner 320x50 -->
+      <div class="ad-banner-wrapper" aria-label="Advertisement">
+        <div class="ad-banner-label">Advertisement</div>
+        <div class="ad-banner-box">
+          <script>
+            atOptions = {
+              'key' : '19bdb15b0ed7ca7387a9b31c81967da2',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highrevenueformat.com/19bdb15b0ed7ca7387a9b31c81967da2/invoke.js"></script>
+        </div>
+      </div>
+    </section>
+
 
 
     <!-- 2. ABOUT US -->
@@ -7272,7 +8993,7 @@
       <!-- Detailed Navigation Grid -->
       <div class="footer-links-grid">
         <div class="footer-col">
-          <div class="footer-col-title">OUR CALCULATORS (35 TOOLS)</div>
+          <div class="footer-col-title">ALL UTILITIES &amp; TOOLS (45 TOOLS)</div>
           <a href="#age" onclick="navigateTo('age')">Age Calculator</a>
           <a href="#emi" onclick="navigateTo('emi')">EMI Loan Calculator</a>
           <a href="#percentage" onclick="navigateTo('percentage')">Percentage Calculator</a>
