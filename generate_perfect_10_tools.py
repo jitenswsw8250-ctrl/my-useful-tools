@@ -1,4 +1,10 @@
-# tools_pdf_image_css.py
+import re
+import os
+import shutil
+import importlib.util
+
+print("1. Preparing CSS for PDF & Image Tools...")
+
 CSS_CODE = r'''/* ==========================================================================
    PDF & IMAGE TOOLS - BULLETPROOF, RESPONSIVE, MODERN STYLES
    ========================================================================== */
@@ -495,3 +501,8 @@ label.file-dropzone.dragover {
   cursor: pointer;
 }
 '''
+
+with open('tools_pdf_image_css.py', 'w', encoding='utf-8') as f:
+    f.write(f'# tools_pdf_image_css.py\nCSS_CODE = r\'\'\'{CSS_CODE}\'\'\'\n')
+
+print("tools_pdf_image_css.py written.")

@@ -81,7 +81,7 @@
   <meta name="apple-mobile-web-app-title" content="MY TOOLS">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="stylesheet" href="style.css">
-      <!-- PDF-Lib & PDF.js for 100% Client-Side PDF Tools (Local with CDN fallback) -->
+              <!-- PDF-Lib & PDF.js for 100% Client-Side PDF Tools (Local with CDN fallback) -->
   <script src="assets/lib/pdf-lib.min.js"></script>
   <script src="assets/lib/pdf.min.js"></script>
   <script>
@@ -7071,12 +7071,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="pdf-merge-dropzone" onclick="document.getElementById('pdf-merge-input').click()">
-          <input type="file" id="pdf-merge-input" accept="application/pdf,.pdf" multiple style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handlePdfMergeFiles(this.files)">
+        <label class="file-dropzone" id="pdf-merge-dropzone" for="pdf-merge-input">
+          <input type="file" id="pdf-merge-input" accept="application/pdf,.pdf" multiple class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handlePdfMergeFiles(this.files)">
           <div class="dropzone-icon">📑</div>
           <div class="dropzone-text"><strong>Choose PDF files</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Select 2 or more PDF documents to merge</div>
-        </div>
+        </label>
 
         <!-- Selected Files List -->
         <div id="pdf-merge-list-container" class="file-list-container" style="display:none;">
@@ -7218,12 +7218,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="pdf-split-dropzone" onclick="document.getElementById('pdf-split-input').click()">
-          <input type="file" id="pdf-split-input" accept="application/pdf,.pdf" style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handlePdfSplitFile(this.files[0])">
+        <label class="file-dropzone" id="pdf-split-dropzone" for="pdf-split-input">
+          <input type="file" id="pdf-split-input" accept="application/pdf,.pdf" class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handlePdfSplitFile(this.files[0])">
           <div class="dropzone-icon">✂️</div>
           <div class="dropzone-text"><strong>Choose a PDF file</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Upload any multi-page PDF document to extract pages</div>
-        </div>
+        </label>
 
         <!-- Selected PDF Summary Card -->
         <div id="pdf-split-summary" class="file-summary-card" style="display:none; margin-top: 16px;">
@@ -7382,12 +7382,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="pdf2img-dropzone" onclick="document.getElementById('pdf2img-input').click()">
-          <input type="file" id="pdf2img-input" accept="application/pdf,.pdf" style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handlePdfToImagesFile(this.files[0])">
+        <label class="file-dropzone" id="pdf2img-dropzone" for="pdf2img-input">
+          <input type="file" id="pdf2img-input" accept="application/pdf,.pdf" class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handlePdfToImagesFile(this.files[0])">
           <div class="dropzone-icon">🖼️</div>
           <div class="dropzone-text"><strong>Choose a PDF file</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Converts PDF pages into JPG or PNG image files</div>
-        </div>
+        </label>
 
         <!-- Selected PDF Summary Card -->
         <div id="pdf2img-summary" class="file-summary-card" style="display:none; margin-top: 16px;">
@@ -7538,12 +7538,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="img2pdf-dropzone" onclick="document.getElementById('img2pdf-input').click()">
-          <input type="file" id="img2pdf-input" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handleImagesToPdfFiles(this.files)">
+        <label class="file-dropzone" id="img2pdf-dropzone" for="img2pdf-input">
+          <input type="file" id="img2pdf-input" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handleImagesToPdfFiles(this.files)">
           <div class="dropzone-icon">📸</div>
           <div class="dropzone-text"><strong>Choose Images</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Supports JPG, PNG, and WebP (select 1 or more images)</div>
-        </div>
+        </label>
 
         <!-- Selected Images Container -->
         <div id="img2pdf-controls" style="display:none; margin-top: 18px;">
@@ -7703,12 +7703,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="imgcomp-dropzone" onclick="document.getElementById('imgcomp-input').click()">
-          <input type="file" id="imgcomp-input" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handleImageCompressorFile(this.files[0])">
+        <label class="file-dropzone" id="imgcomp-dropzone" for="imgcomp-input">
+          <input type="file" id="imgcomp-input" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handleImageCompressorFile(this.files[0])">
           <div class="dropzone-icon">🗜️</div>
           <div class="dropzone-text"><strong>Choose an image</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Supports JPG, PNG, and WebP images</div>
-        </div>
+        </label>
 
         <!-- Selected Image Card -->
         <div id="imgcomp-selected-card" class="file-summary-card" style="display:none; margin-top: 16px;">
@@ -7890,12 +7890,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="imgresize-dropzone" onclick="document.getElementById('imgresize-input').click()">
-          <input type="file" id="imgresize-input" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handleImageResizerFile(this.files[0])">
+        <label class="file-dropzone" id="imgresize-dropzone" for="imgresize-input">
+          <input type="file" id="imgresize-input" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handleImageResizerFile(this.files[0])">
           <div class="dropzone-icon">📐</div>
           <div class="dropzone-text"><strong>Choose an image</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Resize JPG, PNG, or WebP to custom dimensions</div>
-        </div>
+        </label>
 
         <!-- Selected Image Card -->
         <div id="imgresize-selected-card" class="file-summary-card" style="display:none; margin-top: 16px;">
@@ -8068,12 +8068,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="jpg2png-dropzone" onclick="document.getElementById('jpg2png-input').click()">
-          <input type="file" id="jpg2png-input" accept=".jpg,.jpeg,image/jpeg" style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handleJpgToPngFile(this.files[0])">
+        <label class="file-dropzone" id="jpg2png-dropzone" for="jpg2png-input">
+          <input type="file" id="jpg2png-input" accept=".jpg,.jpeg,image/jpeg" class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handleJpgToPngFile(this.files[0])">
           <div class="dropzone-icon">🔄</div>
           <div class="dropzone-text"><strong>Choose a JPG/JPEG image</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Converts instantly into crisp, lossless PNG format</div>
-        </div>
+        </label>
 
         <!-- Selected Image Card -->
         <div id="jpg2png-selected-card" class="file-summary-card" style="display:none; margin-top: 16px;">
@@ -8220,12 +8220,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="png2jpg-dropzone" onclick="document.getElementById('png2jpg-input').click()">
-          <input type="file" id="png2jpg-input" accept=".png,image/png" style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handlePngToJpgFile(this.files[0])">
+        <label class="file-dropzone" id="png2jpg-dropzone" for="png2jpg-input">
+          <input type="file" id="png2jpg-input" accept=".png,image/png" class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handlePngToJpgFile(this.files[0])">
           <div class="dropzone-icon">🎨</div>
           <div class="dropzone-text"><strong>Choose a PNG image</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Converts PNG images to lightweight JPG photos</div>
-        </div>
+        </label>
 
         <!-- Selected Image Card -->
         <div id="png2jpg-selected-card" class="file-summary-card" style="display:none; margin-top: 16px;">
@@ -8396,12 +8396,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="imgcrop-dropzone" onclick="document.getElementById('imgcrop-input').click()">
-          <input type="file" id="imgcrop-input" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handleImageCropperFile(this.files[0])">
+        <label class="file-dropzone" id="imgcrop-dropzone" for="imgcrop-input">
+          <input type="file" id="imgcrop-input" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handleImageCropperFile(this.files[0])">
           <div class="dropzone-icon">✂️</div>
           <div class="dropzone-text"><strong>Choose an image</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Crop JPG, PNG, or WebP pictures to custom ratios</div>
-        </div>
+        </label>
 
         <!-- Selected Image Card -->
         <div id="imgcrop-selected-card" class="file-summary-card" style="display:none; margin-top: 16px;">
@@ -8583,12 +8583,12 @@
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="file-dropzone" id="img2webp-dropzone" onclick="document.getElementById('img2webp-input').click()">
-          <input type="file" id="img2webp-input" accept="image/jpeg,image/png,image/gif,.jpg,.jpeg,.png,.gif" style="display:none;" onclick="event.stopPropagation(); this.value = null;" onchange="handleImageToWebpFile(this.files[0])">
+        <label class="file-dropzone" id="img2webp-dropzone" for="img2webp-input">
+          <input type="file" id="img2webp-input" accept="image/jpeg,image/png,image/gif,.jpg,.jpeg,.png,.gif" class="visually-hidden-file-input" onclick="event.stopPropagation(); this.value = null;" onchange="handleImageToWebpFile(this.files[0])">
           <div class="dropzone-icon">🚀</div>
           <div class="dropzone-text"><strong>Choose JPG or PNG image</strong> or drag &amp; drop here</div>
           <div class="dropzone-sub">Converts images into next-generation WebP format</div>
-        </div>
+        </label>
 
         <!-- Selected Image Card -->
         <div id="img2webp-selected-card" class="file-summary-card" style="display:none; margin-top: 16px;">

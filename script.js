@@ -4875,6 +4875,10 @@ function initNewFeatures() {
 
 // ============================================================================
 // ============================================================================
+// ============================================================================
+// ============================================================================
+// ============================================================================
+// ============================================================================
 // PDF & IMAGE TOOLS - 10 BROWSER-BASED UTILITY TOOLS
 // 100% Client-Side, Zero Server Uploads, Fully Local, Fast and Private
 // ============================================================================
@@ -4907,43 +4911,71 @@ function downloadBlob(blob, filename) {
   }, 2000);
 }
 
-// Drag & Drop Setup for all 10 tools
-function initFileDropzones() {
-  const dropzoneConfigs = [
-    { id: 'pdf-merge-dropzone', inputId: 'pdf-merge-input', handler: files => handlePdfMergeFiles(files) },
-    { id: 'pdf-split-dropzone', inputId: 'pdf-split-input', handler: files => files[0] && handlePdfSplitFile(files[0]) },
-    { id: 'pdf2img-dropzone', inputId: 'pdf2img-input', handler: files => files[0] && handlePdfToImagesFile(files[0]) },
-    { id: 'img2pdf-dropzone', inputId: 'img2pdf-input', handler: files => handleImagesToPdfFiles(files) },
-    { id: 'imgcomp-dropzone', inputId: 'imgcomp-input', handler: files => files[0] && handleImageCompressorFile(files[0]) },
-    { id: 'imgresize-dropzone', inputId: 'imgresize-input', handler: files => files[0] && handleImageResizerFile(files[0]) },
-    { id: 'jpg2png-dropzone', inputId: 'jpg2png-input', handler: files => files[0] && handleJpgToPngFile(files[0]) },
-    { id: 'png2jpg-dropzone', inputId: 'png2jpg-input', handler: files => files[0] && handlePngToJpgFile(files[0]) },
-    { id: 'imgcrop-dropzone', inputId: 'imgcrop-input', handler: files => files[0] && handleImageCropperFile(files[0]) },
-    { id: 'img2webp-dropzone', inputId: 'img2webp-input', handler: files => files[0] && handleImageToWebpFile(files[0]) }
-  ];
+// Helper: Ensure PDFLib is loaded
+async function ensurePdfLib() {
+  if (typeof PDFLib !== 'undefined') return PDFLib;
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'assets/lib/pdf-lib.min.js';
+    s.onload = () => resolve(window.PDFLib);
+    s.onerror = () => {
+      // CDN Fallback
+      const s2 = document.createElement('script');
+      s2.src = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+      s2.onload = () => resolve(window.PDFLib);
+      s2.onerror = () => reject(new Error('PDF engine failed to load. Please check your network connection.'));
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s);
+  });
+}
 
-  dropzoneConfigs.forEach(cfg => {
-    const el = document.getElementById(cfg.id);
-    if (!el) return;
-    ['dragenter', 'dragover'].forEach(evt => {
-      el.addEventListener(evt, e => {
-        e.preventDefault();
-        e.stopPropagation();
-        el.classList.add('dragover');
-      });
-    });
-    ['dragleave', 'drop'].forEach(evt => {
-      el.addEventListener(evt, e => {
-        e.preventDefault();
-        e.stopPropagation();
-        el.classList.remove('dragover');
-      });
-    });
-    el.addEventListener('drop', e => {
-      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
-        cfg.handler(e.dataTransfer.files);
+// Helper: Ensure pdfjsLib is loaded
+async function ensurePdfJsLib() {
+  if (typeof pdfjsLib !== 'undefined') {
+    if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/lib/pdf.worker.min.js';
+    }
+    return pdfjsLib;
+  }
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'assets/lib/pdf.min.js';
+    s.onload = () => {
+      if (typeof pdfjsLib !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/lib/pdf.worker.min.js';
       }
-    });
+      resolve(window.pdfjsLib);
+    };
+    s.onerror = () => {
+      const s2 = document.createElement('script');
+      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      s2.onload = () => {
+        if (typeof pdfjsLib !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+        resolve(window.pdfjsLib);
+      };
+      s2.onerror = () => reject(new Error('PDF renderer failed to load. Please check your network connection.'));
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s);
+  });
+}
+
+// Helper: Asynchronously load an image file into an HTMLImageElement
+function loadImageFromFile(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      resolve({ img, url });
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Unable to decode image file. File may be corrupted or an unsupported format.'));
+    };
+    img.src = url;
   });
 }
 
@@ -4954,24 +4986,24 @@ let pdfMergeResultBlob = null;
 function handlePdfMergeFiles(files) {
   const errEl = document.getElementById('pdf-merge-error');
   if (errEl) errEl.style.display = 'none';
-
   if (!files || files.length === 0) return;
 
+  let added = 0;
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
     if (f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf')) {
       pdfMergeFiles.push(f);
+      added++;
     }
   }
 
-  if (pdfMergeFiles.length === 0) {
+  if (added === 0 && pdfMergeFiles.length === 0) {
     if (errEl) {
       errEl.textContent = 'Please select valid PDF documents (.pdf).';
       errEl.style.display = 'block';
     }
     return;
   }
-
   renderPdfMergeList();
 }
 
@@ -4981,7 +5013,6 @@ function renderPdfMergeList() {
   const countEl = document.getElementById('pdf-merge-count');
   const mergeBtn = document.getElementById('pdf-merge-btn');
   const actionRow = document.getElementById('pdf-merge-action-row');
-
   if (!container || !listEl) return;
 
   if (pdfMergeFiles.length === 0) {
@@ -5044,29 +5075,24 @@ async function processPdfMerge() {
     return;
   }
 
-  if (typeof PDFLib === 'undefined') {
-    if (errEl) {
-      errEl.textContent = 'PDF engine is loading. Please wait a moment and try again.';
-      errEl.style.display = 'block';
-    }
-    return;
-  }
-
   try {
     if (mergeBtn) mergeBtn.disabled = true;
     if (progEl) {
-      progEl.textContent = 'Merging PDF documents locally in your browser...';
+      progEl.textContent = 'Initializing PDF engine...';
       progEl.style.display = 'block';
     }
 
-    const mergedPdf = await PDFLib.PDFDocument.create();
+    const PDFEngine = await ensurePdfLib();
+    if (progEl) progEl.textContent = 'Merging PDF documents locally in your browser...';
+
+    const mergedPdf = await PDFEngine.PDFDocument.create();
     let totalPagesMerged = 0;
 
     for (let i = 0; i < pdfMergeFiles.length; i++) {
       const file = pdfMergeFiles[i];
       if (progEl) progEl.textContent = `Merging file ${i + 1} of ${pdfMergeFiles.length}: ${file.name}...`;
       const arrayBuffer = await file.arrayBuffer();
-      const pdf = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const pdf = await PDFEngine.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
       const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
       copiedPages.forEach(page => mergedPdf.addPage(page));
       totalPagesMerged += copiedPages.length;
@@ -5078,21 +5104,20 @@ async function processPdfMerge() {
 
     if (progEl) progEl.style.display = 'none';
 
-    // Populate results
     document.getElementById('pdf-merge-result-pages').textContent = totalPagesMerged;
     document.getElementById('pdf-merge-result-count').textContent = pdfMergeFiles.length;
     document.getElementById('pdf-merge-result-size').textContent = formatBytes(pdfMergeResultBlob.size);
 
     if (resultCard) {
       resultCard.style.display = 'block';
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (resultCard && typeof resultCard.scrollIntoView === 'function') { try { resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
     }
     showToast('✓ PDFs merged successfully!');
   } catch (err) {
     console.error('PDF Merge Error:', err);
     if (progEl) progEl.style.display = 'none';
     if (errEl) {
-      errEl.textContent = 'Unable to merge selected PDFs. One of the documents may be password protected or corrupted.';
+      errEl.textContent = 'Unable to merge selected PDFs: ' + err.message;
       errEl.style.display = 'block';
     }
   } finally {
@@ -5130,6 +5155,7 @@ async function handlePdfSplitFile(file) {
   const controlsEl = document.getElementById('pdf-split-controls');
   const actionRow = document.getElementById('pdf-split-action-row');
   const resultCard = document.getElementById('pdf-split-result');
+  const progEl = document.getElementById('pdf-split-progress');
 
   if (errEl) errEl.style.display = 'none';
   if (resultCard) resultCard.style.display = 'none';
@@ -5143,38 +5169,39 @@ async function handlePdfSplitFile(file) {
     return;
   }
 
-  if (typeof PDFLib === 'undefined') {
-    if (errEl) {
-      errEl.textContent = 'PDF engine is loading. Please retry in a moment.';
-      errEl.style.display = 'block';
-    }
-    return;
-  }
+  pdfSplitLoadedFile = file;
+
+  // Immediate UI update
+  document.getElementById('pdf-split-filename').textContent = file.name;
+  document.getElementById('pdf-split-total-pages').textContent = 'Reading pages...';
+  document.getElementById('pdf-split-filesize').textContent = formatBytes(file.size);
+  if (summaryEl) summaryEl.style.display = 'flex';
+  if (controlsEl) controlsEl.style.display = 'block';
+  if (actionRow) actionRow.style.display = 'flex';
 
   try {
+    if (progEl) {
+      progEl.textContent = 'Reading PDF structure...';
+      progEl.style.display = 'block';
+    }
+    const PDFEngine = await ensurePdfLib();
     const arrayBuffer = await file.arrayBuffer();
-    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+    const pdfDoc = await PDFEngine.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
 
-    pdfSplitLoadedFile = file;
     pdfSplitTotalPagesCount = pdfDoc.getPageCount();
-
-    document.getElementById('pdf-split-filename').textContent = file.name;
     document.getElementById('pdf-split-total-pages').textContent = pdfSplitTotalPagesCount;
-    document.getElementById('pdf-split-filesize').textContent = formatBytes(file.size);
 
     const initialRange = pdfSplitTotalPagesCount > 1 ? `1-${Math.min(3, pdfSplitTotalPagesCount)}` : '1';
     const rangeInput = document.getElementById('pdf-split-range');
     if (rangeInput) rangeInput.value = initialRange;
-
     onPdfSplitRangeInput();
 
-    if (summaryEl) summaryEl.style.display = 'flex';
-    if (controlsEl) controlsEl.style.display = 'block';
-    if (actionRow) actionRow.style.display = 'flex';
+    if (progEl) progEl.style.display = 'none';
   } catch (err) {
     console.error('PDF Split Load Error:', err);
+    if (progEl) progEl.style.display = 'none';
     if (errEl) {
-      errEl.textContent = 'Could not read PDF. Document may be encrypted or corrupted.';
+      errEl.textContent = 'Could not read PDF. Document may be password-protected or corrupted.';
       errEl.style.display = 'block';
     }
   }
@@ -5203,27 +5230,16 @@ function setPdfSplitPreset(preset) {
 
 function onPdfSplitRangeInput() {
   const input = document.getElementById('pdf-split-range');
-  const hint = document.getElementById('pdf-split-range-hint');
-  const splitBtn = document.getElementById('pdf-split-btn');
-  if (!input || !hint) return;
-
-  const val = input.value.trim();
-  if (!val) {
-    hint.textContent = 'Please enter pages or ranges (e.g. 1-3, 5).';
-    hint.style.color = 'var(--text-muted)';
-    if (splitBtn) splitBtn.disabled = true;
-    return;
-  }
+  const countBadge = document.getElementById('pdf-split-selected-count');
+  const errEl = document.getElementById('pdf-split-error');
+  if (!input || !countBadge) return;
 
   try {
-    const indices = parsePageRanges(val, pdfSplitTotalPagesCount);
-    hint.textContent = `✓ Will extract ${indices.length} page(s): ${indices.map(i => i + 1).slice(0, 10).join(', ')}${indices.length > 10 ? '...' : ''}`;
-    hint.style.color = '#10b981';
-    if (splitBtn) splitBtn.disabled = false;
-  } catch (err) {
-    hint.textContent = `⚠️ ${err.message}`;
-    hint.style.color = '#ef4444';
-    if (splitBtn) splitBtn.disabled = true;
+    const indices = parsePageRanges(input.value, pdfSplitTotalPagesCount);
+    countBadge.textContent = `${indices.length} page(s) selected`;
+    if (errEl) errEl.style.display = 'none';
+  } catch (e) {
+    countBadge.textContent = 'Invalid selection';
   }
 }
 
@@ -5239,7 +5255,6 @@ function parsePageRanges(rangeStr, maxPages) {
       const [startStr, endStr] = part.split('-');
       const start = parseInt(startStr, 10);
       const end = parseInt(endStr, 10);
-
       if (isNaN(start) || isNaN(end) || start < 1 || end < start) {
         throw new Error(`Invalid page range: "${part}"`);
       }
@@ -5298,11 +5313,15 @@ async function processPdfSplit() {
       progEl.style.display = 'block';
     }
 
+    const PDFEngine = await ensurePdfLib();
     const arrayBuffer = await pdfSplitLoadedFile.arrayBuffer();
-    const sourcePdf = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
-    const splitPdf = await PDFLib.PDFDocument.create();
+    const sourcePdf = await PDFEngine.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+    const splitPdf = await PDFEngine.PDFDocument.create();
 
-    const copiedPages = await splitPdf.copyPages(sourcePdf, targetIndices);
+    // Ensure indices are strictly typed and compatible across all environments
+    const allIndices = sourcePdf.getPageIndices();
+    const safeIndices = allIndices.filter(idx => targetIndices.includes(idx));
+    const copiedPages = await splitPdf.copyPages(sourcePdf, safeIndices);
     copiedPages.forEach(p => splitPdf.addPage(p));
 
     const splitBytes = await splitPdf.save();
@@ -5316,7 +5335,7 @@ async function processPdfSplit() {
 
     if (resultCard) {
       resultCard.style.display = 'block';
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (resultCard && typeof resultCard.scrollIntoView === 'function') { try { resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
     }
     showToast('✓ Pages extracted successfully!');
   } catch (err) {
@@ -5334,22 +5353,21 @@ async function processPdfSplit() {
 function downloadSplitPdf() {
   if (!pdfSplitResultBlob) return;
   const base = pdfSplitLoadedFile ? pdfSplitLoadedFile.name.replace(/\.pdf$/i, '') : 'document';
-  downloadBlob(pdfSplitResultBlob, `${base}-extracted-${Date.now()}.pdf`);
+  downloadBlob(pdfSplitResultBlob, `${base}-extracted.pdf`);
 }
 
 function resetPdfSplit() {
   pdfSplitLoadedFile = null;
   pdfSplitTotalPagesCount = 0;
   pdfSplitResultBlob = null;
-
   const input = document.getElementById('pdf-split-input');
   if (input) input.value = '';
   const summaryEl = document.getElementById('pdf-split-summary');
   if (summaryEl) summaryEl.style.display = 'none';
-  const controls = document.getElementById('pdf-split-controls');
-  if (controls) controls.style.display = 'none';
-  const actions = document.getElementById('pdf-split-action-row');
-  if (actions) actions.style.display = 'none';
+  const controlsEl = document.getElementById('pdf-split-controls');
+  if (controlsEl) controlsEl.style.display = 'none';
+  const actionRow = document.getElementById('pdf-split-action-row');
+  if (actionRow) actionRow.style.display = 'none';
   const resultCard = document.getElementById('pdf-split-result');
   if (resultCard) resultCard.style.display = 'none';
   const errEl = document.getElementById('pdf-split-error');
@@ -5369,6 +5387,7 @@ async function handlePdfToImagesFile(file) {
   const controlsEl = document.getElementById('pdf2img-controls');
   const actionRow = document.getElementById('pdf2img-action-row');
   const resultsCard = document.getElementById('pdf2img-results');
+  const progEl = document.getElementById('pdf2img-progress');
 
   if (errEl) errEl.style.display = 'none';
   if (resultsCard) resultsCard.style.display = 'none';
@@ -5382,35 +5401,32 @@ async function handlePdfToImagesFile(file) {
     return;
   }
 
-  if (typeof pdfjsLib === 'undefined') {
-    if (errEl) {
-      errEl.textContent = 'PDF renderer is initializing. Please wait a moment and re-select.';
-      errEl.style.display = 'block';
-    }
-    return;
-  }
+  pdf2ImgFile = file;
+
+  // Immediate UI reveal
+  document.getElementById('pdf2img-filename').textContent = file.name;
+  document.getElementById('pdf2img-total-pages').textContent = 'Reading pages...';
+  document.getElementById('pdf2img-filesize').textContent = formatBytes(file.size);
+  if (summaryEl) summaryEl.style.display = 'flex';
+  if (controlsEl) controlsEl.style.display = 'block';
+  if (actionRow) actionRow.style.display = 'flex';
 
   try {
-    if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/lib/pdf.worker.min.js';
+    if (progEl) {
+      progEl.textContent = 'Initializing PDF renderer...';
+      progEl.style.display = 'block';
     }
-
+    const pdfjs = await ensurePdfJsLib();
     const arrayBuffer = await file.arrayBuffer();
-    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
     const pdfDoc = await loadingTask.promise;
 
-    pdf2ImgFile = file;
     pdf2ImgDoc = pdfDoc;
-
-    document.getElementById('pdf2img-filename').textContent = file.name;
     document.getElementById('pdf2img-total-pages').textContent = pdfDoc.numPages;
-    document.getElementById('pdf2img-filesize').textContent = formatBytes(file.size);
-
-    if (summaryEl) summaryEl.style.display = 'flex';
-    if (controlsEl) controlsEl.style.display = 'block';
-    if (actionRow) actionRow.style.display = 'flex';
+    if (progEl) progEl.style.display = 'none';
   } catch (err) {
     console.error('PDF to Images Read Error:', err);
+    if (progEl) progEl.style.display = 'none';
     if (errEl) {
       errEl.textContent = 'Could not read PDF. File may be encrypted or corrupted.';
       errEl.style.display = 'block';
@@ -5445,7 +5461,7 @@ async function processPdfToImages() {
   try {
     if (convertBtn) convertBtn.disabled = true;
     if (progEl) {
-      progEl.textContent = 'Starting page rendering...';
+      progEl.textContent = 'Rendering PDF pages to images locally...';
       progEl.style.display = 'block';
     }
 
@@ -5497,7 +5513,7 @@ async function processPdfToImages() {
 
     if (resultsCard) {
       resultsCard.style.display = 'block';
-      resultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (resultsCard && typeof resultsCard.scrollIntoView === 'function') { try { resultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
     }
     showToast(`✓ Converted ${numPages} pages to images!`);
   } catch (err) {
@@ -5532,7 +5548,6 @@ function resetPdfToImages() {
   pdf2ImgFile = null;
   pdf2ImgDoc = null;
   pdf2ImgRenderedBlobs = [];
-
   const input = document.getElementById('pdf2img-input');
   if (input) input.value = '';
   const summaryEl = document.getElementById('pdf2img-summary');
@@ -5556,12 +5571,11 @@ let img2PdfResultBlob = null;
 function handleImagesToPdfFiles(files) {
   const errEl = document.getElementById('img2pdf-error');
   if (errEl) errEl.style.display = 'none';
-
   if (!files || files.length === 0) return;
 
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
-    if (f.type.startsWith('image/')) {
+    if (f.type.startsWith('image/') || f.name.toLowerCase().match(/\.(jpe?g|png|webp|gif|bmp)$/)) {
       const url = URL.createObjectURL(f);
       img2PdfItems.push({ file: f, url, name: f.name, size: f.size });
     }
@@ -5574,7 +5588,6 @@ function handleImagesToPdfFiles(files) {
     }
     return;
   }
-
   renderImagesToPdfThumbnails();
 }
 
@@ -5584,7 +5597,6 @@ function renderImagesToPdfThumbnails() {
   const listEl = document.getElementById('img2pdf-thumbnails');
   const actionRow = document.getElementById('img2pdf-action-row');
   const btn = document.getElementById('img2pdf-btn');
-
   if (!controls || !listEl) return;
 
   if (img2PdfItems.length === 0) {
@@ -5647,37 +5659,24 @@ async function processImagesToPdf() {
     return;
   }
 
-  if (typeof PDFLib === 'undefined') {
-    if (errEl) {
-      errEl.textContent = 'PDF engine is loading. Please retry in a moment.';
-      errEl.style.display = 'block';
-    }
-    return;
-  }
-
   const layout = document.getElementById('img2pdf-page-size').value;
   const margin = parseFloat(document.getElementById('img2pdf-margins').value) || 0;
 
   try {
     if (btn) btn.disabled = true;
     if (progEl) {
-      progEl.textContent = 'Generating PDF from images in browser...';
+      progEl.textContent = 'Initializing PDF engine...';
       progEl.style.display = 'block';
     }
 
-    const pdfDoc = await PDFLib.PDFDocument.create();
+    const PDFEngine = await ensurePdfLib();
+    const pdfDoc = await PDFEngine.PDFDocument.create();
 
     for (let i = 0; i < img2PdfItems.length; i++) {
       const item = img2PdfItems[i];
       if (progEl) progEl.textContent = `Processing image ${i + 1} of ${img2PdfItems.length}...`;
 
-      const img = new Image();
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = item.url;
-      });
-
+      const { img } = await loadImageFromFile(item.file);
       const canvas = document.createElement('canvas');
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
@@ -5686,7 +5685,7 @@ async function processImagesToPdf() {
 
       const pngBlob = await new Promise(res => canvas.toBlob(res, 'image/png'));
       const pngBytes = await pngBlob.arrayBuffer();
-      const embeddedImg = await pdfDoc.embedPng(pngBytes);
+      const embeddedImg = await pdfDoc.embedPng(new Uint8Array(pngBytes));
 
       let pageWidth, pageHeight;
       if (layout === 'a4-portrait') {
@@ -5703,33 +5702,33 @@ async function processImagesToPdf() {
       const availW = Math.max(10, pageWidth - margin * 2);
       const availH = Math.max(10, pageHeight - margin * 2);
       const scale = Math.min(availW / img.naturalWidth, availH / img.naturalHeight, 1);
-
       const imgDrawWidth = img.naturalWidth * scale;
       const imgDrawHeight = img.naturalHeight * scale;
-      const drawX = margin + (availW - imgDrawWidth) / 2;
-      const drawY = margin + (availH - imgDrawHeight) / 2;
+
+      const posX = margin + (availW - imgDrawWidth) / 2;
+      const posY = margin + (availH - imgDrawHeight) / 2;
 
       const page = pdfDoc.addPage([pageWidth, pageHeight]);
       page.drawImage(embeddedImg, {
-        x: drawX,
-        y: drawY,
+        x: posX,
+        y: posY,
         width: imgDrawWidth,
         height: imgDrawHeight
       });
     }
 
+    if (progEl) progEl.textContent = 'Finalizing PDF...';
     const pdfBytes = await pdfDoc.save();
     img2PdfResultBlob = new Blob([pdfBytes], { type: 'application/pdf' });
 
     if (progEl) progEl.style.display = 'none';
 
-    document.getElementById('img2pdf-result-pages').textContent = img2PdfItems.length;
     document.getElementById('img2pdf-result-count').textContent = img2PdfItems.length;
     document.getElementById('img2pdf-result-size').textContent = formatBytes(img2PdfResultBlob.size);
 
     if (resultCard) {
       resultCard.style.display = 'block';
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (resultCard && typeof resultCard.scrollIntoView === 'function') { try { resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
     }
     showToast('✓ PDF generated successfully!');
   } catch (err) {
@@ -5753,7 +5752,6 @@ function resetImagesToPdf() {
   img2PdfItems = [];
   img2PdfResultBlob = null;
   renderImagesToPdfThumbnails();
-
   const input = document.getElementById('img2pdf-input');
   if (input) input.value = '';
   const resultCard = document.getElementById('img2pdf-result');
@@ -5780,36 +5778,26 @@ function handleImageCompressorFile(file) {
   if (resultCard) resultCard.style.display = 'none';
   if (!file) return;
 
-  if (!file.type.startsWith('image/')) {
-    if (errEl) {
-      errEl.textContent = 'Please choose a valid image file (JPG, PNG, WebP).';
-      errEl.style.display = 'block';
-    }
-    return;
-  }
-
   imgCompOriginalFile = file;
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      imgCompLoadedImage = img;
+  // Immediate UI display
+  document.getElementById('imgcomp-filename').textContent = file.name;
+  document.getElementById('imgcomp-orig-size').textContent = formatBytes(file.size);
+  document.getElementById('imgcomp-orig-dims').textContent = 'Loading dimensions...';
+  if (cardEl) cardEl.style.display = 'flex';
+  if (controlsEl) controlsEl.style.display = 'block';
+  if (actionRow) actionRow.style.display = 'flex';
 
-      const thumb = document.getElementById('imgcomp-selected-thumb');
-      if (thumb) thumb.src = e.target.result;
+  const thumb = document.getElementById('imgcomp-selected-thumb');
+  const previewUrl = URL.createObjectURL(file);
+  if (thumb) thumb.src = previewUrl;
 
-      document.getElementById('imgcomp-filename').textContent = file.name;
-      document.getElementById('imgcomp-orig-size').textContent = formatBytes(file.size);
-      document.getElementById('imgcomp-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
-
-      if (cardEl) cardEl.style.display = 'flex';
-      if (controlsEl) controlsEl.style.display = 'block';
-      if (actionRow) actionRow.style.display = 'flex';
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+  loadImageFromFile(file).then(({ img }) => {
+    imgCompLoadedImage = img;
+    document.getElementById('imgcomp-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+  }).catch(err => {
+    console.warn('Image decode warning:', err);
+  });
 }
 
 function updateCompressorQuality(val) {
@@ -5817,14 +5805,13 @@ function updateCompressorQuality(val) {
   if (badge) badge.textContent = val + '%';
 }
 
-function runImageCompression() {
+async function runImageCompression() {
   const errEl = document.getElementById('imgcomp-error');
   const progEl = document.getElementById('imgcomp-progress');
   const resultCard = document.getElementById('imgcomp-result');
 
   if (errEl) errEl.style.display = 'none';
-
-  if (!imgCompLoadedImage || !imgCompOriginalFile) {
+  if (!imgCompOriginalFile) {
     if (errEl) {
       errEl.textContent = 'Please choose an image file first.';
       errEl.style.display = 'block';
@@ -5832,66 +5819,74 @@ function runImageCompression() {
     return;
   }
 
-  const quality = parseInt(document.getElementById('imgcomp-quality').value, 10) / 100;
-  const maxWOpt = document.getElementById('imgcomp-max-width').value;
-  const formatOpt = document.getElementById('imgcomp-format').value;
-
-  let targetFormat = formatOpt === 'auto' ? (imgCompOriginalFile.type || 'image/jpeg') : formatOpt;
-  if (targetFormat !== 'image/jpeg' && targetFormat !== 'image/webp') {
-    targetFormat = 'image/jpeg';
-  }
-
-  let w = imgCompLoadedImage.naturalWidth;
-  let h = imgCompLoadedImage.naturalHeight;
-
-  if (maxWOpt !== 'original') {
-    const maxW = parseInt(maxWOpt, 10);
-    if (w > maxW) {
-      h = Math.round(h * (maxW / w));
-      w = maxW;
+  try {
+    let img = imgCompLoadedImage;
+    if (!img) {
+      const loaded = await loadImageFromFile(imgCompOriginalFile);
+      img = loaded.img;
+      imgCompLoadedImage = img;
     }
-  }
 
-  const canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext('2d');
+    const quality = parseInt(document.getElementById('imgcomp-quality').value, 10) / 100;
+    const maxWOpt = document.getElementById('imgcomp-max-width').value;
+    const formatOpt = document.getElementById('imgcomp-format').value;
 
-  if (targetFormat === 'image/jpeg') {
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, w, h);
-  }
+    let targetFormat = formatOpt === 'auto' ? (imgCompOriginalFile.type || 'image/jpeg') : formatOpt;
+    if (targetFormat !== 'image/jpeg' && targetFormat !== 'image/webp') {
+      targetFormat = 'image/jpeg';
+    }
 
-  ctx.drawImage(imgCompLoadedImage, 0, 0, w, h);
+    let w = img.naturalWidth;
+    let h = img.naturalHeight;
 
-  canvas.toBlob(blob => {
-    if (!blob) {
-      if (errEl) {
-        errEl.textContent = 'Compression failed. Please try a different quality level.';
-        errEl.style.display = 'block';
+    if (maxWOpt !== 'original') {
+      const maxW = parseInt(maxWOpt, 10);
+      if (w > maxW) {
+        h = Math.round(h * (maxW / w));
+        w = maxW;
       }
-      return;
     }
 
-    imgCompResultBlob = blob;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
 
-    const originalSize = imgCompOriginalFile.size;
-    const newSize = blob.size;
-    const savings = Math.max(0, Math.round(((originalSize - newSize) / originalSize) * 100));
-
-    document.getElementById('imgcomp-res-orig').textContent = formatBytes(originalSize);
-    document.getElementById('imgcomp-res-new').textContent = formatBytes(newSize);
-    document.getElementById('imgcomp-res-saving').textContent = `-${savings}%`;
-
-    const preview = document.getElementById('imgcomp-preview');
-    if (preview) preview.src = URL.createObjectURL(blob);
-
-    if (resultCard) {
-      resultCard.style.display = 'block';
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (targetFormat === 'image/jpeg') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
     }
-    showToast('✓ Image compressed successfully!');
-  }, targetFormat, quality);
+
+    ctx.drawImage(img, 0, 0, w, h);
+
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      imgCompResultBlob = blob;
+
+      const origSize = imgCompOriginalFile.size;
+      const newSize = blob.size;
+      const reduction = Math.max(0, Math.round(((origSize - newSize) / origSize) * 100));
+
+      document.getElementById('imgcomp-res-orig').textContent = formatBytes(origSize);
+      document.getElementById('imgcomp-res-new').textContent = formatBytes(newSize);
+      document.getElementById('imgcomp-res-saving').textContent = `-${reduction}%`;
+
+      const preview = document.getElementById('imgcomp-preview');
+      if (preview) preview.src = URL.createObjectURL(blob);
+
+      if (resultCard) {
+        resultCard.style.display = 'block';
+        if (resultCard && typeof resultCard.scrollIntoView === 'function') { try { resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
+      }
+      showToast('✓ Image compressed successfully!');
+    }, targetFormat, quality);
+  } catch (err) {
+    console.error('Compression error:', err);
+    if (errEl) {
+      errEl.textContent = 'Compression failed: ' + err.message;
+      errEl.style.display = 'block';
+    }
+  }
 }
 
 function downloadCompressedImage() {
@@ -5906,7 +5901,6 @@ function resetImageCompressor() {
   imgCompLoadedImage = null;
   imgCompOriginalFile = null;
   imgCompResultBlob = null;
-
   const input = document.getElementById('imgcomp-input');
   if (input) input.value = '';
   const card = document.getElementById('imgcomp-selected-card');
@@ -5941,33 +5935,31 @@ function handleImageResizerFile(file) {
 
   imgResizeOriginalFile = file;
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      imgResizeLoadedImage = img;
-      const w = img.naturalWidth;
-      const h = img.naturalHeight;
-      imgResizeNaturalRatio = w / h;
+  // Immediate UI display
+  document.getElementById('imgresize-filename').textContent = file.name;
+  document.getElementById('imgresize-orig-size').textContent = formatBytes(file.size);
+  document.getElementById('imgresize-orig-dims').textContent = 'Loading dimensions...';
+  if (cardEl) cardEl.style.display = 'flex';
+  if (controls) controls.style.display = 'block';
+  if (actions) actions.style.display = 'flex';
 
-      const thumb = document.getElementById('imgresize-selected-thumb');
-      if (thumb) thumb.src = e.target.result;
+  const thumb = document.getElementById('imgresize-selected-thumb');
+  const previewUrl = URL.createObjectURL(file);
+  if (thumb) thumb.src = previewUrl;
 
-      document.getElementById('imgresize-filename').textContent = file.name;
-      document.getElementById('imgresize-orig-dims').textContent = `${w} × ${h} px`;
-      document.getElementById('imgresize-orig-ratio').textContent = `${imgResizeNaturalRatio.toFixed(2)}:1`;
-      document.getElementById('imgresize-orig-size').textContent = formatBytes(file.size);
+  loadImageFromFile(file).then(({ img }) => {
+    imgResizeLoadedImage = img;
+    const w = img.naturalWidth;
+    const h = img.naturalHeight;
+    imgResizeNaturalRatio = w / h;
 
-      document.getElementById('imgresize-width').value = w;
-      document.getElementById('imgresize-height').value = h;
-
-      if (cardEl) cardEl.style.display = 'flex';
-      if (controls) controls.style.display = 'block';
-      if (actions) actions.style.display = 'flex';
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+    document.getElementById('imgresize-orig-dims').textContent = `${w} × ${h} px`;
+    document.getElementById('imgresize-orig-ratio').textContent = `${imgResizeNaturalRatio.toFixed(2)}:1`;
+    document.getElementById('imgresize-width').value = w;
+    document.getElementById('imgresize-height').value = h;
+  }).catch(err => {
+    console.warn('Resizer load warning:', err);
+  });
 }
 
 function toggleResizerLock(locked) {
@@ -6003,12 +5995,12 @@ function applyResizerExact(w, h) {
   document.getElementById('imgresize-height').value = h;
 }
 
-function runImageResize() {
+async function runImageResize() {
   const errEl = document.getElementById('imgresize-error');
   const resultCard = document.getElementById('imgresize-result');
-  if (errEl) errEl.style.display = 'none';
 
-  if (!imgResizeLoadedImage || !imgResizeOriginalFile) {
+  if (errEl) errEl.style.display = 'none';
+  if (!imgResizeOriginalFile) {
     if (errEl) {
       errEl.textContent = 'Please choose an image file first.';
       errEl.style.display = 'block';
@@ -6016,8 +6008,15 @@ function runImageResize() {
     return;
   }
 
-  const w = parseInt(document.getElementById('imgresize-width').value, 10);
-  const h = parseInt(document.getElementById('imgresize-height').value, 10);
+  let w = parseInt(document.getElementById('imgresize-width').value, 10);
+  let h = parseInt(document.getElementById('imgresize-height').value, 10);
+
+  if ((!w || !h || w <= 0 || h <= 0) && imgResizeLoadedImage) {
+    w = imgResizeLoadedImage.naturalWidth;
+    h = imgResizeLoadedImage.naturalHeight;
+    document.getElementById('imgresize-width').value = w;
+    document.getElementById('imgresize-height').value = h;
+  }
 
   if (!w || !h || w <= 0 || h <= 0) {
     if (errEl) {
@@ -6027,56 +6026,69 @@ function runImageResize() {
     return;
   }
 
-  const canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext('2d');
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-
-  const isPng = imgResizeOriginalFile.type === 'image/png';
-  if (!isPng) {
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, w, h);
-  }
-
-  ctx.drawImage(imgResizeLoadedImage, 0, 0, w, h);
-  const format = isPng ? 'image/png' : 'image/jpeg';
-
-  canvas.toBlob(blob => {
-    if (!blob) return;
-    imgResizeResultBlob = blob;
-
-    document.getElementById('imgresize-res-dims').textContent = `${w} × ${h} px`;
-    document.getElementById('imgresize-res-size').textContent = formatBytes(blob.size);
-    document.getElementById('imgresize-res-format').textContent = isPng ? 'PNG' : 'JPG';
-
-    const preview = document.getElementById('imgresize-preview');
-    if (preview) preview.src = URL.createObjectURL(blob);
-
-    if (resultCard) {
-      resultCard.style.display = 'block';
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  try {
+    let img = imgResizeLoadedImage;
+    if (!img) {
+      const loaded = await loadImageFromFile(imgResizeOriginalFile);
+      img = loaded.img;
+      imgResizeLoadedImage = img;
     }
-    showToast('✓ Image resized successfully!');
-  }, format, 0.9);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    const isPng = imgResizeOriginalFile.type === 'image/png';
+    if (!isPng) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+    }
+    ctx.drawImage(img, 0, 0, w, h);
+
+    const format = isPng ? 'image/png' : 'image/jpeg';
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      imgResizeResultBlob = blob;
+
+      document.getElementById('imgresize-res-dims').textContent = `${w} × ${h} px`;
+      document.getElementById('imgresize-res-size').textContent = formatBytes(blob.size);
+      document.getElementById('imgresize-res-format').textContent = isPng ? 'PNG' : 'JPG';
+
+      const preview = document.getElementById('imgresize-preview');
+      if (preview) preview.src = URL.createObjectURL(blob);
+
+      if (resultCard) {
+        resultCard.style.display = 'block';
+        if (resultCard && typeof resultCard.scrollIntoView === 'function') { try { resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
+      }
+      showToast('✓ Image resized successfully!');
+    }, format, 0.9);
+  } catch (err) {
+    console.error('Resize error:', err);
+    if (errEl) {
+      errEl.textContent = 'Resize failed: ' + err.message;
+      errEl.style.display = 'block';
+    }
+  }
 }
 
 function downloadResizedImage() {
   if (!imgResizeResultBlob || !imgResizeOriginalFile) return;
   const isPng = imgResizeOriginalFile.type === 'image/png';
   const ext = isPng ? 'png' : 'jpg';
-  const baseName = imgResizeOriginalFile.name.replace(/\.[^/.]+$/, '');
+  const base = imgResizeOriginalFile.name.replace(/\.[^/.]+$/, '');
   const w = document.getElementById('imgresize-width').value;
   const h = document.getElementById('imgresize-height').value;
-  downloadBlob(imgResizeResultBlob, `${baseName}-${w}x${h}.${ext}`);
+  downloadBlob(imgResizeResultBlob, `${base}-${w}x${h}.${ext}`);
 }
 
 function resetImageResizer() {
   imgResizeLoadedImage = null;
   imgResizeOriginalFile = null;
   imgResizeResultBlob = null;
-
   const input = document.getElementById('imgresize-input');
   if (input) input.value = '';
   const card = document.getElementById('imgresize-selected-card');
@@ -6109,34 +6121,32 @@ function handleJpgToPngFile(file) {
 
   jpg2PngOriginalFile = file;
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      jpg2PngLoadedImage = img;
+  // Immediate UI display
+  document.getElementById('jpg2png-filename').textContent = file.name;
+  document.getElementById('jpg2png-orig-size').textContent = formatBytes(file.size);
+  document.getElementById('jpg2png-orig-dims').textContent = 'Loading dimensions...';
+  if (cardEl) cardEl.style.display = 'flex';
+  if (controls) controls.style.display = 'block';
+  if (actions) actions.style.display = 'flex';
 
-      const thumb = document.getElementById('jpg2png-selected-thumb');
-      if (thumb) thumb.src = e.target.result;
+  const thumb = document.getElementById('jpg2png-selected-thumb');
+  const previewUrl = URL.createObjectURL(file);
+  if (thumb) thumb.src = previewUrl;
 
-      document.getElementById('jpg2png-filename').textContent = file.name;
-      document.getElementById('jpg2png-orig-size').textContent = formatBytes(file.size);
-      document.getElementById('jpg2png-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
-
-      if (cardEl) cardEl.style.display = 'flex';
-      if (controls) controls.style.display = 'block';
-      if (actions) actions.style.display = 'flex';
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+  loadImageFromFile(file).then(({ img }) => {
+    jpg2PngLoadedImage = img;
+    document.getElementById('jpg2png-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+  }).catch(err => {
+    console.warn('JPG load warning:', err);
+  });
 }
 
-function runJpgToPng() {
+async function runJpgToPng() {
   const errEl = document.getElementById('jpg2png-error');
   const resultCard = document.getElementById('jpg2png-result');
-  if (errEl) errEl.style.display = 'none';
 
-  if (!jpg2PngLoadedImage || !jpg2PngOriginalFile) {
+  if (errEl) errEl.style.display = 'none';
+  if (!jpg2PngOriginalFile) {
     if (errEl) {
       errEl.textContent = 'Please choose a JPG/JPEG image first.';
       errEl.style.display = 'block';
@@ -6144,27 +6154,42 @@ function runJpgToPng() {
     return;
   }
 
-  const canvas = document.createElement('canvas');
-  canvas.width = jpg2PngLoadedImage.naturalWidth;
-  canvas.height = jpg2PngLoadedImage.naturalHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(jpg2PngLoadedImage, 0, 0);
-
-  canvas.toBlob(blob => {
-    if (!blob) return;
-    jpg2PngResultBlob = blob;
-
-    document.getElementById('jpg2png-res-size').textContent = formatBytes(blob.size);
-
-    const preview = document.getElementById('jpg2png-preview');
-    if (preview) preview.src = URL.createObjectURL(blob);
-
-    if (resultCard) {
-      resultCard.style.display = 'block';
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  try {
+    let img = jpg2PngLoadedImage;
+    if (!img) {
+      const loaded = await loadImageFromFile(jpg2PngOriginalFile);
+      img = loaded.img;
+      jpg2PngLoadedImage = img;
     }
-    showToast('✓ Converted to PNG!');
-  }, 'image/png');
+
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      jpg2PngResultBlob = blob;
+
+      document.getElementById('jpg2png-res-size').textContent = formatBytes(blob.size);
+
+      const preview = document.getElementById('jpg2png-preview');
+      if (preview) preview.src = URL.createObjectURL(blob);
+
+      if (resultCard) {
+        resultCard.style.display = 'block';
+        if (resultCard && typeof resultCard.scrollIntoView === 'function') { try { resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
+      }
+      showToast('✓ Converted to PNG successfully!');
+    }, 'image/png');
+  } catch (err) {
+    console.error('JPG to PNG error:', err);
+    if (errEl) {
+      errEl.textContent = 'Conversion failed: ' + err.message;
+      errEl.style.display = 'block';
+    }
+  }
 }
 
 function downloadJpgToPng() {
@@ -6177,7 +6202,6 @@ function resetJpgToPng() {
   jpg2PngLoadedImage = null;
   jpg2PngOriginalFile = null;
   jpg2PngResultBlob = null;
-
   const input = document.getElementById('jpg2png-input');
   if (input) input.value = '';
   const card = document.getElementById('jpg2png-selected-card');
@@ -6211,26 +6235,24 @@ function handlePngToJpgFile(file) {
 
   png2JpgOriginalFile = file;
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      png2JpgLoadedImage = img;
+  // Immediate UI display
+  document.getElementById('png2jpg-filename').textContent = file.name;
+  document.getElementById('png2jpg-orig-size').textContent = formatBytes(file.size);
+  document.getElementById('png2jpg-orig-dims').textContent = 'Loading dimensions...';
+  if (cardEl) cardEl.style.display = 'flex';
+  if (controls) controls.style.display = 'block';
+  if (actions) actions.style.display = 'flex';
 
-      const thumb = document.getElementById('png2jpg-selected-thumb');
-      if (thumb) thumb.src = e.target.result;
+  const thumb = document.getElementById('png2jpg-selected-thumb');
+  const previewUrl = URL.createObjectURL(file);
+  if (thumb) thumb.src = previewUrl;
 
-      document.getElementById('png2jpg-filename').textContent = file.name;
-      document.getElementById('png2jpg-orig-size').textContent = formatBytes(file.size);
-      document.getElementById('png2jpg-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
-
-      if (cardEl) cardEl.style.display = 'flex';
-      if (controls) controls.style.display = 'block';
-      if (actions) actions.style.display = 'flex';
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+  loadImageFromFile(file).then(({ img }) => {
+    png2JpgLoadedImage = img;
+    document.getElementById('png2jpg-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+  }).catch(err => {
+    console.warn('PNG load warning:', err);
+  });
 }
 
 function updatePng2JpgBg(hex) {
@@ -6244,12 +6266,12 @@ function updatePng2JpgQuality(val) {
   if (qBadge) qBadge.textContent = val + '%';
 }
 
-function runPngToJpg() {
+async function runPngToJpg() {
   const errEl = document.getElementById('png2jpg-error');
   const resultCard = document.getElementById('png2jpg-result');
-  if (errEl) errEl.style.display = 'none';
 
-  if (!png2JpgLoadedImage || !png2JpgOriginalFile) {
+  if (errEl) errEl.style.display = 'none';
+  if (!png2JpgOriginalFile) {
     if (errEl) {
       errEl.textContent = 'Please choose a PNG image first.';
       errEl.style.display = 'block';
@@ -6257,39 +6279,53 @@ function runPngToJpg() {
     return;
   }
 
-  const quality = parseInt(document.getElementById('png2jpg-quality').value, 10) / 100;
-
-  const canvas = document.createElement('canvas');
-  canvas.width = png2JpgLoadedImage.naturalWidth;
-  canvas.height = png2JpgLoadedImage.naturalHeight;
-  const ctx = canvas.getContext('2d');
-
-  // Fill custom background color for transparency
-  ctx.fillStyle = png2JpgBgColor || '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(png2JpgLoadedImage, 0, 0);
-
-  canvas.toBlob(blob => {
-    if (!blob) return;
-    png2JpgResultBlob = blob;
-
-    const originalSize = png2JpgOriginalFile.size;
-    const newSize = blob.size;
-    const reduction = Math.max(0, Math.round(((originalSize - newSize) / originalSize) * 100));
-
-    document.getElementById('png2jpg-res-orig').textContent = formatBytes(originalSize);
-    document.getElementById('png2jpg-res-new').textContent = formatBytes(newSize);
-    document.getElementById('png2jpg-res-reduction').textContent = `-${reduction}%`;
-
-    const preview = document.getElementById('png2jpg-preview');
-    if (preview) preview.src = URL.createObjectURL(blob);
-
-    if (resultCard) {
-      resultCard.style.display = 'block';
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  try {
+    let img = png2JpgLoadedImage;
+    if (!img) {
+      const loaded = await loadImageFromFile(png2JpgOriginalFile);
+      img = loaded.img;
+      png2JpgLoadedImage = img;
     }
-    showToast('✓ Converted to JPG!');
-  }, 'image/jpeg', quality);
+
+    const quality = parseInt(document.getElementById('png2jpg-quality').value, 10) / 100;
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+
+    // Fill custom background color for transparency
+    ctx.fillStyle = png2JpgBgColor || '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      png2JpgResultBlob = blob;
+
+      const originalSize = png2JpgOriginalFile.size;
+      const newSize = blob.size;
+      const reduction = Math.max(0, Math.round(((originalSize - newSize) / originalSize) * 100));
+
+      document.getElementById('png2jpg-res-orig').textContent = formatBytes(originalSize);
+      document.getElementById('png2jpg-res-new').textContent = formatBytes(newSize);
+      document.getElementById('png2jpg-res-reduction').textContent = `-${reduction}%`;
+
+      const preview = document.getElementById('png2jpg-preview');
+      if (preview) preview.src = URL.createObjectURL(blob);
+
+      if (resultCard) {
+        resultCard.style.display = 'block';
+        if (resultCard && typeof resultCard.scrollIntoView === 'function') { try { resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
+      }
+      showToast('✓ Converted to JPG successfully!');
+    }, 'image/jpeg', quality);
+  } catch (err) {
+    console.error('PNG to JPG error:', err);
+    if (errEl) {
+      errEl.textContent = 'Conversion failed: ' + err.message;
+      errEl.style.display = 'block';
+    }
+  }
 }
 
 function downloadPngToJpg() {
@@ -6302,8 +6338,6 @@ function resetPngToJpg() {
   png2JpgLoadedImage = null;
   png2JpgOriginalFile = null;
   png2JpgResultBlob = null;
-  png2JpgBgColor = '#ffffff';
-
   const input = document.getElementById('png2jpg-input');
   if (input) input.value = '';
   const card = document.getElementById('png2jpg-selected-card');
@@ -6337,47 +6371,44 @@ function handleImageCropperFile(file) {
 
   imgCropOriginalFile = file;
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      imgCropLoadedImage = img;
+  // Immediate UI display
+  document.getElementById('imgcrop-filename').textContent = file.name;
+  document.getElementById('imgcrop-orig-size').textContent = formatBytes(file.size);
+  document.getElementById('imgcrop-orig-dims').textContent = 'Loading dimensions...';
+  if (cardEl) cardEl.style.display = 'flex';
+  if (controls) controls.style.display = 'block';
+  if (actions) actions.style.display = 'flex';
 
-      const thumb = document.getElementById('imgcrop-selected-thumb');
-      if (thumb) thumb.src = e.target.result;
+  const thumb = document.getElementById('imgcrop-selected-thumb');
+  const previewUrl = URL.createObjectURL(file);
+  if (thumb) thumb.src = previewUrl;
 
-      document.getElementById('imgcrop-filename').textContent = file.name;
-      document.getElementById('imgcrop-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
-      document.getElementById('imgcrop-orig-size').textContent = formatBytes(file.size);
-
-      if (cardEl) cardEl.style.display = 'flex';
-      if (controls) controls.style.display = 'block';
-      if (actions) actions.style.display = 'flex';
-
-      setTimeout(drawCropCanvas, 50);
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+  loadImageFromFile(file).then(({ img }) => {
+    imgCropLoadedImage = img;
+    document.getElementById('imgcrop-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+    setTimeout(drawCropCanvas, 50);
+  }).catch(err => {
+    console.warn('Crop load warning:', err);
+  });
 }
 
 function setCropRatio(ratio) {
   imgCropCurrentRatio = ratio;
   const ratioBtnMap = {
-    "free": "crop-ratio-free",
-    "1:1": "crop-ratio-1-1",
-    "4:3": "crop-ratio-4-3",
-    "16:9": "crop-ratio-16-9",
-    "1-1": "crop-ratio-1-1",
-    "4-3": "crop-ratio-4-3",
-    "16-9": "crop-ratio-16-9"
+    'free': 'crop-ratio-free',
+    '1:1': 'crop-ratio-1-1',
+    '4:3': 'crop-ratio-4-3',
+    '16:9': 'crop-ratio-16-9',
+    '1-1': 'crop-ratio-1-1',
+    '4-3': 'crop-ratio-4-3',
+    '16-9': 'crop-ratio-16-9'
   };
-  const activeBtnId = ratioBtnMap[ratio] || "crop-ratio-free";
-  ["crop-ratio-free", "crop-ratio-1-1", "crop-ratio-4-3", "crop-ratio-16-9"].forEach(btnId => {
+  const activeBtnId = ratioBtnMap[ratio] || 'crop-ratio-free';
+  ['crop-ratio-free', 'crop-ratio-1-1', 'crop-ratio-4-3', 'crop-ratio-16-9'].forEach(btnId => {
     const btn = document.getElementById(btnId);
     if (btn) {
-      if (btnId === activeBtnId) btn.classList.add("active");
-      else btn.classList.remove("active");
+      if (btnId === activeBtnId) btn.classList.add('active');
+      else btn.classList.remove('active');
     }
   });
   drawCropCanvas();
@@ -6390,10 +6421,8 @@ function onCropParamChange() {
 
   const sizeBadge = document.getElementById('crop-size-val');
   if (sizeBadge) sizeBadge.textContent = sizeVal + '%';
-
   const xBadge = document.getElementById('crop-pos-x-val');
   if (xBadge) xBadge.textContent = xVal + '%';
-
   const yBadge = document.getElementById('crop-pos-y-val');
   if (yBadge) yBadge.textContent = yVal + '%';
 
@@ -6417,12 +6446,11 @@ function getCropBox() {
   const sizeVal = parseInt(document.getElementById('crop-size').value, 10) / 100;
 
   let cropW, cropH;
-
-  if (imgCropCurrentRatio === '1:1') {
+  if (imgCropCurrentRatio === '1:1' || imgCropCurrentRatio === '1-1') {
     const minDim = Math.min(imgW, imgH) * sizeVal;
     cropW = minDim;
     cropH = minDim;
-  } else if (imgCropCurrentRatio === '4:3') {
+  } else if (imgCropCurrentRatio === '4:3' || imgCropCurrentRatio === '4-3') {
     const targetW = imgW * sizeVal;
     cropW = targetW;
     cropH = targetW * (3 / 4);
@@ -6430,7 +6458,7 @@ function getCropBox() {
       cropH = imgH * sizeVal;
       cropW = cropH * (4 / 3);
     }
-  } else if (imgCropCurrentRatio === '16:9') {
+  } else if (imgCropCurrentRatio === '16:9' || imgCropCurrentRatio === '16-9') {
     const targetW = imgW * sizeVal;
     cropW = targetW;
     cropH = targetW * (9 / 16);
@@ -6439,19 +6467,23 @@ function getCropBox() {
       cropW = cropH * (16 / 9);
     }
   } else {
+    // Freeform
     cropW = imgW * sizeVal;
     cropH = imgH * sizeVal;
   }
 
-  const maxOffsetX = Math.max(0, imgW - cropW);
-  const maxOffsetY = Math.max(0, imgH - cropH);
+  cropW = Math.max(10, Math.min(cropW, imgW));
+  cropH = Math.max(10, Math.min(cropH, imgH));
 
-  const x = Math.max(0, Math.min(maxOffsetX, maxOffsetX * posXVal));
-  const y = Math.max(0, Math.min(maxOffsetY, maxOffsetY * posYVal));
+  const maxLeft = imgW - cropW;
+  const maxTop = imgH - cropH;
+
+  const cropX = Math.max(0, Math.min(maxLeft * posXVal, maxLeft));
+  const cropY = Math.max(0, Math.min(maxTop * posYVal, maxTop));
 
   return {
-    x: Math.round(x),
-    y: Math.round(y),
+    x: Math.round(cropX),
+    y: Math.round(cropY),
     w: Math.round(cropW),
     h: Math.round(cropH)
   };
@@ -6468,13 +6500,15 @@ function drawCropCanvas() {
 
   canvas.width = wrapWidth;
   canvas.height = imgCropLoadedImage.naturalHeight * displayScale;
-  const ctx = canvas.getContext('2d');
 
+  const ctx = canvas.getContext('2d');
   ctx.drawImage(imgCropLoadedImage, 0, 0, canvas.width, canvas.height);
 
+  // Dark overlay
   ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // Clear crop box to show bright area
   const box = getCropBox();
   const cX = box.x * displayScale;
   const cY = box.y * displayScale;
@@ -6484,10 +6518,12 @@ function drawCropCanvas() {
   ctx.clearRect(cX, cY, cW, cH);
   ctx.drawImage(imgCropLoadedImage, box.x, box.y, box.w, box.h, cX, cY, cW, cH);
 
+  // Crop border outline
   ctx.strokeStyle = '#2563eb';
   ctx.lineWidth = 2;
   ctx.strokeRect(cX, cY, cW, cH);
 
+  // Grid lines (rule of thirds)
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -6498,47 +6534,66 @@ function drawCropCanvas() {
   ctx.stroke();
 }
 
-function runImageCrop() {
+async function runImageCrop() {
   const errEl = document.getElementById('imgcrop-error');
   const resultCard = document.getElementById('imgcrop-result');
-  if (errEl) errEl.style.display = 'none';
 
-  if (!imgCropLoadedImage || !imgCropOriginalFile) {
+  if (errEl) errEl.style.display = 'none';
+  if (!imgCropOriginalFile) {
     if (errEl) {
-      errEl.textContent = 'Please choose an image to crop.';
+      errEl.textContent = 'Please choose an image file first.';
       errEl.style.display = 'block';
     }
     return;
   }
 
-  const box = getCropBox();
-  if (box.w <= 0 || box.h <= 0) return;
-
-  const outCanvas = document.createElement('canvas');
-  outCanvas.width = box.w;
-  outCanvas.height = box.h;
-  const outCtx = outCanvas.getContext('2d');
-  outCtx.drawImage(imgCropLoadedImage, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);
-
-  const format = imgCropOriginalFile.type === 'image/png' ? 'image/png' : 'image/jpeg';
-
-  outCanvas.toBlob(blob => {
-    if (!blob) return;
-    imgCropResultBlob = blob;
-
-    document.getElementById('imgcrop-res-dims').textContent = `${box.w} × ${box.h} px`;
-    document.getElementById('imgcrop-res-ratio').textContent = imgCropCurrentRatio.toUpperCase();
-    document.getElementById('imgcrop-res-size').textContent = formatBytes(blob.size);
-
-    const preview = document.getElementById('imgcrop-preview');
-    if (preview) preview.src = URL.createObjectURL(blob);
-
-    if (resultCard) {
-      resultCard.style.display = 'block';
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  try {
+    let img = imgCropLoadedImage;
+    if (!img) {
+      const loaded = await loadImageFromFile(imgCropOriginalFile);
+      img = loaded.img;
+      imgCropLoadedImage = img;
     }
-    showToast('✓ Image cropped successfully!');
-  }, format, 0.92);
+
+    const box = getCropBox();
+    if (!box.w || !box.h) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = box.w;
+    canvas.height = box.h;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    ctx.drawImage(img, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);
+
+    const isPng = imgCropOriginalFile.type === 'image/png';
+    const mime = isPng ? 'image/png' : 'image/jpeg';
+
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      imgCropResultBlob = blob;
+
+      document.getElementById('imgcrop-res-dims').textContent = `${box.w} × ${box.h} px`;
+      document.getElementById('imgcrop-res-size').textContent = formatBytes(blob.size);
+      document.getElementById('imgcrop-res-ratio').textContent = `${(box.w / box.h).toFixed(2)}:1`;
+
+      const preview = document.getElementById('imgcrop-preview');
+      if (preview) preview.src = URL.createObjectURL(blob);
+
+      if (resultCard) {
+        resultCard.style.display = 'block';
+        if (resultCard && typeof resultCard.scrollIntoView === 'function') { try { resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
+      }
+      showToast('✓ Image cropped successfully!');
+    }, mime, 0.92);
+  } catch (err) {
+    console.error('Crop error:', err);
+    if (errEl) {
+      errEl.textContent = 'Crop failed: ' + err.message;
+      errEl.style.display = 'block';
+    }
+  }
 }
 
 function downloadCroppedImage() {
@@ -6546,14 +6601,14 @@ function downloadCroppedImage() {
   const isPng = imgCropOriginalFile.type === 'image/png';
   const ext = isPng ? 'png' : 'jpg';
   const baseName = imgCropOriginalFile.name.replace(/\.[^/.]+$/, '');
-  downloadBlob(imgCropResultBlob, `${baseName}-cropped.${ext}`);
+  const box = getCropBox();
+  downloadBlob(imgCropResultBlob, `${baseName}-cropped-${box.w}x${box.h}.${ext}`);
 }
 
 function resetImageCropper() {
   imgCropLoadedImage = null;
   imgCropOriginalFile = null;
   imgCropResultBlob = null;
-
   const input = document.getElementById('imgcrop-input');
   if (input) input.value = '';
   const card = document.getElementById('imgcrop-selected-card');
@@ -6586,26 +6641,24 @@ function handleImageToWebpFile(file) {
 
   img2WebpOriginalFile = file;
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      img2WebpLoadedImage = img;
+  // Immediate UI display
+  document.getElementById('img2webp-filename').textContent = file.name;
+  document.getElementById('img2webp-orig-size').textContent = formatBytes(file.size);
+  document.getElementById('img2webp-orig-dims').textContent = 'Loading dimensions...';
+  if (cardEl) cardEl.style.display = 'flex';
+  if (controls) controls.style.display = 'block';
+  if (actions) actions.style.display = 'flex';
 
-      const thumb = document.getElementById('img2webp-selected-thumb');
-      if (thumb) thumb.src = e.target.result;
+  const thumb = document.getElementById('img2webp-selected-thumb');
+  const previewUrl = URL.createObjectURL(file);
+  if (thumb) thumb.src = previewUrl;
 
-      document.getElementById('img2webp-filename').textContent = file.name;
-      document.getElementById('img2webp-orig-size').textContent = formatBytes(file.size);
-      document.getElementById('img2webp-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
-
-      if (cardEl) cardEl.style.display = 'flex';
-      if (controls) controls.style.display = 'block';
-      if (actions) actions.style.display = 'flex';
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+  loadImageFromFile(file).then(({ img }) => {
+    img2WebpLoadedImage = img;
+    document.getElementById('img2webp-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+  }).catch(err => {
+    console.warn('WebP load warning:', err);
+  });
 }
 
 function updateWebpQuality(val) {
@@ -6613,12 +6666,12 @@ function updateWebpQuality(val) {
   if (qVal) qVal.textContent = val + '%';
 }
 
-function runImageToWebp() {
+async function runImageToWebp() {
   const errEl = document.getElementById('img2webp-error');
   const resultCard = document.getElementById('img2webp-result');
-  if (errEl) errEl.style.display = 'none';
 
-  if (!img2WebpLoadedImage || !img2WebpOriginalFile) {
+  if (errEl) errEl.style.display = 'none';
+  if (!img2WebpOriginalFile) {
     if (errEl) {
       errEl.textContent = 'Please choose an image to convert.';
       errEl.style.display = 'block';
@@ -6626,35 +6679,49 @@ function runImageToWebp() {
     return;
   }
 
-  const quality = parseInt(document.getElementById('img2webp-quality').value, 10) / 100;
-
-  const canvas = document.createElement('canvas');
-  canvas.width = img2WebpLoadedImage.naturalWidth;
-  canvas.height = img2WebpLoadedImage.naturalHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(img2WebpLoadedImage, 0, 0);
-
-  canvas.toBlob(blob => {
-    if (!blob) return;
-    img2WebpResultBlob = blob;
-
-    const originalSize = img2WebpOriginalFile.size;
-    const newSize = blob.size;
-    const savedPct = Math.max(0, Math.round(((originalSize - newSize) / originalSize) * 100));
-
-    document.getElementById('img2webp-res-orig').textContent = formatBytes(originalSize);
-    document.getElementById('img2webp-res-new').textContent = formatBytes(newSize);
-    document.getElementById('img2webp-res-saved').textContent = `-${savedPct}%`;
-
-    const preview = document.getElementById('img2webp-preview');
-    if (preview) preview.src = URL.createObjectURL(blob);
-
-    if (resultCard) {
-      resultCard.style.display = 'block';
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  try {
+    let img = img2WebpLoadedImage;
+    if (!img) {
+      const loaded = await loadImageFromFile(img2WebpOriginalFile);
+      img = loaded.img;
+      img2WebpLoadedImage = img;
     }
-    showToast('✓ Converted to WebP!');
-  }, 'image/webp', quality);
+
+    const quality = parseInt(document.getElementById('img2webp-quality').value, 10) / 100;
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      img2WebpResultBlob = blob;
+
+      const originalSize = img2WebpOriginalFile.size;
+      const newSize = blob.size;
+      const savedPct = Math.max(0, Math.round(((originalSize - newSize) / originalSize) * 100));
+
+      document.getElementById('img2webp-res-orig').textContent = formatBytes(originalSize);
+      document.getElementById('img2webp-res-new').textContent = formatBytes(newSize);
+      document.getElementById('img2webp-res-saved').textContent = `-${savedPct}%`;
+
+      const preview = document.getElementById('img2webp-preview');
+      if (preview) preview.src = URL.createObjectURL(blob);
+
+      if (resultCard) {
+        resultCard.style.display = 'block';
+        if (resultCard && typeof resultCard.scrollIntoView === 'function') { try { resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e){} }
+      }
+      showToast('✓ Converted to WebP successfully!');
+    }, 'image/webp', quality);
+  } catch (err) {
+    console.error('WebP conversion error:', err);
+    if (errEl) {
+      errEl.textContent = 'Conversion failed: ' + err.message;
+      errEl.style.display = 'block';
+    }
+  }
 }
 
 function downloadWebpImage() {
@@ -6667,7 +6734,6 @@ function resetImageToWebp() {
   img2WebpLoadedImage = null;
   img2WebpOriginalFile = null;
   img2WebpResultBlob = null;
-
   const input = document.getElementById('img2webp-input');
   if (input) input.value = '';
   const card = document.getElementById('img2webp-selected-card');
@@ -6680,6 +6746,64 @@ function resetImageToWebp() {
   if (resultCard) resultCard.style.display = 'none';
   const errEl = document.getElementById('img2webp-error');
   if (errEl) errEl.style.display = 'none';
+}
+
+// Drag & Drop Setup and Input Change Listeners for all 10 tools
+function initFileDropzones() {
+  const toolConfigs = [
+    { id: 'pdf-merge-dropzone', inputId: 'pdf-merge-input', handler: files => handlePdfMergeFiles(files) },
+    { id: 'pdf-split-dropzone', inputId: 'pdf-split-input', handler: files => files && files[0] && handlePdfSplitFile(files[0]) },
+    { id: 'pdf2img-dropzone', inputId: 'pdf2img-input', handler: files => files && files[0] && handlePdfToImagesFile(files[0]) },
+    { id: 'img2pdf-dropzone', inputId: 'img2pdf-input', handler: files => handleImagesToPdfFiles(files) },
+    { id: 'imgcomp-dropzone', inputId: 'imgcomp-input', handler: files => files && files[0] && handleImageCompressorFile(files[0]) },
+    { id: 'imgresize-dropzone', inputId: 'imgresize-input', handler: files => files && files[0] && handleImageResizerFile(files[0]) },
+    { id: 'jpg2png-dropzone', inputId: 'jpg2png-input', handler: files => files && files[0] && handleJpgToPngFile(files[0]) },
+    { id: 'png2jpg-dropzone', inputId: 'png2jpg-input', handler: files => files && files[0] && handlePngToJpgFile(files[0]) },
+    { id: 'imgcrop-dropzone', inputId: 'imgcrop-input', handler: files => files && files[0] && handleImageCropperFile(files[0]) },
+    { id: 'img2webp-dropzone', inputId: 'img2webp-input', handler: files => files && files[0] && handleImageToWebpFile(files[0]) }
+  ];
+
+  toolConfigs.forEach(cfg => {
+    // 1. Listen directly to file input change event
+    const inputEl = document.getElementById(cfg.inputId);
+    if (inputEl) {
+      inputEl.addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.value = null;
+      });
+      inputEl.addEventListener('change', function(e) {
+        if (this.files && this.files.length > 0) {
+          cfg.handler(this.files);
+        }
+      });
+    }
+
+    // 2. Drag & Drop on dropzone
+    const dropzoneEl = document.getElementById(cfg.id);
+    if (!dropzoneEl) return;
+
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropzoneEl.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzoneEl.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+      dropzoneEl.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzoneEl.classList.remove('dragover');
+      });
+    });
+
+    dropzoneEl.addEventListener('drop', e => {
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+        cfg.handler(e.dataTransfer.files);
+      }
+    });
+  });
 }
 
 // Auto-initialize dropzones when DOM is ready
