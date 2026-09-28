@@ -1,4 +1,9 @@
-# tools_pdf_image_css.py
+import os
+import re
+
+print("Generating clean, robust code for all 10 PDF & Image tools...")
+
+# 1. GENERATE CSS
 CSS_CODE = r'''/* ==========================================================================
    PDF & IMAGE TOOLS - MODERN, RESPONSIVE STYLES
    ========================================================================== */
@@ -491,3 +496,8 @@ CSS_CODE = r'''/* ==============================================================
   cursor: pointer;
 }
 '''
+
+with open('tools_pdf_image_css.py', 'w', encoding='utf-8') as f:
+    f.write(f'# tools_pdf_image_css.py\nCSS_CODE = r\'\'\'{CSS_CODE}\'\'\'\n')
+
+print("tools_pdf_image_css.py written.")

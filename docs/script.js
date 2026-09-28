@@ -4298,6 +4298,16 @@ function resetSalesTax() {
 // =========================================================================
 
 const TOOLS_INFO = {
+  'pdf-merge': { name: 'PDF Merge', icon: '📑', category: 'pdf-images', desc: 'Combine multiple PDF documents into one file in custom page order.' },
+  'pdf-split': { name: 'PDF Split', icon: '✂️', category: 'pdf-images', desc: 'Extract custom page ranges or split single pages from any PDF document.' },
+  'pdf-to-images': { name: 'PDF to Images', icon: '🖼️', category: 'pdf-images', desc: 'Convert multi-page PDF documents into high-resolution JPG or PNG images.' },
+  'images-to-pdf': { name: 'Images to PDF', icon: '📸', category: 'pdf-images', desc: 'Convert JPG, PNG, and WebP images into a single organized PDF document.' },
+  'image-compressor': { name: 'Image Compressor', icon: '🗜️', category: 'pdf-images', desc: 'Compress JPG, PNG, and WebP images by up to 90% without visible loss.' },
+  'image-resizer': { name: 'Image Resizer', icon: '📐', category: 'pdf-images', desc: 'Resize image dimensions by exact pixels or percentage with aspect ratio lock.' },
+  'jpg-to-png': { name: 'JPG to PNG Converter', icon: '🔄', category: 'pdf-images', desc: 'Convert JPG/JPEG images to lossless transparent-ready PNG format.' },
+  'png-to-jpg': { name: 'PNG to JPG Converter', icon: '🎨', category: 'pdf-images', desc: 'Convert PNG images to JPG with custom background color for transparency.' },
+  'image-cropper': { name: 'Image Cropper', icon: '✂️', category: 'pdf-images', desc: 'Crop images with preset aspect ratios (1:1, 4:3, 16:9, Freeform) and live preview.' },
+  'image-to-webp': { name: 'Image to WebP Converter', icon: '🚀', category: 'pdf-images', desc: 'Convert JPG and PNG images into lightweight next-gen WebP format.' },
   'age': { name: 'Age Calculator', icon: '🎂', category: 'datetime', desc: 'Exact age in years, months, days, countdown to next birthday.' },
   'emi': { name: 'EMI Loan Calculator', icon: '🏦', category: 'finance', desc: 'Monthly loan installment, total interest payable, repayment split.' },
   'percentage': { name: 'Percentage Calculator', icon: '📊', category: 'math', desc: 'Solve X% of Y, percent increase/decrease, and proportions.' },
@@ -4346,6 +4356,16 @@ const TOOLS_INFO = {
 };
 
 const RELATED_TOOLS_MAP = {
+  'pdf-merge': ['pdf-split', 'pdf-to-images', 'images-to-pdf'],
+  'pdf-split': ['pdf-merge', 'pdf-to-images', 'images-to-pdf'],
+  'pdf-to-images': ['images-to-pdf', 'pdf-split', 'image-compressor'],
+  'images-to-pdf': ['pdf-to-images', 'pdf-merge', 'image-compressor'],
+  'image-compressor': ['image-resizer', 'image-to-webp', 'image-cropper'],
+  'image-resizer': ['image-compressor', 'image-cropper', 'image-to-webp'],
+  'jpg-to-png': ['png-to-jpg', 'image-to-webp', 'image-compressor'],
+  'png-to-jpg': ['jpg-to-png', 'image-to-webp', 'image-compressor'],
+  'image-cropper': ['image-resizer', 'image-compressor', 'image-to-webp'],
+  'image-to-webp': ['image-compressor', 'jpg-to-png', 'png-to-jpg'],
   'age': ['date-difference', 'time', 'hours-to-minutes', 'pregnancy-due-date'],
   'emi': ['loan-interest', 'loan-eligibility', 'loan-tenure', 'fd'],
   'percentage': ['discount', 'profit-loss', 'gst', 'average'],
@@ -4854,11 +4874,12 @@ function initNewFeatures() {
 
 
 // ============================================================================
-// PDF & IMAGE TOOLS - 10 NEW BROWSER-BASED UTILITY TOOLS
-// 100% Client-Side, Zero Server Uploads, Fully Local and Private
+// ============================================================================
+// PDF & IMAGE TOOLS - 10 BROWSER-BASED UTILITY TOOLS
+// 100% Client-Side, Zero Server Uploads, Fully Local, Fast and Private
 // ============================================================================
 
-// Utility: Format bytes into readable string (e.g. 1.25 MB)
+// Utility: Format bytes into human-readable string (e.g. 1.25 MB)
 function formatBytes(bytes, decimals = 1) {
   if (!bytes || bytes === 0) return '0 B';
   const k = 1024;
@@ -4868,26 +4889,73 @@ function formatBytes(bytes, decimals = 1) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-// Utility: Trigger browser download for a Blob
+// Utility: Trigger reliable browser download for a Blob
 function downloadBlob(blob, filename) {
+  if (!blob) return;
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
   setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 1000);
+    try {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {}
+  }, 2000);
+}
+
+// Drag & Drop Setup for all 10 tools
+function initFileDropzones() {
+  const dropzoneConfigs = [
+    { id: 'pdf-merge-dropzone', inputId: 'pdf-merge-input', handler: files => handlePdfMergeFiles(files) },
+    { id: 'pdf-split-dropzone', inputId: 'pdf-split-input', handler: files => files[0] && handlePdfSplitFile(files[0]) },
+    { id: 'pdf2img-dropzone', inputId: 'pdf2img-input', handler: files => files[0] && handlePdfToImagesFile(files[0]) },
+    { id: 'img2pdf-dropzone', inputId: 'img2pdf-input', handler: files => handleImagesToPdfFiles(files) },
+    { id: 'imgcomp-dropzone', inputId: 'imgcomp-input', handler: files => files[0] && handleImageCompressorFile(files[0]) },
+    { id: 'imgresize-dropzone', inputId: 'imgresize-input', handler: files => files[0] && handleImageResizerFile(files[0]) },
+    { id: 'jpg2png-dropzone', inputId: 'jpg2png-input', handler: files => files[0] && handleJpgToPngFile(files[0]) },
+    { id: 'png2jpg-dropzone', inputId: 'png2jpg-input', handler: files => files[0] && handlePngToJpgFile(files[0]) },
+    { id: 'imgcrop-dropzone', inputId: 'imgcrop-input', handler: files => files[0] && handleImageCropperFile(files[0]) },
+    { id: 'img2webp-dropzone', inputId: 'img2webp-input', handler: files => files[0] && handleImageToWebpFile(files[0]) }
+  ];
+
+  dropzoneConfigs.forEach(cfg => {
+    const el = document.getElementById(cfg.id);
+    if (!el) return;
+    ['dragenter', 'dragover'].forEach(evt => {
+      el.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        el.classList.add('dragover');
+      });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+      el.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        el.classList.remove('dragover');
+      });
+    });
+    el.addEventListener('drop', e => {
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+        cfg.handler(e.dataTransfer.files);
+      }
+    });
+  });
 }
 
 // ==================== 1. PDF MERGE ====================
 let pdfMergeFiles = [];
+let pdfMergeResultBlob = null;
 
 function handlePdfMergeFiles(files) {
   const errEl = document.getElementById('pdf-merge-error');
   if (errEl) errEl.style.display = 'none';
+
+  if (!files || files.length === 0) return;
 
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
@@ -4912,22 +4980,25 @@ function renderPdfMergeList() {
   const listEl = document.getElementById('pdf-merge-file-list');
   const countEl = document.getElementById('pdf-merge-count');
   const mergeBtn = document.getElementById('pdf-merge-btn');
+  const actionRow = document.getElementById('pdf-merge-action-row');
 
   if (!container || !listEl) return;
 
   if (pdfMergeFiles.length === 0) {
     container.style.display = 'none';
+    if (actionRow) actionRow.style.display = 'none';
     if (mergeBtn) mergeBtn.disabled = true;
     return;
   }
 
   container.style.display = 'block';
+  if (actionRow) actionRow.style.display = 'flex';
   if (countEl) countEl.textContent = pdfMergeFiles.length;
   if (mergeBtn) mergeBtn.disabled = pdfMergeFiles.length < 2;
 
   listEl.innerHTML = pdfMergeFiles.map((file, idx) => `
     <div class="file-item-row" data-index="${idx}">
-      <span class="file-item-idx">${idx + 1}</span>
+      <span class="file-item-idx">#${idx + 1}</span>
       <span class="file-item-icon">📄</span>
       <div class="file-item-details">
         <span class="file-item-name" title="${file.name}">${file.name}</span>
@@ -4975,7 +5046,7 @@ async function processPdfMerge() {
 
   if (typeof PDFLib === 'undefined') {
     if (errEl) {
-      errEl.textContent = 'PDF library is initializing. Please check your internet connection and try again.';
+      errEl.textContent = 'PDF engine is loading. Please wait a moment and try again.';
       errEl.style.display = 'block';
     }
     return;
@@ -5003,22 +5074,19 @@ async function processPdfMerge() {
 
     if (progEl) progEl.textContent = 'Finalizing merged PDF...';
     const mergedPdfBytes = await mergedPdf.save();
-    const mergedBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+    pdfMergeResultBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
 
     if (progEl) progEl.style.display = 'none';
 
     // Populate results
     document.getElementById('pdf-merge-result-pages').textContent = totalPagesMerged;
     document.getElementById('pdf-merge-result-count').textContent = pdfMergeFiles.length;
-    document.getElementById('pdf-merge-result-size').textContent = formatBytes(mergedBlob.size);
+    document.getElementById('pdf-merge-result-size').textContent = formatBytes(pdfMergeResultBlob.size);
 
-    const downloadLink = document.getElementById('pdf-merge-download-btn');
-    if (downloadLink) {
-      downloadLink.href = URL.createObjectURL(mergedBlob);
-      downloadLink.download = `merged-document-${Date.now()}.pdf`;
+    if (resultCard) {
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    if (resultCard) resultCard.style.display = 'block';
     showToast('✓ PDFs merged successfully!');
   } catch (err) {
     console.error('PDF Merge Error:', err);
@@ -5032,8 +5100,14 @@ async function processPdfMerge() {
   }
 }
 
+function downloadMergedPdf() {
+  if (!pdfMergeResultBlob) return;
+  downloadBlob(pdfMergeResultBlob, `merged-document-${Date.now()}.pdf`);
+}
+
 function resetPdfMerge() {
   pdfMergeFiles = [];
+  pdfMergeResultBlob = null;
   renderPdfMergeList();
   const input = document.getElementById('pdf-merge-input');
   if (input) input.value = '';
@@ -5045,17 +5119,20 @@ function resetPdfMerge() {
   if (progEl) progEl.style.display = 'none';
 }
 
-
 // ==================== 2. PDF SPLIT ====================
 let pdfSplitLoadedFile = null;
 let pdfSplitTotalPagesCount = 0;
+let pdfSplitResultBlob = null;
 
 async function handlePdfSplitFile(file) {
   const errEl = document.getElementById('pdf-split-error');
+  const summaryEl = document.getElementById('pdf-split-summary');
   const controlsEl = document.getElementById('pdf-split-controls');
-  const splitBtn = document.getElementById('pdf-split-btn');
+  const actionRow = document.getElementById('pdf-split-action-row');
+  const resultCard = document.getElementById('pdf-split-result');
 
   if (errEl) errEl.style.display = 'none';
+  if (resultCard) resultCard.style.display = 'none';
   if (!file) return;
 
   if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
@@ -5077,16 +5154,23 @@ async function handlePdfSplitFile(file) {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+
     pdfSplitLoadedFile = file;
     pdfSplitTotalPagesCount = pdfDoc.getPageCount();
 
     document.getElementById('pdf-split-filename').textContent = file.name;
     document.getElementById('pdf-split-total-pages').textContent = pdfSplitTotalPagesCount;
     document.getElementById('pdf-split-filesize').textContent = formatBytes(file.size);
-    document.getElementById('pdf-split-range').value = pdfSplitTotalPagesCount > 1 ? `1-${Math.min(3, pdfSplitTotalPagesCount)}` : '1';
 
+    const initialRange = pdfSplitTotalPagesCount > 1 ? `1-${Math.min(3, pdfSplitTotalPagesCount)}` : '1';
+    const rangeInput = document.getElementById('pdf-split-range');
+    if (rangeInput) rangeInput.value = initialRange;
+
+    onPdfSplitRangeInput();
+
+    if (summaryEl) summaryEl.style.display = 'flex';
     if (controlsEl) controlsEl.style.display = 'block';
-    if (splitBtn) splitBtn.disabled = false;
+    if (actionRow) actionRow.style.display = 'flex';
   } catch (err) {
     console.error('PDF Split Load Error:', err);
     if (errEl) {
@@ -5112,7 +5196,34 @@ function setPdfSplitPreset(preset) {
   } else if (preset === 'even') {
     const evens = [];
     for (let p = 2; p <= pdfSplitTotalPagesCount; p += 2) evens.push(p);
-    input.value = evens.length ? evens.join(', ') : '2';
+    input.value = evens.length ? evens.join(', ') : (pdfSplitTotalPagesCount >= 2 ? '2' : '1');
+  }
+  onPdfSplitRangeInput();
+}
+
+function onPdfSplitRangeInput() {
+  const input = document.getElementById('pdf-split-range');
+  const hint = document.getElementById('pdf-split-range-hint');
+  const splitBtn = document.getElementById('pdf-split-btn');
+  if (!input || !hint) return;
+
+  const val = input.value.trim();
+  if (!val) {
+    hint.textContent = 'Please enter pages or ranges (e.g. 1-3, 5).';
+    hint.style.color = 'var(--text-muted)';
+    if (splitBtn) splitBtn.disabled = true;
+    return;
+  }
+
+  try {
+    const indices = parsePageRanges(val, pdfSplitTotalPagesCount);
+    hint.textContent = `✓ Will extract ${indices.length} page(s): ${indices.map(i => i + 1).slice(0, 10).join(', ')}${indices.length > 10 ? '...' : ''}`;
+    hint.style.color = '#10b981';
+    if (splitBtn) splitBtn.disabled = false;
+  } catch (err) {
+    hint.textContent = `⚠️ ${err.message}`;
+    hint.style.color = '#ef4444';
+    if (splitBtn) splitBtn.disabled = true;
   }
 }
 
@@ -5128,6 +5239,7 @@ function parsePageRanges(rangeStr, maxPages) {
       const [startStr, endStr] = part.split('-');
       const start = parseInt(startStr, 10);
       const end = parseInt(endStr, 10);
+
       if (isNaN(start) || isNaN(end) || start < 1 || end < start) {
         throw new Error(`Invalid page range: "${part}"`);
       }
@@ -5168,14 +5280,6 @@ async function processPdfSplit() {
   }
 
   const rangeVal = document.getElementById('pdf-split-range').value.trim();
-  if (!rangeVal) {
-    if (errEl) {
-      errEl.textContent = 'Please enter pages or a page range to extract.';
-      errEl.style.display = 'block';
-    }
-    return;
-  }
-
   let targetIndices;
   try {
     targetIndices = parsePageRanges(rangeVal, pdfSplitTotalPagesCount);
@@ -5190,7 +5294,7 @@ async function processPdfSplit() {
   try {
     if (splitBtn) splitBtn.disabled = true;
     if (progEl) {
-      progEl.textContent = `Extracting ${targetIndices.length} pages in browser...`;
+      progEl.textContent = `Extracting ${targetIndices.length} page(s) in browser...`;
       progEl.style.display = 'block';
     }
 
@@ -5202,21 +5306,18 @@ async function processPdfSplit() {
     copiedPages.forEach(p => splitPdf.addPage(p));
 
     const splitBytes = await splitPdf.save();
-    const splitBlob = new Blob([splitBytes], { type: 'application/pdf' });
+    pdfSplitResultBlob = new Blob([splitBytes], { type: 'application/pdf' });
 
     if (progEl) progEl.style.display = 'none';
 
     document.getElementById('pdf-split-result-pages').textContent = targetIndices.length;
     document.getElementById('pdf-split-result-range').textContent = rangeVal;
-    document.getElementById('pdf-split-result-size').textContent = formatBytes(splitBlob.size);
+    document.getElementById('pdf-split-result-size').textContent = formatBytes(pdfSplitResultBlob.size);
 
-    const downloadLink = document.getElementById('pdf-split-download-btn');
-    if (downloadLink) {
-      downloadLink.href = URL.createObjectURL(splitBlob);
-      downloadLink.download = `extracted-pages-${Date.now()}.pdf`;
+    if (resultCard) {
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    if (resultCard) resultCard.style.display = 'block';
     showToast('✓ Pages extracted successfully!');
   } catch (err) {
     console.error('PDF Split Error:', err);
@@ -5230,13 +5331,25 @@ async function processPdfSplit() {
   }
 }
 
+function downloadSplitPdf() {
+  if (!pdfSplitResultBlob) return;
+  const base = pdfSplitLoadedFile ? pdfSplitLoadedFile.name.replace(/\.pdf$/i, '') : 'document';
+  downloadBlob(pdfSplitResultBlob, `${base}-extracted-${Date.now()}.pdf`);
+}
+
 function resetPdfSplit() {
   pdfSplitLoadedFile = null;
   pdfSplitTotalPagesCount = 0;
+  pdfSplitResultBlob = null;
+
   const input = document.getElementById('pdf-split-input');
   if (input) input.value = '';
+  const summaryEl = document.getElementById('pdf-split-summary');
+  if (summaryEl) summaryEl.style.display = 'none';
   const controls = document.getElementById('pdf-split-controls');
   if (controls) controls.style.display = 'none';
+  const actions = document.getElementById('pdf-split-action-row');
+  if (actions) actions.style.display = 'none';
   const resultCard = document.getElementById('pdf-split-result');
   if (resultCard) resultCard.style.display = 'none';
   const errEl = document.getElementById('pdf-split-error');
@@ -5245,17 +5358,20 @@ function resetPdfSplit() {
   if (progEl) progEl.style.display = 'none';
 }
 
-
 // ==================== 3. PDF TO IMAGES ====================
 let pdf2ImgFile = null;
 let pdf2ImgRenderedBlobs = [];
+let pdf2ImgDoc = null;
 
 async function handlePdfToImagesFile(file) {
   const errEl = document.getElementById('pdf2img-error');
+  const summaryEl = document.getElementById('pdf2img-summary');
   const controlsEl = document.getElementById('pdf2img-controls');
-  const convertBtn = document.getElementById('pdf2img-btn');
+  const actionRow = document.getElementById('pdf2img-action-row');
+  const resultsCard = document.getElementById('pdf2img-results');
 
   if (errEl) errEl.style.display = 'none';
+  if (resultsCard) resultsCard.style.display = 'none';
   if (!file) return;
 
   if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
@@ -5275,17 +5391,24 @@ async function handlePdfToImagesFile(file) {
   }
 
   try {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/lib/pdf.worker.min.js';
+    }
+
     const arrayBuffer = await file.arrayBuffer();
     const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
     const pdfDoc = await loadingTask.promise;
 
     pdf2ImgFile = file;
+    pdf2ImgDoc = pdfDoc;
+
     document.getElementById('pdf2img-filename').textContent = file.name;
     document.getElementById('pdf2img-total-pages').textContent = pdfDoc.numPages;
+    document.getElementById('pdf2img-filesize').textContent = formatBytes(file.size);
 
+    if (summaryEl) summaryEl.style.display = 'flex';
     if (controlsEl) controlsEl.style.display = 'block';
-    if (convertBtn) convertBtn.disabled = false;
+    if (actionRow) actionRow.style.display = 'flex';
   } catch (err) {
     console.error('PDF to Images Read Error:', err);
     if (errEl) {
@@ -5307,7 +5430,7 @@ async function processPdfToImages() {
   if (galleryEl) galleryEl.innerHTML = '';
   pdf2ImgRenderedBlobs = [];
 
-  if (!pdf2ImgFile) {
+  if (!pdf2ImgFile || !pdf2ImgDoc) {
     if (errEl) {
       errEl.textContent = 'Please select a PDF file first.';
       errEl.style.display = 'block';
@@ -5326,21 +5449,18 @@ async function processPdfToImages() {
       progEl.style.display = 'block';
     }
 
-    const arrayBuffer = await pdf2ImgFile.arrayBuffer();
-    const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    const numPages = pdfDoc.numPages;
+    const numPages = pdf2ImgDoc.numPages;
 
     for (let pageNum = 1; pageNum <= numPages; pageNum++) {
       if (progEl) progEl.textContent = `Rendering page ${pageNum} of ${numPages}...`;
-      const page = await pdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale });
 
+      const page = await pdf2ImgDoc.getPage(pageNum);
+      const viewport = page.getViewport({ scale });
       const canvas = document.createElement('canvas');
       canvas.width = viewport.width;
       canvas.height = viewport.height;
       const ctx = canvas.getContext('2d');
 
-      // Fill white background for JPEGs
       if (format === 'image/jpeg') {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -5348,22 +5468,22 @@ async function processPdfToImages() {
 
       await page.render({ canvasContext: ctx, viewport }).promise;
 
-      // Convert canvas to blob
       await new Promise(resolve => {
         canvas.toBlob(blob => {
           const blobUrl = URL.createObjectURL(blob);
           const fileName = `page-${pageNum}.${ext}`;
+          const itemIdx = pdf2ImgRenderedBlobs.length;
           pdf2ImgRenderedBlobs.push({ blob, url: blobUrl, filename: fileName, pageNum });
 
           const card = document.createElement('div');
           card.className = 'image-thumb-card';
           card.innerHTML = `
-            <div class="thumb-header">Page ${pageNum}</div>
+            <div class="thumb-header">Page ${pageNum} (${Math.round(viewport.width)}×${Math.round(viewport.height)} px)</div>
             <div class="thumb-preview-wrap">
               <img src="${blobUrl}" class="thumb-preview" alt="Page ${pageNum}">
             </div>
             <div class="thumb-actions">
-              <a href="${blobUrl}" download="${fileName}" class="btn btn-outline btn-sm btn-block">⬇ Page ${pageNum}</a>
+              <button type="button" onclick="downloadPdfPageImage(${itemIdx})" class="btn btn-outline btn-sm btn-block">⬇ Download Page ${pageNum}</button>
             </div>
           `;
           galleryEl.appendChild(card);
@@ -5374,7 +5494,11 @@ async function processPdfToImages() {
 
     if (progEl) progEl.style.display = 'none';
     document.getElementById('pdf2img-rendered-count').textContent = numPages;
-    if (resultsCard) resultsCard.style.display = 'block';
+
+    if (resultsCard) {
+      resultsCard.style.display = 'block';
+      resultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
     showToast(`✓ Converted ${numPages} pages to images!`);
   } catch (err) {
     console.error('PDF to Images Error:', err);
@@ -5386,6 +5510,12 @@ async function processPdfToImages() {
   } finally {
     if (convertBtn) convertBtn.disabled = false;
   }
+}
+
+function downloadPdfPageImage(index) {
+  const item = pdf2ImgRenderedBlobs[index];
+  if (!item) return;
+  downloadBlob(item.blob, item.filename);
 }
 
 function downloadAllPdfImages() {
@@ -5400,11 +5530,17 @@ function downloadAllPdfImages() {
 
 function resetPdfToImages() {
   pdf2ImgFile = null;
+  pdf2ImgDoc = null;
   pdf2ImgRenderedBlobs = [];
+
   const input = document.getElementById('pdf2img-input');
   if (input) input.value = '';
+  const summaryEl = document.getElementById('pdf2img-summary');
+  if (summaryEl) summaryEl.style.display = 'none';
   const controls = document.getElementById('pdf2img-controls');
   if (controls) controls.style.display = 'none';
+  const actions = document.getElementById('pdf2img-action-row');
+  if (actions) actions.style.display = 'none';
   const results = document.getElementById('pdf2img-results');
   if (results) results.style.display = 'none';
   const errEl = document.getElementById('pdf2img-error');
@@ -5413,13 +5549,15 @@ function resetPdfToImages() {
   if (progEl) progEl.style.display = 'none';
 }
 
-
 // ==================== 4. IMAGES TO PDF ====================
 let img2PdfItems = [];
+let img2PdfResultBlob = null;
 
 function handleImagesToPdfFiles(files) {
   const errEl = document.getElementById('img2pdf-error');
   if (errEl) errEl.style.display = 'none';
+
+  if (!files || files.length === 0) return;
 
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
@@ -5444,23 +5582,26 @@ function renderImagesToPdfThumbnails() {
   const controls = document.getElementById('img2pdf-controls');
   const countEl = document.getElementById('img2pdf-count');
   const listEl = document.getElementById('img2pdf-thumbnails');
+  const actionRow = document.getElementById('img2pdf-action-row');
   const btn = document.getElementById('img2pdf-btn');
 
   if (!controls || !listEl) return;
 
   if (img2PdfItems.length === 0) {
     controls.style.display = 'none';
+    if (actionRow) actionRow.style.display = 'none';
     if (btn) btn.disabled = true;
     return;
   }
 
   controls.style.display = 'block';
+  if (actionRow) actionRow.style.display = 'flex';
   if (countEl) countEl.textContent = img2PdfItems.length;
   if (btn) btn.disabled = false;
 
   listEl.innerHTML = img2PdfItems.map((item, idx) => `
     <div class="file-item-row" data-index="${idx}">
-      <span class="file-item-idx">${idx + 1}</span>
+      <span class="file-item-idx">#${idx + 1}</span>
       <img src="${item.url}" class="file-item-thumb" alt="${item.name}">
       <div class="file-item-details">
         <span class="file-item-name">${item.name}</span>
@@ -5508,7 +5649,7 @@ async function processImagesToPdf() {
 
   if (typeof PDFLib === 'undefined') {
     if (errEl) {
-      errEl.textContent = 'PDF engine is loading. Please retry.';
+      errEl.textContent = 'PDF engine is loading. Please retry in a moment.';
       errEl.style.display = 'block';
     }
     return;
@@ -5530,7 +5671,6 @@ async function processImagesToPdf() {
       const item = img2PdfItems[i];
       if (progEl) progEl.textContent = `Processing image ${i + 1} of ${img2PdfItems.length}...`;
 
-      // Read image via an Image element to normalize format to PNG canvas
       const img = new Image();
       await new Promise((resolve, reject) => {
         img.onload = resolve;
@@ -5549,8 +5689,6 @@ async function processImagesToPdf() {
       const embeddedImg = await pdfDoc.embedPng(pngBytes);
 
       let pageWidth, pageHeight;
-      let imgDrawWidth, imgDrawHeight, drawX, drawY;
-
       if (layout === 'a4-portrait') {
         pageWidth = 595.28;
         pageHeight = 841.89;
@@ -5558,19 +5696,18 @@ async function processImagesToPdf() {
         pageWidth = 841.89;
         pageHeight = 595.28;
       } else {
-        // Natural fit
         pageWidth = img.naturalWidth + margin * 2;
         pageHeight = img.naturalHeight + margin * 2;
       }
 
-      const availW = pageWidth - margin * 2;
-      const availH = pageHeight - margin * 2;
+      const availW = Math.max(10, pageWidth - margin * 2);
+      const availH = Math.max(10, pageHeight - margin * 2);
       const scale = Math.min(availW / img.naturalWidth, availH / img.naturalHeight, 1);
 
-      imgDrawWidth = img.naturalWidth * scale;
-      imgDrawHeight = img.naturalHeight * scale;
-      drawX = margin + (availW - imgDrawWidth) / 2;
-      drawY = margin + (availH - imgDrawHeight) / 2;
+      const imgDrawWidth = img.naturalWidth * scale;
+      const imgDrawHeight = img.naturalHeight * scale;
+      const drawX = margin + (availW - imgDrawWidth) / 2;
+      const drawY = margin + (availH - imgDrawHeight) / 2;
 
       const page = pdfDoc.addPage([pageWidth, pageHeight]);
       page.drawImage(embeddedImg, {
@@ -5582,21 +5719,18 @@ async function processImagesToPdf() {
     }
 
     const pdfBytes = await pdfDoc.save();
-    const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+    img2PdfResultBlob = new Blob([pdfBytes], { type: 'application/pdf' });
 
     if (progEl) progEl.style.display = 'none';
 
     document.getElementById('img2pdf-result-pages').textContent = img2PdfItems.length;
     document.getElementById('img2pdf-result-count').textContent = img2PdfItems.length;
-    document.getElementById('img2pdf-result-size').textContent = formatBytes(pdfBlob.size);
+    document.getElementById('img2pdf-result-size').textContent = formatBytes(img2PdfResultBlob.size);
 
-    const downloadLink = document.getElementById('img2pdf-download-btn');
-    if (downloadLink) {
-      downloadLink.href = URL.createObjectURL(pdfBlob);
-      downloadLink.download = `images-document-${Date.now()}.pdf`;
+    if (resultCard) {
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    if (resultCard) resultCard.style.display = 'block';
     showToast('✓ PDF generated successfully!');
   } catch (err) {
     console.error('Images to PDF Error:', err);
@@ -5610,9 +5744,16 @@ async function processImagesToPdf() {
   }
 }
 
+function downloadImagesPdf() {
+  if (!img2PdfResultBlob) return;
+  downloadBlob(img2PdfResultBlob, `images-document-${Date.now()}.pdf`);
+}
+
 function resetImagesToPdf() {
   img2PdfItems = [];
+  img2PdfResultBlob = null;
   renderImagesToPdfThumbnails();
+
   const input = document.getElementById('img2pdf-input');
   if (input) input.value = '';
   const resultCard = document.getElementById('img2pdf-result');
@@ -5623,40 +5764,48 @@ function resetImagesToPdf() {
   if (progEl) progEl.style.display = 'none';
 }
 
-
 // ==================== 5. IMAGE COMPRESSOR ====================
 let imgCompLoadedImage = null;
 let imgCompOriginalFile = null;
+let imgCompResultBlob = null;
 
 function handleImageCompressorFile(file) {
   const errEl = document.getElementById('imgcomp-error');
+  const cardEl = document.getElementById('imgcomp-selected-card');
   const controlsEl = document.getElementById('imgcomp-controls');
   const actionRow = document.getElementById('imgcomp-action-row');
+  const resultCard = document.getElementById('imgcomp-result');
 
   if (errEl) errEl.style.display = 'none';
+  if (resultCard) resultCard.style.display = 'none';
   if (!file) return;
 
   if (!file.type.startsWith('image/')) {
     if (errEl) {
-      errEl.textContent = 'Please choose a valid image file.';
+      errEl.textContent = 'Please choose a valid image file (JPG, PNG, WebP).';
       errEl.style.display = 'block';
     }
     return;
   }
 
   imgCompOriginalFile = file;
+
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
       imgCompLoadedImage = img;
+
+      const thumb = document.getElementById('imgcomp-selected-thumb');
+      if (thumb) thumb.src = e.target.result;
+
       document.getElementById('imgcomp-filename').textContent = file.name;
       document.getElementById('imgcomp-orig-size').textContent = formatBytes(file.size);
       document.getElementById('imgcomp-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
 
+      if (cardEl) cardEl.style.display = 'flex';
       if (controlsEl) controlsEl.style.display = 'block';
       if (actionRow) actionRow.style.display = 'flex';
-      runImageCompression();
     };
     img.src = e.target.result;
   };
@@ -5664,12 +5813,24 @@ function handleImageCompressorFile(file) {
 }
 
 function updateCompressorQuality(val) {
-  document.getElementById('imgcomp-quality-val').textContent = val + '%';
-  runImageCompression();
+  const badge = document.getElementById('imgcomp-quality-val');
+  if (badge) badge.textContent = val + '%';
 }
 
 function runImageCompression() {
-  if (!imgCompLoadedImage || !imgCompOriginalFile) return;
+  const errEl = document.getElementById('imgcomp-error');
+  const progEl = document.getElementById('imgcomp-progress');
+  const resultCard = document.getElementById('imgcomp-result');
+
+  if (errEl) errEl.style.display = 'none';
+
+  if (!imgCompLoadedImage || !imgCompOriginalFile) {
+    if (errEl) {
+      errEl.textContent = 'Please choose an image file first.';
+      errEl.style.display = 'block';
+    }
+    return;
+  }
 
   const quality = parseInt(document.getElementById('imgcomp-quality').value, 10) / 100;
   const maxWOpt = document.getElementById('imgcomp-max-width').value;
@@ -5677,7 +5838,7 @@ function runImageCompression() {
 
   let targetFormat = formatOpt === 'auto' ? (imgCompOriginalFile.type || 'image/jpeg') : formatOpt;
   if (targetFormat !== 'image/jpeg' && targetFormat !== 'image/webp') {
-    targetFormat = 'image/jpeg'; // fallback
+    targetFormat = 'image/jpeg';
   }
 
   let w = imgCompLoadedImage.naturalWidth;
@@ -5704,7 +5865,15 @@ function runImageCompression() {
   ctx.drawImage(imgCompLoadedImage, 0, 0, w, h);
 
   canvas.toBlob(blob => {
-    if (!blob) return;
+    if (!blob) {
+      if (errEl) {
+        errEl.textContent = 'Compression failed. Please try a different quality level.';
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
+    imgCompResultBlob = blob;
 
     const originalSize = imgCompOriginalFile.size;
     const newSize = blob.size;
@@ -5717,24 +5886,31 @@ function runImageCompression() {
     const preview = document.getElementById('imgcomp-preview');
     if (preview) preview.src = URL.createObjectURL(blob);
 
-    const ext = targetFormat === 'image/webp' ? 'webp' : 'jpg';
-    const baseName = imgCompOriginalFile.name.replace(/\.[^/.]+$/, '');
-    const dlBtn = document.getElementById('imgcomp-download-btn');
-    if (dlBtn) {
-      dlBtn.href = URL.createObjectURL(blob);
-      dlBtn.download = `${baseName}-compressed.${ext}`;
+    if (resultCard) {
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    const resultCard = document.getElementById('imgcomp-result');
-    if (resultCard) resultCard.style.display = 'block';
+    showToast('✓ Image compressed successfully!');
   }, targetFormat, quality);
+}
+
+function downloadCompressedImage() {
+  if (!imgCompResultBlob || !imgCompOriginalFile) return;
+  const formatOpt = document.getElementById('imgcomp-format').value;
+  const ext = formatOpt === 'image/webp' ? 'webp' : 'jpg';
+  const baseName = imgCompOriginalFile.name.replace(/\.[^/.]+$/, '');
+  downloadBlob(imgCompResultBlob, `${baseName}-compressed.${ext}`);
 }
 
 function resetImageCompressor() {
   imgCompLoadedImage = null;
   imgCompOriginalFile = null;
+  imgCompResultBlob = null;
+
   const input = document.getElementById('imgcomp-input');
   if (input) input.value = '';
+  const card = document.getElementById('imgcomp-selected-card');
+  if (card) card.style.display = 'none';
   const controls = document.getElementById('imgcomp-controls');
   if (controls) controls.style.display = 'none';
   const actions = document.getElementById('imgcomp-action-row');
@@ -5745,22 +5921,26 @@ function resetImageCompressor() {
   if (errEl) errEl.style.display = 'none';
 }
 
-
 // ==================== 6. IMAGE RESIZER ====================
 let imgResizeLoadedImage = null;
 let imgResizeOriginalFile = null;
+let imgResizeResultBlob = null;
 let imgResizeAspectRatioLocked = true;
 let imgResizeNaturalRatio = 1;
 
 function handleImageResizerFile(file) {
   const errEl = document.getElementById('imgresize-error');
+  const cardEl = document.getElementById('imgresize-selected-card');
   const controls = document.getElementById('imgresize-controls');
   const actions = document.getElementById('imgresize-action-row');
+  const resultCard = document.getElementById('imgresize-result');
 
   if (errEl) errEl.style.display = 'none';
+  if (resultCard) resultCard.style.display = 'none';
   if (!file) return;
 
   imgResizeOriginalFile = file;
+
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
@@ -5770,6 +5950,9 @@ function handleImageResizerFile(file) {
       const h = img.naturalHeight;
       imgResizeNaturalRatio = w / h;
 
+      const thumb = document.getElementById('imgresize-selected-thumb');
+      if (thumb) thumb.src = e.target.result;
+
       document.getElementById('imgresize-filename').textContent = file.name;
       document.getElementById('imgresize-orig-dims').textContent = `${w} × ${h} px`;
       document.getElementById('imgresize-orig-ratio').textContent = `${imgResizeNaturalRatio.toFixed(2)}:1`;
@@ -5778,9 +5961,9 @@ function handleImageResizerFile(file) {
       document.getElementById('imgresize-width').value = w;
       document.getElementById('imgresize-height').value = h;
 
+      if (cardEl) cardEl.style.display = 'flex';
       if (controls) controls.style.display = 'block';
       if (actions) actions.style.display = 'flex';
-      runImageResize();
     };
     img.src = e.target.result;
   };
@@ -5813,25 +5996,32 @@ function applyResizerPreset(scale) {
   const h = Math.round(imgResizeLoadedImage.naturalHeight * scale);
   document.getElementById('imgresize-width').value = w;
   document.getElementById('imgresize-height').value = h;
-  runImageResize();
 }
 
 function applyResizerExact(w, h) {
   document.getElementById('imgresize-width').value = w;
   document.getElementById('imgresize-height').value = h;
-  runImageResize();
 }
 
 function runImageResize() {
-  if (!imgResizeLoadedImage) return;
+  const errEl = document.getElementById('imgresize-error');
+  const resultCard = document.getElementById('imgresize-result');
+  if (errEl) errEl.style.display = 'none';
+
+  if (!imgResizeLoadedImage || !imgResizeOriginalFile) {
+    if (errEl) {
+      errEl.textContent = 'Please choose an image file first.';
+      errEl.style.display = 'block';
+    }
+    return;
+  }
 
   const w = parseInt(document.getElementById('imgresize-width').value, 10);
   const h = parseInt(document.getElementById('imgresize-height').value, 10);
 
   if (!w || !h || w <= 0 || h <= 0) {
-    const errEl = document.getElementById('imgresize-error');
     if (errEl) {
-      errEl.textContent = 'Please enter valid width and height dimensions.';
+      errEl.textContent = 'Please enter valid positive width and height dimensions.';
       errEl.style.display = 'block';
     }
     return;
@@ -5851,36 +6041,46 @@ function runImageResize() {
   }
 
   ctx.drawImage(imgResizeLoadedImage, 0, 0, w, h);
-
   const format = isPng ? 'image/png' : 'image/jpeg';
+
   canvas.toBlob(blob => {
     if (!blob) return;
+    imgResizeResultBlob = blob;
 
-    document.getElementById('imgresize-res-dims').textContent = `${w} × ${h}`;
+    document.getElementById('imgresize-res-dims').textContent = `${w} × ${h} px`;
     document.getElementById('imgresize-res-size').textContent = formatBytes(blob.size);
     document.getElementById('imgresize-res-format').textContent = isPng ? 'PNG' : 'JPG';
 
     const preview = document.getElementById('imgresize-preview');
     if (preview) preview.src = URL.createObjectURL(blob);
 
-    const ext = isPng ? 'png' : 'jpg';
-    const baseName = imgResizeOriginalFile.name.replace(/\.[^/.]+$/, '');
-    const dlBtn = document.getElementById('imgresize-download-btn');
-    if (dlBtn) {
-      dlBtn.href = URL.createObjectURL(blob);
-      dlBtn.download = `${baseName}-${w}x${h}.${ext}`;
+    if (resultCard) {
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    const resultCard = document.getElementById('imgresize-result');
-    if (resultCard) resultCard.style.display = 'block';
+    showToast('✓ Image resized successfully!');
   }, format, 0.9);
+}
+
+function downloadResizedImage() {
+  if (!imgResizeResultBlob || !imgResizeOriginalFile) return;
+  const isPng = imgResizeOriginalFile.type === 'image/png';
+  const ext = isPng ? 'png' : 'jpg';
+  const baseName = imgResizeOriginalFile.name.replace(/\.[^/.]+$/, '');
+  const w = document.getElementById('imgresize-width').value;
+  const h = document.getElementById('imgresize-height').value;
+  downloadBlob(imgResizeResultBlob, `${baseName}-${w}x${h}.${ext}`);
 }
 
 function resetImageResizer() {
   imgResizeLoadedImage = null;
   imgResizeOriginalFile = null;
+  imgResizeResultBlob = null;
+
   const input = document.getElementById('imgresize-input');
   if (input) input.value = '';
+  const card = document.getElementById('imgresize-selected-card');
+  if (card) card.style.display = 'none';
   const controls = document.getElementById('imgresize-controls');
   if (controls) controls.style.display = 'none';
   const actions = document.getElementById('imgresize-action-row');
@@ -5891,32 +6091,40 @@ function resetImageResizer() {
   if (errEl) errEl.style.display = 'none';
 }
 
-
 // ==================== 7. JPG TO PNG CONVERTER ====================
 let jpg2PngLoadedImage = null;
 let jpg2PngOriginalFile = null;
+let jpg2PngResultBlob = null;
 
 function handleJpgToPngFile(file) {
   const errEl = document.getElementById('jpg2png-error');
+  const cardEl = document.getElementById('jpg2png-selected-card');
   const controls = document.getElementById('jpg2png-controls');
   const actions = document.getElementById('jpg2png-action-row');
+  const resultCard = document.getElementById('jpg2png-result');
 
   if (errEl) errEl.style.display = 'none';
+  if (resultCard) resultCard.style.display = 'none';
   if (!file) return;
 
   jpg2PngOriginalFile = file;
+
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
       jpg2PngLoadedImage = img;
+
+      const thumb = document.getElementById('jpg2png-selected-thumb');
+      if (thumb) thumb.src = e.target.result;
+
       document.getElementById('jpg2png-filename').textContent = file.name;
       document.getElementById('jpg2png-orig-size').textContent = formatBytes(file.size);
       document.getElementById('jpg2png-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
 
+      if (cardEl) cardEl.style.display = 'flex';
       if (controls) controls.style.display = 'block';
       if (actions) actions.style.display = 'flex';
-      runJpgToPng();
     };
     img.src = e.target.result;
   };
@@ -5924,7 +6132,17 @@ function handleJpgToPngFile(file) {
 }
 
 function runJpgToPng() {
-  if (!jpg2PngLoadedImage || !jpg2PngOriginalFile) return;
+  const errEl = document.getElementById('jpg2png-error');
+  const resultCard = document.getElementById('jpg2png-result');
+  if (errEl) errEl.style.display = 'none';
+
+  if (!jpg2PngLoadedImage || !jpg2PngOriginalFile) {
+    if (errEl) {
+      errEl.textContent = 'Please choose a JPG/JPEG image first.';
+      errEl.style.display = 'block';
+    }
+    return;
+  }
 
   const canvas = document.createElement('canvas');
   canvas.width = jpg2PngLoadedImage.naturalWidth;
@@ -5934,30 +6152,36 @@ function runJpgToPng() {
 
   canvas.toBlob(blob => {
     if (!blob) return;
+    jpg2PngResultBlob = blob;
 
     document.getElementById('jpg2png-res-size').textContent = formatBytes(blob.size);
 
     const preview = document.getElementById('jpg2png-preview');
     if (preview) preview.src = URL.createObjectURL(blob);
 
-    const baseName = jpg2PngOriginalFile.name.replace(/\.[^/.]+$/, '');
-    const dlBtn = document.getElementById('jpg2png-download-btn');
-    if (dlBtn) {
-      dlBtn.href = URL.createObjectURL(blob);
-      dlBtn.download = `${baseName}.png`;
+    if (resultCard) {
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    const resultCard = document.getElementById('jpg2png-result');
-    if (resultCard) resultCard.style.display = 'block';
     showToast('✓ Converted to PNG!');
   }, 'image/png');
+}
+
+function downloadJpgToPng() {
+  if (!jpg2PngResultBlob || !jpg2PngOriginalFile) return;
+  const baseName = jpg2PngOriginalFile.name.replace(/\.[^/.]+$/, '');
+  downloadBlob(jpg2PngResultBlob, `${baseName}.png`);
 }
 
 function resetJpgToPng() {
   jpg2PngLoadedImage = null;
   jpg2PngOriginalFile = null;
+  jpg2PngResultBlob = null;
+
   const input = document.getElementById('jpg2png-input');
   if (input) input.value = '';
+  const card = document.getElementById('jpg2png-selected-card');
+  if (card) card.style.display = 'none';
   const controls = document.getElementById('jpg2png-controls');
   if (controls) controls.style.display = 'none';
   const actions = document.getElementById('jpg2png-action-row');
@@ -5968,32 +6192,41 @@ function resetJpgToPng() {
   if (errEl) errEl.style.display = 'none';
 }
 
-
 // ==================== 8. PNG TO JPG CONVERTER ====================
 let png2JpgLoadedImage = null;
 let png2JpgOriginalFile = null;
+let png2JpgResultBlob = null;
+let png2JpgBgColor = '#ffffff';
 
 function handlePngToJpgFile(file) {
   const errEl = document.getElementById('png2jpg-error');
+  const cardEl = document.getElementById('png2jpg-selected-card');
   const controls = document.getElementById('png2jpg-controls');
   const actions = document.getElementById('png2jpg-action-row');
+  const resultCard = document.getElementById('png2jpg-result');
 
   if (errEl) errEl.style.display = 'none';
+  if (resultCard) resultCard.style.display = 'none';
   if (!file) return;
 
   png2JpgOriginalFile = file;
+
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
       png2JpgLoadedImage = img;
+
+      const thumb = document.getElementById('png2jpg-selected-thumb');
+      if (thumb) thumb.src = e.target.result;
+
       document.getElementById('png2jpg-filename').textContent = file.name;
       document.getElementById('png2jpg-orig-size').textContent = formatBytes(file.size);
       document.getElementById('png2jpg-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
 
+      if (cardEl) cardEl.style.display = 'flex';
       if (controls) controls.style.display = 'block';
       if (actions) actions.style.display = 'flex';
-      runPngToJpg();
     };
     img.src = e.target.result;
   };
@@ -6001,21 +6234,29 @@ function handlePngToJpgFile(file) {
 }
 
 function updatePng2JpgBg(hex) {
-  const badge = document.getElementById('png2jpg-bg-hex');
-  if (badge) badge.textContent = hex;
-  runPngToJpg();
+  png2JpgBgColor = hex;
+  const hexBadge = document.getElementById('png2jpg-bg-hex');
+  if (hexBadge) hexBadge.textContent = hex.toUpperCase();
 }
 
 function updatePng2JpgQuality(val) {
-  const qVal = document.getElementById('png2jpg-quality-val');
-  if (qVal) qVal.textContent = val + '%';
-  runPngToJpg();
+  const qBadge = document.getElementById('png2jpg-quality-val');
+  if (qBadge) qBadge.textContent = val + '%';
 }
 
 function runPngToJpg() {
-  if (!png2JpgLoadedImage || !png2JpgOriginalFile) return;
+  const errEl = document.getElementById('png2jpg-error');
+  const resultCard = document.getElementById('png2jpg-result');
+  if (errEl) errEl.style.display = 'none';
 
-  const bgColor = document.getElementById('png2jpg-bg-color').value || '#ffffff';
+  if (!png2JpgLoadedImage || !png2JpgOriginalFile) {
+    if (errEl) {
+      errEl.textContent = 'Please choose a PNG image first.';
+      errEl.style.display = 'block';
+    }
+    return;
+  }
+
   const quality = parseInt(document.getElementById('png2jpg-quality').value, 10) / 100;
 
   const canvas = document.createElement('canvas');
@@ -6023,13 +6264,14 @@ function runPngToJpg() {
   canvas.height = png2JpgLoadedImage.naturalHeight;
   const ctx = canvas.getContext('2d');
 
-  // Fill background for transparency
-  ctx.fillStyle = bgColor;
+  // Fill custom background color for transparency
+  ctx.fillStyle = png2JpgBgColor || '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(png2JpgLoadedImage, 0, 0);
 
   canvas.toBlob(blob => {
     if (!blob) return;
+    png2JpgResultBlob = blob;
 
     const originalSize = png2JpgOriginalFile.size;
     const newSize = blob.size;
@@ -6042,24 +6284,30 @@ function runPngToJpg() {
     const preview = document.getElementById('png2jpg-preview');
     if (preview) preview.src = URL.createObjectURL(blob);
 
-    const baseName = png2JpgOriginalFile.name.replace(/\.[^/.]+$/, '');
-    const dlBtn = document.getElementById('png2jpg-download-btn');
-    if (dlBtn) {
-      dlBtn.href = URL.createObjectURL(blob);
-      dlBtn.download = `${baseName}.jpg`;
+    if (resultCard) {
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    const resultCard = document.getElementById('png2jpg-result');
-    if (resultCard) resultCard.style.display = 'block';
     showToast('✓ Converted to JPG!');
   }, 'image/jpeg', quality);
+}
+
+function downloadPngToJpg() {
+  if (!png2JpgResultBlob || !png2JpgOriginalFile) return;
+  const baseName = png2JpgOriginalFile.name.replace(/\.[^/.]+$/, '');
+  downloadBlob(png2JpgResultBlob, `${baseName}.jpg`);
 }
 
 function resetPngToJpg() {
   png2JpgLoadedImage = null;
   png2JpgOriginalFile = null;
+  png2JpgResultBlob = null;
+  png2JpgBgColor = '#ffffff';
+
   const input = document.getElementById('png2jpg-input');
   if (input) input.value = '';
+  const card = document.getElementById('png2jpg-selected-card');
+  if (card) card.style.display = 'none';
   const controls = document.getElementById('png2jpg-controls');
   if (controls) controls.style.display = 'none';
   const actions = document.getElementById('png2jpg-action-row');
@@ -6070,29 +6318,43 @@ function resetPngToJpg() {
   if (errEl) errEl.style.display = 'none';
 }
 
-
 // ==================== 9. IMAGE CROPPER ====================
 let imgCropLoadedImage = null;
 let imgCropOriginalFile = null;
-let imgCropCurrentRatio = 'free'; // 'free', '1:1', '4:3', '16:9'
+let imgCropResultBlob = null;
+let imgCropCurrentRatio = 'free';
 
 function handleImageCropperFile(file) {
   const errEl = document.getElementById('imgcrop-error');
+  const cardEl = document.getElementById('imgcrop-selected-card');
   const controls = document.getElementById('imgcrop-controls');
   const actions = document.getElementById('imgcrop-action-row');
+  const resultCard = document.getElementById('imgcrop-result');
 
   if (errEl) errEl.style.display = 'none';
+  if (resultCard) resultCard.style.display = 'none';
   if (!file) return;
 
   imgCropOriginalFile = file;
+
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
       imgCropLoadedImage = img;
+
+      const thumb = document.getElementById('imgcrop-selected-thumb');
+      if (thumb) thumb.src = e.target.result;
+
+      document.getElementById('imgcrop-filename').textContent = file.name;
+      document.getElementById('imgcrop-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+      document.getElementById('imgcrop-orig-size').textContent = formatBytes(file.size);
+
+      if (cardEl) cardEl.style.display = 'flex';
       if (controls) controls.style.display = 'block';
       if (actions) actions.style.display = 'flex';
-      drawCropCanvas();
+
+      setTimeout(drawCropCanvas, 50);
     };
     img.src = e.target.result;
   };
@@ -6101,18 +6363,48 @@ function handleImageCropperFile(file) {
 
 function setCropRatio(ratio) {
   imgCropCurrentRatio = ratio;
-  ['free', '1-1', '4-3', '16-9'].forEach(r => {
-    const btn = document.getElementById(`crop-ratio-${r}`);
+  const ratioBtnMap = {
+    "free": "crop-ratio-free",
+    "1:1": "crop-ratio-1-1",
+    "4:3": "crop-ratio-4-3",
+    "16:9": "crop-ratio-16-9",
+    "1-1": "crop-ratio-1-1",
+    "4-3": "crop-ratio-4-3",
+    "16-9": "crop-ratio-16-9"
+  };
+  const activeBtnId = ratioBtnMap[ratio] || "crop-ratio-free";
+  ["crop-ratio-free", "crop-ratio-1-1", "crop-ratio-4-3", "crop-ratio-16-9"].forEach(btnId => {
+    const btn = document.getElementById(btnId);
     if (btn) {
-      if (r === ratio.replace(':', '-')) btn.classList.add('active');
-      else btn.classList.remove('active');
+      if (btnId === activeBtnId) btn.classList.add("active");
+      else btn.classList.remove("active");
     }
   });
   drawCropCanvas();
 }
 
 function onCropParamChange() {
+  const sizeVal = document.getElementById('crop-size').value;
+  const xVal = document.getElementById('crop-pos-x').value;
+  const yVal = document.getElementById('crop-pos-y').value;
+
+  const sizeBadge = document.getElementById('crop-size-val');
+  if (sizeBadge) sizeBadge.textContent = sizeVal + '%';
+
+  const xBadge = document.getElementById('crop-pos-x-val');
+  if (xBadge) xBadge.textContent = xVal + '%';
+
+  const yBadge = document.getElementById('crop-pos-y-val');
+  if (yBadge) yBadge.textContent = yVal + '%';
+
   drawCropCanvas();
+}
+
+function resetCropCenter() {
+  document.getElementById('crop-size').value = 80;
+  document.getElementById('crop-pos-x').value = 50;
+  document.getElementById('crop-pos-y').value = 50;
+  onCropParamChange();
 }
 
 function getCropBox() {
@@ -6125,6 +6417,7 @@ function getCropBox() {
   const sizeVal = parseInt(document.getElementById('crop-size').value, 10) / 100;
 
   let cropW, cropH;
+
   if (imgCropCurrentRatio === '1:1') {
     const minDim = Math.min(imgW, imgH) * sizeVal;
     cropW = minDim;
@@ -6146,39 +6439,42 @@ function getCropBox() {
       cropW = cropH * (16 / 9);
     }
   } else {
-    // Freeform
     cropW = imgW * sizeVal;
     cropH = imgH * sizeVal;
   }
 
-  const maxOffsetX = imgW - cropW;
-  const maxOffsetY = imgH - cropH;
+  const maxOffsetX = Math.max(0, imgW - cropW);
+  const maxOffsetY = Math.max(0, imgH - cropH);
+
   const x = Math.max(0, Math.min(maxOffsetX, maxOffsetX * posXVal));
   const y = Math.max(0, Math.min(maxOffsetY, maxOffsetY * posYVal));
 
-  return { x: Math.round(x), y: Math.round(y), w: Math.round(cropW), h: Math.round(cropH) };
+  return {
+    x: Math.round(x),
+    y: Math.round(y),
+    w: Math.round(cropW),
+    h: Math.round(cropH)
+  };
 }
 
 function drawCropCanvas() {
   if (!imgCropLoadedImage) return;
-
   const canvas = document.getElementById('imgcrop-canvas');
   if (!canvas) return;
 
-  const wrapWidth = Math.min(canvas.parentElement.clientWidth || 400, 600);
+  const parentWidth = canvas.parentElement ? canvas.parentElement.clientWidth : 400;
+  const wrapWidth = Math.max(280, Math.min(parentWidth || 400, 600));
   const displayScale = wrapWidth / imgCropLoadedImage.naturalWidth;
+
   canvas.width = wrapWidth;
   canvas.height = imgCropLoadedImage.naturalHeight * displayScale;
-
   const ctx = canvas.getContext('2d');
-  // Draw base image
+
   ctx.drawImage(imgCropLoadedImage, 0, 0, canvas.width, canvas.height);
 
-  // Overlay semi-transparent dark mask
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Clear crop box hole
   const box = getCropBox();
   const cX = box.x * displayScale;
   const cY = box.y * displayScale;
@@ -6188,12 +6484,10 @@ function drawCropCanvas() {
   ctx.clearRect(cX, cY, cW, cH);
   ctx.drawImage(imgCropLoadedImage, box.x, box.y, box.w, box.h, cX, cY, cW, cH);
 
-  // Draw crop boundary outline
   ctx.strokeStyle = '#2563eb';
   ctx.lineWidth = 2;
   ctx.strokeRect(cX, cY, cW, cH);
 
-  // Draw rule of thirds lines
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -6205,7 +6499,17 @@ function drawCropCanvas() {
 }
 
 function runImageCrop() {
-  if (!imgCropLoadedImage || !imgCropOriginalFile) return;
+  const errEl = document.getElementById('imgcrop-error');
+  const resultCard = document.getElementById('imgcrop-result');
+  if (errEl) errEl.style.display = 'none';
+
+  if (!imgCropLoadedImage || !imgCropOriginalFile) {
+    if (errEl) {
+      errEl.textContent = 'Please choose an image to crop.';
+      errEl.style.display = 'block';
+    }
+    return;
+  }
 
   const box = getCropBox();
   if (box.w <= 0 || box.h <= 0) return;
@@ -6217,35 +6521,43 @@ function runImageCrop() {
   outCtx.drawImage(imgCropLoadedImage, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);
 
   const format = imgCropOriginalFile.type === 'image/png' ? 'image/png' : 'image/jpeg';
+
   outCanvas.toBlob(blob => {
     if (!blob) return;
+    imgCropResultBlob = blob;
 
-    document.getElementById('imgcrop-res-dims').textContent = `${box.w} × ${box.h}`;
-    document.getElementById('imgcrop-res-ratio').textContent = imgCropCurrentRatio;
+    document.getElementById('imgcrop-res-dims').textContent = `${box.w} × ${box.h} px`;
+    document.getElementById('imgcrop-res-ratio').textContent = imgCropCurrentRatio.toUpperCase();
     document.getElementById('imgcrop-res-size').textContent = formatBytes(blob.size);
 
     const preview = document.getElementById('imgcrop-preview');
     if (preview) preview.src = URL.createObjectURL(blob);
 
-    const ext = format === 'image/png' ? 'png' : 'jpg';
-    const baseName = imgCropOriginalFile.name.replace(/\.[^/.]+$/, '');
-    const dlBtn = document.getElementById('imgcrop-download-btn');
-    if (dlBtn) {
-      dlBtn.href = URL.createObjectURL(blob);
-      dlBtn.download = `${baseName}-cropped.${ext}`;
+    if (resultCard) {
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    const resultCard = document.getElementById('imgcrop-result');
-    if (resultCard) resultCard.style.display = 'block';
     showToast('✓ Image cropped successfully!');
   }, format, 0.92);
+}
+
+function downloadCroppedImage() {
+  if (!imgCropResultBlob || !imgCropOriginalFile) return;
+  const isPng = imgCropOriginalFile.type === 'image/png';
+  const ext = isPng ? 'png' : 'jpg';
+  const baseName = imgCropOriginalFile.name.replace(/\.[^/.]+$/, '');
+  downloadBlob(imgCropResultBlob, `${baseName}-cropped.${ext}`);
 }
 
 function resetImageCropper() {
   imgCropLoadedImage = null;
   imgCropOriginalFile = null;
+  imgCropResultBlob = null;
+
   const input = document.getElementById('imgcrop-input');
   if (input) input.value = '';
+  const card = document.getElementById('imgcrop-selected-card');
+  if (card) card.style.display = 'none';
   const controls = document.getElementById('imgcrop-controls');
   if (controls) controls.style.display = 'none';
   const actions = document.getElementById('imgcrop-action-row');
@@ -6256,32 +6568,40 @@ function resetImageCropper() {
   if (errEl) errEl.style.display = 'none';
 }
 
-
 // ==================== 10. IMAGE TO WEBP CONVERTER ====================
 let img2WebpLoadedImage = null;
 let img2WebpOriginalFile = null;
+let img2WebpResultBlob = null;
 
 function handleImageToWebpFile(file) {
   const errEl = document.getElementById('img2webp-error');
+  const cardEl = document.getElementById('img2webp-selected-card');
   const controls = document.getElementById('img2webp-controls');
   const actions = document.getElementById('img2webp-action-row');
+  const resultCard = document.getElementById('img2webp-result');
 
   if (errEl) errEl.style.display = 'none';
+  if (resultCard) resultCard.style.display = 'none';
   if (!file) return;
 
   img2WebpOriginalFile = file;
+
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
       img2WebpLoadedImage = img;
+
+      const thumb = document.getElementById('img2webp-selected-thumb');
+      if (thumb) thumb.src = e.target.result;
+
       document.getElementById('img2webp-filename').textContent = file.name;
       document.getElementById('img2webp-orig-size').textContent = formatBytes(file.size);
       document.getElementById('img2webp-orig-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
 
+      if (cardEl) cardEl.style.display = 'flex';
       if (controls) controls.style.display = 'block';
       if (actions) actions.style.display = 'flex';
-      runImageToWebp();
     };
     img.src = e.target.result;
   };
@@ -6291,11 +6611,20 @@ function handleImageToWebpFile(file) {
 function updateWebpQuality(val) {
   const qVal = document.getElementById('img2webp-quality-val');
   if (qVal) qVal.textContent = val + '%';
-  runImageToWebp();
 }
 
 function runImageToWebp() {
-  if (!img2WebpLoadedImage || !img2WebpOriginalFile) return;
+  const errEl = document.getElementById('img2webp-error');
+  const resultCard = document.getElementById('img2webp-result');
+  if (errEl) errEl.style.display = 'none';
+
+  if (!img2WebpLoadedImage || !img2WebpOriginalFile) {
+    if (errEl) {
+      errEl.textContent = 'Please choose an image to convert.';
+      errEl.style.display = 'block';
+    }
+    return;
+  }
 
   const quality = parseInt(document.getElementById('img2webp-quality').value, 10) / 100;
 
@@ -6307,6 +6636,7 @@ function runImageToWebp() {
 
   canvas.toBlob(blob => {
     if (!blob) return;
+    img2WebpResultBlob = blob;
 
     const originalSize = img2WebpOriginalFile.size;
     const newSize = blob.size;
@@ -6319,24 +6649,29 @@ function runImageToWebp() {
     const preview = document.getElementById('img2webp-preview');
     if (preview) preview.src = URL.createObjectURL(blob);
 
-    const baseName = img2WebpOriginalFile.name.replace(/\.[^/.]+$/, '');
-    const dlBtn = document.getElementById('img2webp-download-btn');
-    if (dlBtn) {
-      dlBtn.href = URL.createObjectURL(blob);
-      dlBtn.download = `${baseName}.webp`;
+    if (resultCard) {
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
-    const resultCard = document.getElementById('img2webp-result');
-    if (resultCard) resultCard.style.display = 'block';
     showToast('✓ Converted to WebP!');
   }, 'image/webp', quality);
+}
+
+function downloadWebpImage() {
+  if (!img2WebpResultBlob || !img2WebpOriginalFile) return;
+  const baseName = img2WebpOriginalFile.name.replace(/\.[^/.]+$/, '');
+  downloadBlob(img2WebpResultBlob, `${baseName}.webp`);
 }
 
 function resetImageToWebp() {
   img2WebpLoadedImage = null;
   img2WebpOriginalFile = null;
+  img2WebpResultBlob = null;
+
   const input = document.getElementById('img2webp-input');
   if (input) input.value = '';
+  const card = document.getElementById('img2webp-selected-card');
+  if (card) card.style.display = 'none';
   const controls = document.getElementById('img2webp-controls');
   if (controls) controls.style.display = 'none';
   const actions = document.getElementById('img2webp-action-row');
@@ -6345,4 +6680,11 @@ function resetImageToWebp() {
   if (resultCard) resultCard.style.display = 'none';
   const errEl = document.getElementById('img2webp-error');
   if (errEl) errEl.style.display = 'none';
+}
+
+// Auto-initialize dropzones when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initFileDropzones);
+} else {
+  initFileDropzones();
 }

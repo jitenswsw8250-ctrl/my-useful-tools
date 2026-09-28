@@ -1,4 +1,5 @@
-# tools_pdf_image_js.py
+import re
+
 JS_CODE = r'''// ============================================================================
 // PDF & IMAGE TOOLS - 10 BROWSER-BASED UTILITY TOOLS
 // 100% Client-Side, Zero Server Uploads, Fully Local, Fast and Private
@@ -1814,3 +1815,8 @@ if (document.readyState === 'loading') {
   initFileDropzones();
 }
 '''
+
+with open('tools_pdf_image_js.py', 'w', encoding='utf-8') as f:
+    f.write(f'# tools_pdf_image_js.py\nJS_CODE = r\'\'\'{JS_CODE}\'\'\'\n')
+
+print("tools_pdf_image_js.py written successfully.")
