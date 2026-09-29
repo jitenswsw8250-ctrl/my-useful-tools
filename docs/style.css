@@ -339,6 +339,46 @@ input, textarea, select {
   margin: 0 auto;
 }
 
+/* ================= ADSTERRA 300x250 RECTANGLE AD AREA ================= */
+.ad-rect-wrapper {
+  margin: 28px auto 20px auto;
+  padding: 12px 10px;
+  background-color: var(--surface-color);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  text-align: center;
+  max-width: 340px;
+  width: 100%;
+  box-sizing: border-box;
+  clear: both;
+}
+
+.ad-rect-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  min-height: 250px;
+  width: 100%;
+  max-width: 300px;
+  overflow: hidden;
+}
+
+.ad-rect-box iframe {
+  max-width: 100% !important;
+  border: 0 !important;
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 350px) {
+  .ad-rect-wrapper {
+    padding: 10px 4px;
+    margin: 20px auto 16px auto;
+  }
+}
+
 /* ================= HERO CARD ================= */
 .hero-card {
   text-align: center;
